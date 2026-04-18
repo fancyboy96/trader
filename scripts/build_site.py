@@ -138,11 +138,21 @@ CSS = """
 
 THEME_JS = """
 <script>
+  (function() {
+    const saved = localStorage.getItem('pythia-theme');
+    if (saved) document.documentElement.setAttribute('data-theme', saved);
+  })();
   function toggleTheme() {
     const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
     document.documentElement.setAttribute('data-theme', next);
+    localStorage.setItem('pythia-theme', next);
     document.querySelector('.theme-toggle').textContent = next === 'dark' ? 'Light' : 'Dark';
   }
+  document.addEventListener('DOMContentLoaded', function() {
+    const theme = document.documentElement.getAttribute('data-theme');
+    const btn = document.querySelector('.theme-toggle');
+    if (btn) btn.textContent = theme === 'dark' ? 'Light' : 'Dark';
+  });
 </script>"""
 
 
