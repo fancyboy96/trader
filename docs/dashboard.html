@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Screener Dashboard — Pythia</title>
+  <script>const t=localStorage.getItem("pythia-theme");if(t)document.documentElement.setAttribute("data-theme",t);</script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root { --ease-out: cubic-bezier(0.16,1,0.3,1); --dur: 200ms; }
@@ -188,13 +189,9 @@
 </table>
 </section>
 
-<footer class="report-footer">Pythia &nbsp;·&nbsp; Screener Dashboard &nbsp;·&nbsp; 2026-04-18 &nbsp;·&nbsp; For personal use only &nbsp;·&nbsp; <a href="methodology.html">Methodology</a></footer>
+<footer class="report-footer">Pythia &nbsp;·&nbsp; Screener Dashboard &nbsp;·&nbsp; 2026-04-18 &nbsp;·&nbsp; For personal use only</footer>
 
 <script>
-  (function() {
-    const saved = localStorage.getItem('pythia-theme');
-    if (saved) document.documentElement.setAttribute('data-theme', saved);
-  })();
   function toggleTheme() {
     const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
     document.documentElement.setAttribute('data-theme', next);

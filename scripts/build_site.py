@@ -138,10 +138,6 @@ CSS = """
 
 THEME_JS = """
 <script>
-  (function() {
-    const saved = localStorage.getItem('pythia-theme');
-    if (saved) document.documentElement.setAttribute('data-theme', saved);
-  })();
   function toggleTheme() {
     const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
     document.documentElement.setAttribute('data-theme', next);
@@ -155,6 +151,8 @@ THEME_JS = """
   });
 </script>"""
 
+THEME_INIT = '<script>const t=localStorage.getItem("pythia-theme");if(t)document.documentElement.setAttribute("data-theme",t);</script>'
+
 
 def html_shell(title: str, body: str) -> str:
     return f"""<!DOCTYPE html>
@@ -163,6 +161,7 @@ def html_shell(title: str, body: str) -> str:
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{title} — Pythia</title>
+  {THEME_INIT}
   <style>{CSS}</style>
 </head>
 <body>
@@ -194,7 +193,7 @@ def site_header(active: str, title: str, subtitle: str = "", prefix: str = "") -
 
 def footer(page: str, prefix: str = "") -> str:
     today = date.today().isoformat()
-    return f'<footer class="report-footer">Pythia &nbsp;·&nbsp; {page} &nbsp;·&nbsp; {today} &nbsp;·&nbsp; For personal use only &nbsp;·&nbsp; <a href="{prefix}methodology.html">Methodology</a></footer>'
+    return f'<footer class="report-footer">Pythia &nbsp;·&nbsp; {page} &nbsp;·&nbsp; {today} &nbsp;·&nbsp; For personal use only</footer>'
 
 
 def fmt_large(v) -> str:
@@ -619,7 +618,7 @@ def build_profile(conn, ticker: str):
 </section>
 
 <footer class="report-footer">
-  Pythia &nbsp;·&nbsp; {ticker} — {name} &nbsp;·&nbsp; {today} &nbsp;·&nbsp; For personal use only &nbsp;·&nbsp; <a href="../methodology.html">Methodology</a>
+  Pythia &nbsp;·&nbsp; {ticker} — {name} &nbsp;·&nbsp; {today} &nbsp;·&nbsp; For personal use only
 </footer>"""
 
     (PROFILES / f"{ticker}.html").write_text(html_shell(f"{ticker} — {name}", body))
