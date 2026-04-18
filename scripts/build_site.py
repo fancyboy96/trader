@@ -191,9 +191,20 @@ def site_header(active: str, title: str, subtitle: str = "", prefix: str = "") -
 </header>"""
 
 
+DISCLAIMER = (
+    "This site is produced for personal research purposes only. "
+    "Nothing here constitutes financial advice, an investment recommendation, or an offer to buy or sell any security. "
+    "All data is sourced from public APIs and may be inaccurate, delayed, or incomplete. "
+    "Past performance is not indicative of future results. "
+    "Do your own research. Consult a licensed financial adviser before making any investment decision."
+)
+
 def footer(page: str, prefix: str = "") -> str:
     today = date.today().isoformat()
-    return f'<footer class="report-footer">Pythia &nbsp;·&nbsp; {page} &nbsp;·&nbsp; {today} &nbsp;·&nbsp; For personal use only</footer>'
+    return f"""<footer class="report-footer">
+  Pythia &nbsp;·&nbsp; {page} &nbsp;·&nbsp; {today} &nbsp;·&nbsp; For personal use only
+  <div style="margin-top:10px;font-size:11px;color:var(--text-dim);line-height:1.6;max-width:800px">{DISCLAIMER}</div>
+</footer>"""
 
 
 def fmt_large(v) -> str:
@@ -270,6 +281,10 @@ def build_landing(conn):
   </div>
 </section>
 
+<section>
+  <div class="callout" style="font-size:13px;color:var(--text-dim)">{DISCLAIMER}</div>
+</section>
+
 {footer("Home")}"""
 
     (DOCS / "index.html").write_text(html_shell("Home", body))
@@ -278,11 +293,22 @@ def build_landing(conn):
 
 # ── Dashboard page ────────────────────────────────────────────────────────────
 
+def _report_link(ticker: str, today: str) -> str:
+    """Return path to report if one exists for today, else None."""
+    p = DOCS / "reports" / f"{ticker}-{today}.html"
+    if p.exists():
+        return f"reports/{ticker}-{today}.html"
+    # fallback: most recent report for this ticker
+    existing = sorted((DOCS / "reports").glob(f"{ticker}-*.html"), reverse=True)
+    return f"reports/{existing[0].name}" if existing else None
+
+
 def build_dashboard(conn):
     today = date.today().isoformat()
 
-    results = conn.execute("""
-        SELECT sr.*, c.name, c.sector, f.market_cap, f.fwd_pe, f.gross_margin
+    all_passed = conn.execute("""
+        SELECT sr.*, c.name, c.sector, f.market_cap, f.fwd_pe, f.gross_margin,
+               f.net_margin, f.roe, f.debt_to_equity, f.beta
         FROM screen_results sr
         LEFT JOIN companies c ON sr.ticker = c.ticker
         LEFT JOIN fundamentals f ON sr.ticker = f.ticker AND f.snapshot_date = (
@@ -292,41 +318,63 @@ def build_dashboard(conn):
         ORDER BY sr.score DESC
     """).fetchall()
 
-    filtered = conn.execute(
-        "SELECT COUNT(*) FROM screen_results WHERE passed_filters = 0"
-    ).fetchone()[0]
+    all_filtered = conn.execute("""
+        SELECT sr.ticker, sr.filter_fail_reason, c.name
+        FROM screen_results sr
+        LEFT JOIN companies c ON sr.ticker = c.ticker
+        WHERE sr.passed_filters = 0
+        ORDER BY sr.ticker
+    """).fetchall()
 
-    tier_counts = {t: sum(1 for r in results if r["tier"] == t) for t in "ABCD"}
+    tier_a   = [r for r in all_passed if r["tier"] == "A"]
+    tier_bc  = [r for r in all_passed if r["tier"] in ("B", "C")]
 
     stats = f"""
 <div class="stat-grid">
-  <div class="stat-card">
-    <div class="stat-label">Universe</div>
-    <div class="stat-value neutral">{len(results) + filtered}</div>
-    <div class="stat-sub">tickers screened</div>
-  </div>
-  <div class="stat-card">
-    <div class="stat-label">Tier A</div>
-    <div class="stat-value green">{tier_counts['A']}</div>
-    <div class="stat-sub">strong candidates</div>
-  </div>
-  <div class="stat-card">
-    <div class="stat-label">Tier B</div>
-    <div class="stat-value neutral">{tier_counts['B']}</div>
-    <div class="stat-sub">watch list</div>
-  </div>
-  <div class="stat-card">
-    <div class="stat-label">Filtered out</div>
-    <div class="stat-value neutral">{filtered}</div>
-    <div class="stat-sub">failed hard filters</div>
-  </div>
+  <div class="stat-card"><div class="stat-label">Universe</div><div class="stat-value neutral">{len(all_passed) + len(all_filtered)}</div><div class="stat-sub">tickers screened</div></div>
+  <div class="stat-card"><div class="stat-label">Tier A</div><div class="stat-value green">{len(tier_a)}</div><div class="stat-sub">analysis reports</div></div>
+  <div class="stat-card"><div class="stat-label">Tier B / C</div><div class="stat-value neutral">{len(tier_bc)}</div><div class="stat-sub">watch list</div></div>
+  <div class="stat-card"><div class="stat-label">Filtered out</div><div class="stat-value neutral">{len(all_filtered)}</div><div class="stat-sub">failed hard filters</div></div>
 </div>"""
 
-    rows_html = ""
-    for r in results:
+    # Tier A — report links
+    a_rows = ""
+    for r in tier_a:
+        report = _report_link(r["ticker"], today)
+        ticker_cell = f'<a href="{report}">{r["ticker"]}</a>' if report else f'<a href="profiles/{r["ticker"]}.html">{r["ticker"]}</a>'
+        report_cell = f'<a href="{report}" style="font-size:11px">Read report →</a>' if report else '<span style="color:var(--text-dim);font-size:11px">—</span>'
         score_w = min(int(r["score"]), 100)
         bar = f'<div class="score-bar-wrap"><div class="score-bar fill" style="width:{score_w}px"></div><span>{r["score"]:.0f}</span></div>'
-        rows_html += f"""
+        a_rows += f"""
+    <tr>
+      <td class="accent">{ticker_cell}</td>
+      <td>{r['name'] or '—'}</td>
+      <td class="dim">{r['sector'] or '—'}</td>
+      <td class="num">{bar}</td>
+      <td class="num dim">{fmt_large(r['market_cap'])}</td>
+      <td class="num dim">{fmt_pct(r['revenue_growth_yoy'])}</td>
+      <td class="num dim">{fmt_pct(r['gross_margin'])}</td>
+      <td class="num dim">{fmt_x(r['fwd_pe'])}</td>
+      <td>{report_cell}</td>
+    </tr>"""
+
+    tier_a_table = f"""
+<table>
+  <thead><tr>
+    <th>Ticker</th><th>Company</th><th>Sector</th>
+    <th class="num">Score</th><th class="num">Mkt Cap</th>
+    <th class="num">Rev Growth</th><th class="num">Gross Margin</th><th class="num">Fwd P/E</th>
+    <th>Report</th>
+  </tr></thead>
+  <tbody>{a_rows}</tbody>
+</table>""" if tier_a else '<p style="color:var(--text-dim);font-size:13px">No Tier A results.</p>'
+
+    # Tier B/C — metrics table with profile links
+    bc_rows = ""
+    for r in tier_bc:
+        score_w = min(int(r["score"]), 100)
+        bar = f'<div class="score-bar-wrap"><div class="score-bar fill" style="width:{score_w}px"></div><span>{r["score"]:.0f}</span></div>'
+        bc_rows += f"""
     <tr>
       <td class="accent"><a href="profiles/{r['ticker']}.html">{r['ticker']}</a></td>
       <td>{r['name'] or '—'}</td>
@@ -337,19 +385,27 @@ def build_dashboard(conn):
       <td class="num dim">{fmt_pct(r['revenue_growth_yoy'])}</td>
       <td class="num dim">{fmt_pct(r['gross_margin'])}</td>
       <td class="num dim">{fmt_x(r['fwd_pe'])}</td>
+      <td class="num dim">{fmt_pct(r['roe'])}</td>
+      <td class="num dim">{fmt_num(r['debt_to_equity'])}</td>
     </tr>"""
 
-    empty = '<p style="color:var(--text-dim);font-size:13px">No results yet. Run <code>screen.py</code> after loading tickers with <code>refresh.py</code>.</p>'
-
-    table = f"""
+    tier_bc_table = f"""
 <table>
   <thead><tr>
     <th>Ticker</th><th>Company</th><th>Sector</th><th>Tier</th>
     <th class="num">Score</th><th class="num">Mkt Cap</th>
     <th class="num">Rev Growth</th><th class="num">Gross Margin</th><th class="num">Fwd P/E</th>
+    <th class="num">ROE</th><th class="num">D/E</th>
   </tr></thead>
-  <tbody>{rows_html}</tbody>
-</table>""" if results else empty
+  <tbody>{bc_rows}</tbody>
+</table>""" if tier_bc else '<p style="color:var(--text-dim);font-size:13px">No Tier B/C results.</p>'
+
+    # Filtered — plain list
+    filtered_items = " &nbsp;·&nbsp; ".join(
+        f'<span style="color:var(--text)">{r["ticker"]}</span> <span style="color:var(--text-dim);font-size:11px">({r["filter_fail_reason"] or "filter"})</span>'
+        for r in all_filtered
+    )
+    filtered_section = f'<p style="font-size:13px;line-height:2">{filtered_items}</p>' if filtered_items else '<p style="color:var(--text-dim);font-size:13px">None.</p>'
 
     body = f"""
 {site_header("Dashboard", "Screener Dashboard", f"Last run: {today} &nbsp;·&nbsp; Criteria: screening-criteria.md")}
@@ -360,14 +416,24 @@ def build_dashboard(conn):
 </section>
 
 <section>
-  <div class="section-title">Results</div>
-  {table}
+  <div class="section-title">Tier A — Analysis Reports</div>
+  {tier_a_table}
+</section>
+
+<section>
+  <div class="section-title">Tier B / C — Watch List</div>
+  {tier_bc_table}
+</section>
+
+<section>
+  <div class="section-title">Filtered Out</div>
+  {filtered_section}
 </section>
 
 {footer("Screener Dashboard")}"""
 
     (DOCS / "dashboard.html").write_text(html_shell("Screener Dashboard", body))
-    print(f"  dashboard.html — {len(results)} tickers")
+    print(f"  dashboard.html — {len(tier_a)} Tier A · {len(tier_bc)} B/C · {len(all_filtered)} filtered")
 
 
 # ── Methodology page ──────────────────────────────────────────────────────────
