@@ -23,15 +23,17 @@ def log_audit(conn, ticker: str, endpoint: str, rows: int, status: str, note: st
 
 def upsert_company(conn, ticker: str, info: dict):
     conn.execute("""
-        INSERT INTO companies (ticker, name, sector, industry, country, description, website, last_updated)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        INSERT INTO companies (ticker, name, exchange, sector, industry, country, description, website, last_updated)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
         ON CONFLICT(ticker) DO UPDATE SET
-            name=excluded.name, sector=excluded.sector, industry=excluded.industry,
-            country=excluded.country, description=excluded.description,
-            website=excluded.website, last_updated=excluded.last_updated
+            name=excluded.name, exchange=excluded.exchange, sector=excluded.sector,
+            industry=excluded.industry, country=excluded.country,
+            description=excluded.description, website=excluded.website,
+            last_updated=excluded.last_updated
     """, (
         ticker,
         info.get("longName") or info.get("shortName"),
+        info.get("fullExchangeName") or info.get("exchange"),
         info.get("sector"),
         info.get("industry"),
         info.get("country"),

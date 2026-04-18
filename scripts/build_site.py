@@ -214,6 +214,22 @@ def footer(page: str, prefix: str = "") -> str:
 </footer>"""
 
 
+_EXCHANGE_MAP = {
+    "NasdaqGS": "NASDAQ", "NasdaqGM": "NASDAQ", "NasdaqCM": "NASDAQ",
+    "Nasdaq": "NASDAQ", "NMS": "NASDAQ", "NGM": "NASDAQ", "NCM": "NASDAQ",
+    "NYSE": "NYSE", "NYQ": "NYSE", "NYS": "NYSE",
+    "NYSE Arca": "NYSE Arca", "PCX": "NYSE Arca",
+    "NYSE American": "NYSE American", "ASE": "NYSE American",
+    "LSE": "LSE", "XLON": "LSE",
+    "TSX": "TSX",
+}
+
+def fmt_exchange(raw: str | None) -> str:
+    if not raw:
+        return ""
+    return _EXCHANGE_MAP.get(raw, raw)
+
+
 def fmt_large(v) -> str:
     if v is None: return "—"
     if v >= 1e12: return f"${v/1e12:.2f}T"
@@ -676,6 +692,7 @@ def build_profile(conn, ticker: str):
     name        = (c and c["name"])        or ticker
     sector      = (c and c["sector"])      or "—"
     industry    = (c and c["industry"])    or "—"
+    exchange    = fmt_exchange(c and c["exchange"])
     description = (c and c["description"]) or ""
     price       = prices["close"] if prices else None
     price_date  = prices["date"]  if prices else "—"
@@ -771,7 +788,7 @@ def build_profile(conn, ticker: str):
     <div>
       <div class="label">Pythia — Company Profile</div>
       <h1>{ticker} &mdash; {name}</h1>
-      <div class="meta">Sector: <span>{sector}</span> &nbsp;·&nbsp; Industry: <span>{industry}</span> &nbsp;·&nbsp; Data: <span>{fetch_meta}</span> &nbsp;·&nbsp; Snapshot: <span>{fund_date}</span></div>
+      <div class="meta">{f'<span style="font-weight:600">{exchange}: {ticker}</span> &nbsp;·&nbsp; ' if exchange else ''}Sector: <span>{sector}</span> &nbsp;·&nbsp; Industry: <span>{industry}</span> &nbsp;·&nbsp; Data: <span>{fetch_meta}</span> &nbsp;·&nbsp; Snapshot: <span>{fund_date}</span></div>
     </div>
     <button class="theme-toggle" onclick="toggleTheme()">Dark</button>
   </div>

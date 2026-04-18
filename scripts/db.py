@@ -23,6 +23,7 @@ def init_db():
         CREATE TABLE IF NOT EXISTS companies (
             ticker          TEXT PRIMARY KEY,
             name            TEXT,
+            exchange        TEXT,
             sector          TEXT,
             industry        TEXT,
             country         TEXT,

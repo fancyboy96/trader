@@ -11,6 +11,7 @@ import sys
 from datetime import date
 from pathlib import Path
 from db import get_conn, init_db
+from build_site import fmt_exchange
 
 REPORTS_DIR = Path(__file__).parent.parent / "docs" / "reports"
 
@@ -337,9 +338,10 @@ def generate(ticker: str, conn):
     hi = conn.execute("SELECT MAX(high) as h, MIN(low) as l FROM prices WHERE ticker=? AND date >= date('now','-365 days')", (ticker,)).fetchone()
     news = conn.execute("SELECT * FROM news WHERE ticker=? ORDER BY published_at DESC LIMIT 6", (ticker,)).fetchall()
 
-    name    = (c and c["name"]) or ticker
-    sector  = (c and c["sector"]) or "—"
-    industry= (c and c["industry"]) or "—"
+    name     = (c and c["name"]) or ticker
+    sector   = (c and c["sector"]) or "—"
+    industry = (c and c["industry"]) or "—"
+    exchange = fmt_exchange(c and c["exchange"])
     price   = pr["close"] if pr else None
     h52     = hi["h"] if hi else None
     l52     = hi["l"] if hi else None
@@ -415,7 +417,7 @@ def generate(ticker: str, conn):
       <div class="label">Pythia — Analysis Report</div>
       <h1>{ticker} &mdash; {name}</h1>
       <div class="meta">
-        Sector: <span>{sector}</span> &nbsp;·&nbsp;
+        {f'<span style="font-weight:600">{exchange}: {ticker}</span> &nbsp;·&nbsp; ' if exchange else ''}Sector: <span>{sector}</span> &nbsp;·&nbsp;
         Industry: <span>{industry}</span> &nbsp;·&nbsp;
         Generated: <span>{today}</span>
       </div>
