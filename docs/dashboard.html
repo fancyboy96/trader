@@ -146,11 +146,11 @@
   <div class="section-title">Overview</div>
   
 <div class="stat-grid">
-  <div class="stat-card"><div class="stat-label">Universe</div><div class="stat-value neutral">34</div><div class="stat-sub">tickers screened</div></div>
-  <div class="stat-card"><div class="stat-label">Tier A</div><div class="stat-value green">7</div><div class="stat-sub">strong candidates</div></div>
-  <div class="stat-card"><div class="stat-label">Tier B</div><div class="stat-value neutral">8</div><div class="stat-sub">watch list</div></div>
+  <div class="stat-card"><div class="stat-label">Universe</div><div class="stat-value neutral">41</div><div class="stat-sub">tickers screened</div></div>
+  <div class="stat-card"><div class="stat-label">Tier A</div><div class="stat-value green">8</div><div class="stat-sub">strong candidates</div></div>
+  <div class="stat-card"><div class="stat-label">Tier B</div><div class="stat-value neutral">9</div><div class="stat-sub">watch list</div></div>
   <div class="stat-card"><div class="stat-label">Tier C</div><div class="stat-value neutral">2</div><div class="stat-sub">weak</div></div>
-  <div class="stat-card"><div class="stat-label">Filtered out</div><div class="stat-value neutral">17</div><div class="stat-sub">failed hard filters</div></div>
+  <div class="stat-card"><div class="stat-label">Filtered out</div><div class="stat-value neutral">22</div><div class="stat-sub">failed hard filters</div></div>
 </div>
 </section>
 
@@ -158,7 +158,7 @@
   <div class="section-title">Screener Results</div>
   
 <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
-  <span id="view-label" style="font-size:13px;color:var(--text-dim)">17 companies &nbsp;·&nbsp; sorted by score</span>
+  <span id="view-label" style="font-size:13px;color:var(--text-dim)">19 companies &nbsp;·&nbsp; sorted by score</span>
   <div style="display:flex;align-items:center;gap:6px">
     <span style="font-size:11px;color:var(--text-dim);text-transform:uppercase;letter-spacing:.08em">View:</span>
     <button id="btn-score" onclick="setView('score')"
@@ -278,6 +278,19 @@
       <td class="num dim">31.4%</td>
       <td class="num dim">0.01</td>
     </tr>
+    <tr data-industry="Software - Infrastructure" data-sector="Technology" data-score="76">
+      <td class="accent"><a href="profiles/MSFT.html">MSFT</a></td>
+      <td>Microsoft Corporation</td>
+      <td class="dim">Technology</td>
+      <td><span class="badge A">A</span></td>
+      <td class="num"><div class="score-bar-wrap"><div class="score-bar fill" style="width:76px"></div><span>76</span></div></td>
+      <td class="num dim">$3.14T</td>
+      <td class="num dim">14.9%</td>
+      <td class="num dim">68.6%</td>
+      <td class="num dim">22.4x</td>
+      <td class="num dim">34.4%</td>
+      <td class="num dim">0.32</td>
+    </tr>
     <tr data-industry="Semiconductor Equipment & Materials" data-sector="Technology" data-score="71">
       <td class="accent"><a href="profiles/ASML.html">ASML</a></td>
       <td>ASML Holding N.V.</td>
@@ -303,6 +316,19 @@
       <td class="num dim">78.6x</td>
       <td class="num dim">26.0%</td>
       <td class="num dim">0.03</td>
+    </tr>
+    <tr data-industry="Internet Content & Information" data-sector="Communication Services" data-score="70">
+      <td class="accent"><a href="profiles/GOOGL.html">GOOGL</a></td>
+      <td>Alphabet Inc.</td>
+      <td class="dim">Communication Services</td>
+      <td><span class="badge B">B</span></td>
+      <td class="num"><div class="score-bar-wrap"><div class="score-bar fill" style="width:70px"></div><span>70</span></div></td>
+      <td class="num dim">$4.13T</td>
+      <td class="num dim">15.1%</td>
+      <td class="num dim">59.7%</td>
+      <td class="num dim">25.4x</td>
+      <td class="num dim">35.7%</td>
+      <td class="num dim">0.16</td>
     </tr>
     <tr data-industry="Semiconductors" data-sector="Technology" data-score="68">
       <td class="accent"><a href="profiles/AMD.html">AMD</a></td>
@@ -429,7 +455,7 @@ function setView(view) {
   // clear group headers
   Array.from(tbody.querySelectorAll('tr.group-header')).forEach(function(el){el.remove();});
   if (view === 'score') {
-    document.getElementById('view-label').textContent = '17 companies · sorted by score';
+    document.getElementById('view-label').textContent = '19 companies · sorted by score';
     _origRows.slice().sort(function(a,b){return +b.dataset.score - +a.dataset.score;}).forEach(function(r){tbody.appendChild(r);});
     return;
   }
@@ -441,7 +467,7 @@ function setView(view) {
     groups[g].push(r);
   });
   var keys = Object.keys(groups).sort();
-  document.getElementById('view-label').textContent = '17 companies · ' + keys.length + ' ' + view + 's';
+  document.getElementById('view-label').textContent = '19 companies · ' + keys.length + ' ' + view + 's';
   keys.forEach(function(g){
     var members = groups[g].sort(function(a,b){return +b.dataset.score - +a.dataset.score;});
     var hdr = document.createElement('tr');
@@ -462,7 +488,7 @@ function setView(view) {
   
 <details style="margin-top:8px">
   <summary style="cursor:pointer;color:var(--text-dim);font-size:13px;user-select:none">
-    Show 17 filtered tickers
+    Show 22 filtered tickers
   </summary>
   <table style="margin-top:12px">
     <thead><tr><th>Ticker</th><th>Company</th><th>Reason</th></tr></thead>
@@ -508,6 +534,21 @@ function setView(view) {
       <td class="dim">gross_margin 0.13 < 0.3</td>
     </tr>
     <tr>
+      <td class="accent">HON</td>
+      <td>Honeywell International Inc.</td>
+      <td class="dim">debt_to_equity 2.4 > 2</td>
+    </tr>
+    <tr>
+      <td class="accent">IBM</td>
+      <td>International Business Machines Corporation</td>
+      <td class="dim">current_ratio 0.96 < 1</td>
+    </tr>
+    <tr>
+      <td class="accent">IONQ</td>
+      <td>IonQ, Inc.</td>
+      <td class="dim">revenue_ttm 1.3e+08 < 5e+08</td>
+    </tr>
+    <tr>
       <td class="accent">LDOS</td>
       <td>Leidos Holdings, Inc.</td>
       <td class="dim">gross_margin 0.18 < 0.3</td>
@@ -536,6 +577,16 @@ function setView(view) {
       <td class="accent">PWR</td>
       <td>Quanta Services, Inc.</td>
       <td class="dim">gross_margin 0.15 < 0.3</td>
+    </tr>
+    <tr>
+      <td class="accent">QBTS</td>
+      <td>D-Wave Quantum Inc.</td>
+      <td class="dim">revenue_ttm 2.5e+07 < 5e+08</td>
+    </tr>
+    <tr>
+      <td class="accent">RGTI</td>
+      <td>Rigetti Computing, Inc.</td>
+      <td class="dim">revenue_ttm 7.1e+06 < 5e+08</td>
     </tr>
     <tr>
       <td class="accent">RTX</td>

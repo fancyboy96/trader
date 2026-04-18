@@ -43,6 +43,25 @@ PLAYS = [
         "added": "2026-04-18",
     },
     {
+        "id": "quantum-computing",
+        "title": "Quantum Computing",
+        "status": "watch",
+        "summary": "Early-stage quantum hardware and the established tech platforms building serious quantum programs.",
+        "thesis": (
+            "Quantum computing is moving from laboratory demonstration to early commercial availability. "
+            "The play spans two distinct risk profiles. "
+            "At the speculative end, IonQ, Rigetti, and D-Wave are pure-play hardware companies building trapped-ion and superconducting systems; "
+            "all are pre-scale on revenue and will not pass conventional fundamental filters, but they hold the most direct exposure to a hardware breakthrough. "
+            "At the established end, Microsoft's topological qubit program (Azure Quantum) and Google's Willow chip represent well-funded, "
+            "long-horizon bets from companies that can absorb the capital cost. IBM has the most mature end-to-end quantum stack with IBM Quantum, "
+            "though its current balance sheet is under near-term pressure. "
+            "The watch status reflects genuine commercial uncertainty: quantum advantage over classical compute has not been demonstrated "
+            "for practical business problems at scale. Position sizing should reflect that asymmetry."
+        ),
+        "tickers": ["MSFT", "GOOGL", "IBM", "IONQ", "RGTI", "QBTS"],
+        "added": "2026-04-18",
+    },
+    {
         "id": "clean-energy-transition",
         "title": "Clean Energy Transition",
         "status": "watch",

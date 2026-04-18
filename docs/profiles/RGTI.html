@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Home — Pythia</title>
+  <title>RGTI — Rigetti Computing, Inc. — Pythia</title>
   <script>const t=localStorage.getItem("pythia-theme");if(t)document.documentElement.setAttribute("data-theme",t);</script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -125,64 +125,81 @@
 </head>
 <body>
 
+<a class="back-link" href="../dashboard.html">← Back to dashboard</a>
+
 <header class="site-header">
   <div class="site-header-row">
-    <div><div class="label">Portfolio Research</div></div>
+    <div>
+      <div class="label">Pythia — Company Profile</div>
+      <h1>RGTI &mdash; Rigetti Computing, Inc.</h1>
+      <div class="meta">Sector: <span>Technology</span> &nbsp;·&nbsp; Industry: <span>Computer Hardware</span> &nbsp;·&nbsp; Generated: <span>2026-04-18</span></div>
+    </div>
     <button class="theme-toggle" onclick="toggleTheme()">Dark</button>
   </div>
+  <nav>
+    <a href="../index.html">Home</a>
+    <a href="../plays.html">Plays</a>
+    <a href="../dashboard.html">Dashboard</a>
+  </nav>
 </header>
 
-<div class="hero">
-  <div class="wordmark">Pythia</div>
-  <div class="tagline">Fundamental stock analysis and long-term portfolio research.<br>Screen for quality businesses, read the numbers, and build positions with a clear rationale.</div>
-</div>
-
-<div class="nav-cards">
-  <a class="nav-card" href="plays.html">
-    <div class="card-label">Ideas</div>
-    <div class="card-title">Plays</div>
-    <div class="card-desc">Curated thematic investment ideas with associated stocks and supporting thesis.</div>
-  </a>
-  <a class="nav-card" href="dashboard.html">
-    <div class="card-label">Screener</div>
-    <div class="card-title">Dashboard</div>
-    <div class="card-desc">All tickers ranked by fundamental score. Tier A and B candidates highlighted. Last run: 2026-04-18.</div>
-  </a>
-</div>
-
 <section>
-  <div class="section-title">At a Glance</div>
-  <div class="stat-grid">
-    <div class="stat-card">
-      <div class="stat-label">Universe</div>
-      <div class="stat-value neutral">41</div>
-      <div class="stat-sub">tickers in database</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-label">Tier A</div>
-      <div class="stat-value green">8</div>
-      <div class="stat-sub">strong candidates</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-label">Tier B</div>
-      <div class="stat-value neutral">9</div>
-      <div class="stat-sub">watch list</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-label">Last Screened</div>
-      <div class="stat-value neutral" style="font-size:16px">2026-04-18</div>
-      <div class="stat-sub">&nbsp;</div>
-    </div>
+  <div class="section-title">Snapshot</div>
+  
+<div class="stat-grid">
+  <div class="stat-card">
+    <div class="stat-label">Price</div>
+    <div class="stat-value neutral">$19.81</div>
+    <div class="stat-sub">as of 2026-04-17</div>
   </div>
+  <div class="stat-card">
+    <div class="stat-label">Market Cap</div>
+    <div class="stat-value neutral" style="font-size:18px">$6.58B</div>
+    <div class="stat-sub">&nbsp;</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Revenue (ttm)</div>
+    <div class="stat-value neutral" style="font-size:18px">$7.09M</div>
+    <div class="stat-sub">Growth: -34.3%</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Gross Margin</div>
+    <div class="stat-value neutral">29.1%</div>
+    <div class="stat-sub">Net margin: 0.0%</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Fwd P/E</div>
+    <div class="stat-value neutral">-105.0x</div>
+    <div class="stat-sub">PEG: —</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">FCF (ttm)</div>
+    <div class="stat-value neutral" style="font-size:18px">$-42,190,500</div>
+    <div class="stat-sub">D/E: 0.01</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">ROE</div>
+    <div class="stat-value neutral">-64.3%</div>
+    <div class="stat-sub">Beta: 1.83</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Screen Score</div>
+    <div class="stat-value neutral">0 <span style="font-size:14px;font-weight:normal">/ 100</span></div>
+    <div class="stat-sub">Tier: <span class="badge D">D</span></div>
+  </div>
+</div>
+  <div class="callout" style="border-left-color:var(--red);margin-top:12px">Failed hard filter: revenue_ttm 7.1e+06 < 5e+08</div>
 </section>
 
+<section><div class="section-title">About</div><div class="callout blue" style="margin-top:0">Rigetti Computing, Inc., through its subsidiaries, builds and operates quantum computers and the superconducting quantum processors the United States, the United Kingdom, rest of Europe, Asia, and internationally. The company offers quantum processing units (QPUs) and quantum computing systems to provide access to quantum computing systems through the cloud in the form of quantum computing as a service (QCaaS). It provides Novera, a 9-qubit chip QPU that features tunable couplers for fast two-qubit operations and a 5-qubit chip for testing single-qubit operations; Novera QPU that is based in fourth generation Ankaa-class architecture; 36-qubit Cepheus-1-36Q system, a multi-chip quantum computer; and 84-qubit Ankaa-3 quantum computer. The company also sells access to its quantum computers t</div></section>
+
 <section>
-  <div class="callout" style="font-size:13px;color:var(--text-dim)">This site is produced for personal research purposes only. Nothing here constitutes financial advice, an investment recommendation, or an offer to buy or sell any security. All data is sourced from public APIs and may be inaccurate, delayed, or incomplete. Past performance is not indicative of future results. Do your own research. Consult a licensed financial adviser before making any investment decision.</div>
+  <div class="section-title">Recent News</div>
+  <p style="color:var(--text-dim);font-size:13px">No news stored. Run <code>python scripts/news.py RGTI</code></p>
 </section>
 
 <footer class="report-footer">
-  Pythia &nbsp;·&nbsp; Home &nbsp;·&nbsp; 2026-04-18 &nbsp;·&nbsp; <a href="https://fancyboy96.github.io/trader/methodology.html">Methodology</a> &nbsp;·&nbsp; For personal use only
-  <div style="margin-top:10px;font-size:11px;color:var(--text-dim);line-height:1.6;max-width:800px">This site is produced for personal research purposes only. Nothing here constitutes financial advice, an investment recommendation, or an offer to buy or sell any security. All data is sourced from public APIs and may be inaccurate, delayed, or incomplete. Past performance is not indicative of future results. Do your own research. Consult a licensed financial adviser before making any investment decision.</div>
+  Pythia &nbsp;·&nbsp; RGTI — Rigetti Computing, Inc. &nbsp;·&nbsp; 2026-04-18 &nbsp;·&nbsp; For personal use only
 </footer>
 
 <script>
