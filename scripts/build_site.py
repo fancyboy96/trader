@@ -174,7 +174,7 @@ def html_shell(title: str, body: str) -> str:
 
 def site_header(active: str, title: str, subtitle: str = "", prefix: str = "") -> str:
     sub = f'<div class="meta">{subtitle}</div>' if subtitle else ""
-    dash_class = "active" if active == "Dashboard" else ""
+    def cls(page): return "active" if active == page else ""
     return f"""
 <header class="site-header">
   <div class="site-header-row">
@@ -185,7 +185,10 @@ def site_header(active: str, title: str, subtitle: str = "", prefix: str = "") -
     </div>
     <button class="theme-toggle" onclick="toggleTheme()">Dark</button>
   </div>
-  <nav><a href="{prefix}dashboard.html" class="{dash_class}">Dashboard</a></nav>
+  <nav>
+    <a href="{prefix}index.html" class="{cls('Home')}">Home</a>
+    <a href="{prefix}dashboard.html" class="{cls('Dashboard')}">Dashboard</a>
+  </nav>
 </header>"""
 
 
@@ -239,11 +242,6 @@ def build_landing(conn):
     <div class="card-label">Screener</div>
     <div class="card-title">Dashboard</div>
     <div class="card-desc">All tickers ranked by fundamental score. Tier A and B candidates highlighted. Last run: {last_run}.</div>
-  </a>
-  <a class="nav-card" href="methodology.html">
-    <div class="card-label">Reference</div>
-    <div class="card-title">Methodology</div>
-    <div class="card-desc">How scores are calculated. Pass/fail filter thresholds. Tier definitions and what each means in practice.</div>
   </a>
 </div>
 
@@ -601,7 +599,10 @@ def build_profile(conn, ticker: str):
     </div>
     <button class="theme-toggle" onclick="toggleTheme()">Dark</button>
   </div>
-  <nav><a href="../dashboard.html">Dashboard</a></nav>
+  <nav>
+    <a href="../index.html">Home</a>
+    <a href="../dashboard.html">Dashboard</a>
+  </nav>
 </header>
 
 <section>
