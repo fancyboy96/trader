@@ -165,6 +165,11 @@
              background:var(--accent);color:var(--bg);cursor:pointer;font-weight:600">
       By Score
     </button>
+    <button id="btn-sector" onclick="setView('sector')"
+      style="font-size:12px;padding:5px 12px;border:1px solid var(--border);
+             background:var(--bg-card);color:var(--text);cursor:pointer;margin-left:-1px">
+      By Sector
+    </button>
     <button id="btn-industry" onclick="setView('industry')"
       style="font-size:12px;padding:5px 12px;border:1px solid var(--border);border-radius:0 4px 4px 0;
              background:var(--bg-card);color:var(--text);cursor:pointer;margin-left:-1px">
@@ -181,7 +186,7 @@
     <th class="num">Fwd P/E</th><th class="num">ROE</th><th class="num">D/E</th>
   </tr></thead>
   <tbody id="results-body">
-    <tr data-industry="Semiconductors" data-score="88">
+    <tr data-industry="Semiconductors" data-sector="Technology" data-score="88">
       <td class="accent"><a href="profiles/NVDA.html">NVDA</a></td>
       <td>NVIDIA Corporation</td>
       <td class="dim">Technology</td>
@@ -194,7 +199,7 @@
       <td class="num dim">101.5%</td>
       <td class="num dim">0.07</td>
     </tr>
-    <tr data-industry="Semiconductors" data-score="86">
+    <tr data-industry="Semiconductors" data-sector="Technology" data-score="86">
       <td class="accent"><a href="profiles/AVGO.html">AVGO</a></td>
       <td>Broadcom Inc.</td>
       <td class="dim">Technology</td>
@@ -207,7 +212,7 @@
       <td class="num dim">33.4%</td>
       <td class="num dim">0.83</td>
     </tr>
-    <tr data-industry="Semiconductors" data-score="85">
+    <tr data-industry="Semiconductors" data-sector="Technology" data-score="85">
       <td class="accent"><a href="profiles/TSM.html">TSM</a></td>
       <td>Taiwan Semiconductor Manufacturing Company Limited</td>
       <td class="dim">Technology</td>
@@ -220,7 +225,7 @@
       <td class="num dim">36.2%</td>
       <td class="num dim">0.17</td>
     </tr>
-    <tr data-industry="Solar" data-score="83">
+    <tr data-industry="Solar" data-sector="Technology" data-score="83">
       <td class="accent"><a href="profiles/FSLR.html">FSLR</a></td>
       <td>First Solar, Inc.</td>
       <td class="dim">Technology</td>
@@ -233,7 +238,7 @@
       <td class="num dim">17.4%</td>
       <td class="num dim">0.07</td>
     </tr>
-    <tr data-industry="Drug Manufacturers - General" data-score="83">
+    <tr data-industry="Drug Manufacturers - General" data-sector="Healthcare" data-score="83">
       <td class="accent"><a href="profiles/LLY.html">LLY</a></td>
       <td>Eli Lilly and Company</td>
       <td class="dim">Healthcare</td>
@@ -246,7 +251,7 @@
       <td class="num dim">101.2%</td>
       <td class="num dim">1.65</td>
     </tr>
-    <tr data-industry="Medical Devices" data-score="81">
+    <tr data-industry="Medical Devices" data-sector="Healthcare" data-score="81">
       <td class="accent"><a href="profiles/DXCM.html">DXCM</a></td>
       <td>DexCom, Inc.</td>
       <td class="dim">Healthcare</td>
@@ -259,7 +264,7 @@
       <td class="num dim">34.5%</td>
       <td class="num dim">0.51</td>
     </tr>
-    <tr data-industry="Computer Hardware" data-score="78">
+    <tr data-industry="Computer Hardware" data-sector="Technology" data-score="78">
       <td class="accent"><a href="profiles/ANET.html">ANET</a></td>
       <td>Arista Networks, Inc.</td>
       <td class="dim">Technology</td>
@@ -272,7 +277,7 @@
       <td class="num dim">31.4%</td>
       <td class="num dim">0.01</td>
     </tr>
-    <tr data-industry="Semiconductor Equipment & Materials" data-score="71">
+    <tr data-industry="Semiconductor Equipment & Materials" data-sector="Technology" data-score="71">
       <td class="accent"><a href="profiles/ASML.html">ASML</a></td>
       <td>ASML Holding N.V.</td>
       <td class="dim">Technology</td>
@@ -285,7 +290,7 @@
       <td class="num dim">52.2%</td>
       <td class="num dim">0.13</td>
     </tr>
-    <tr data-industry="Software - Infrastructure" data-score="70">
+    <tr data-industry="Software - Infrastructure" data-sector="Technology" data-score="70">
       <td class="accent"><a href="profiles/PLTR.html">PLTR</a></td>
       <td>Palantir Technologies Inc.</td>
       <td class="dim">Technology</td>
@@ -298,7 +303,7 @@
       <td class="num dim">26.0%</td>
       <td class="num dim">0.03</td>
     </tr>
-    <tr data-industry="Semiconductors" data-score="68">
+    <tr data-industry="Semiconductors" data-sector="Technology" data-score="68">
       <td class="accent"><a href="profiles/AMD.html">AMD</a></td>
       <td>Advanced Micro Devices, Inc.</td>
       <td class="dim">Technology</td>
@@ -311,7 +316,7 @@
       <td class="num dim">7.1%</td>
       <td class="num dim">0.06</td>
     </tr>
-    <tr data-industry="Semiconductors" data-score="63">
+    <tr data-industry="Semiconductors" data-sector="Technology" data-score="63">
       <td class="accent"><a href="profiles/ARM.html">ARM</a></td>
       <td>Arm Holdings plc</td>
       <td class="dim">Technology</td>
@@ -324,7 +329,7 @@
       <td class="num dim">11.3%</td>
       <td class="num dim">0.06</td>
     </tr>
-    <tr data-industry="Electrical Equipment & Parts" data-score="61">
+    <tr data-industry="Electrical Equipment & Parts" data-sector="Industrials" data-score="61">
       <td class="accent"><a href="profiles/HUBB.html">HUBB</a></td>
       <td>Hubbell Incorporated</td>
       <td class="dim">Industrials</td>
@@ -337,7 +342,7 @@
       <td class="num dim">24.5%</td>
       <td class="num dim">0.64</td>
     </tr>
-    <tr data-industry="Medical Instruments & Supplies" data-score="61">
+    <tr data-industry="Medical Instruments & Supplies" data-sector="Healthcare" data-score="61">
       <td class="accent"><a href="profiles/ISRG.html">ISRG</a></td>
       <td>Intuitive Surgical, Inc.</td>
       <td class="dim">Healthcare</td>
@@ -350,7 +355,7 @@
       <td class="num dim">16.7%</td>
       <td class="num dim">0.01</td>
     </tr>
-    <tr data-industry="Solar" data-score="58">
+    <tr data-industry="Solar" data-sector="Technology" data-score="58">
       <td class="accent"><a href="profiles/ENPH.html">ENPH</a></td>
       <td>Enphase Energy, Inc.</td>
       <td class="dim">Technology</td>
@@ -363,7 +368,7 @@
       <td class="num dim">17.9%</td>
       <td class="num dim">1.14</td>
     </tr>
-    <tr data-industry="Specialty Industrial Machinery" data-score="51">
+    <tr data-industry="Specialty Industrial Machinery" data-sector="Industrials" data-score="51">
       <td class="accent"><a href="profiles/ETN.html">ETN</a></td>
       <td>Eaton Corporation plc</td>
       <td class="dim">Industrials</td>
@@ -376,7 +381,7 @@
       <td class="num dim">21.5%</td>
       <td class="num dim">0.55</td>
     </tr>
-    <tr data-industry="Medical Devices" data-score="48">
+    <tr data-industry="Medical Devices" data-sector="Healthcare" data-score="48">
       <td class="accent"><a href="profiles/GEHC.html">GEHC</a></td>
       <td>GE HealthCare Technologies Inc.</td>
       <td class="dim">Healthcare</td>
@@ -389,7 +394,7 @@
       <td class="num dim">22.4%</td>
       <td class="num dim">0.99</td>
     </tr>
-    <tr data-industry="Specialty Industrial Machinery" data-score="33">
+    <tr data-industry="Specialty Industrial Machinery" data-sector="Industrials" data-score="33">
       <td class="accent"><a href="profiles/ROK.html">ROK</a></td>
       <td>Rockwell Automation, Inc.</td>
       <td class="dim">Industrials</td>
@@ -405,40 +410,45 @@
 </table>
 <script>
 var _origRows = null;
-var _currentView = 'score';
+var _btns = ['score','sector','industry'];
 function setView(view) {
   var tbody = document.getElementById('results-body');
   if (!_origRows) _origRows = Array.from(tbody.querySelectorAll('tr[data-industry]'));
-  _currentView = view;
   // update button styles
-  var active   = 'border:1px solid var(--accent);background:var(--accent);color:var(--bg);font-weight:600';
-  var inactive = 'border:1px solid var(--border);background:var(--bg-card);color:var(--text);font-weight:normal';
-  document.getElementById('btn-score').style.cssText    += ';' + (view==='score'    ? active : inactive);
-  document.getElementById('btn-industry').style.cssText += ';' + (view==='industry' ? active : inactive);
-  // remove group headers
-  Array.from(tbody.querySelectorAll('tr.industry-header')).forEach(function(el){el.remove();});
+  _btns.forEach(function(v) {
+    var btn = document.getElementById('btn-' + v);
+    if (v === view) {
+      btn.style.background = 'var(--accent)'; btn.style.color = 'var(--bg)';
+      btn.style.borderColor = 'var(--accent)'; btn.style.fontWeight = '600';
+    } else {
+      btn.style.background = 'var(--bg-card)'; btn.style.color = 'var(--text)';
+      btn.style.borderColor = 'var(--border)'; btn.style.fontWeight = 'normal';
+    }
+  });
+  // clear group headers
+  Array.from(tbody.querySelectorAll('tr.group-header')).forEach(function(el){el.remove();});
   if (view === 'score') {
     document.getElementById('view-label').textContent = '17 companies · sorted by score';
     _origRows.slice().sort(function(a,b){return +b.dataset.score - +a.dataset.score;}).forEach(function(r){tbody.appendChild(r);});
     return;
   }
-  // group by industry alphabetically, sorted by score within each group
+  var key = view === 'sector' ? 'sector' : 'industry';
   var groups = {};
   _origRows.forEach(function(r){
-    var ind = r.dataset.industry || 'Unknown';
-    if (!groups[ind]) groups[ind] = [];
-    groups[ind].push(r);
+    var g = r.dataset[key] || 'Unknown';
+    if (!groups[g]) groups[g] = [];
+    groups[g].push(r);
   });
-  var industryNames = Object.keys(groups).sort();
-  document.getElementById('view-label').textContent = '17 companies · ' + industryNames.length + ' industries';
-  industryNames.forEach(function(ind){
-    var members = groups[ind].sort(function(a,b){return +b.dataset.score - +a.dataset.score;});
+  var keys = Object.keys(groups).sort();
+  document.getElementById('view-label').textContent = '17 companies · ' + keys.length + ' ' + view + 's';
+  keys.forEach(function(g){
+    var members = groups[g].sort(function(a,b){return +b.dataset.score - +a.dataset.score;});
     var hdr = document.createElement('tr');
-    hdr.className = 'industry-header';
+    hdr.className = 'group-header';
     hdr.innerHTML = '<td colspan="11" style="background:var(--bg-card);color:var(--accent);'
       + 'font-size:11px;letter-spacing:.12em;text-transform:uppercase;padding:8px 12px;'
       + 'font-weight:700;border-top:2px solid var(--border)">'
-      + ind + ' <span style="color:var(--text-dim);font-weight:400;letter-spacing:0;text-transform:none">(' + members.length + ')</span></td>';
+      + g + ' <span style="color:var(--text-dim);font-weight:400;letter-spacing:0;text-transform:none">(' + members.length + ')</span></td>';
     tbody.appendChild(hdr);
     members.forEach(function(r){tbody.appendChild(r);});
   });

@@ -349,8 +349,9 @@ def build_dashboard(conn):
         score_w = min(int(r["score"]), 100)
         bar = f'<div class="score-bar-wrap"><div class="score-bar fill" style="width:{score_w}px"></div><span>{r["score"]:.0f}</span></div>'
         industry = (r['industry'] or '').replace('"', '&quot;')
+        sector   = (r['sector']   or '').replace('"', '&quot;')
         rows += f"""
-    <tr data-industry="{industry}" data-score="{r['score']:.0f}">
+    <tr data-industry="{industry}" data-sector="{sector}" data-score="{r['score']:.0f}">
       <td class="accent"><a href="profiles/{r['ticker']}.html">{r['ticker']}</a></td>
       <td>{r['name'] or '—'}</td>
       <td class="dim">{r['sector'] or '—'}</td>
@@ -374,6 +375,11 @@ def build_dashboard(conn):
              background:var(--accent);color:var(--bg);cursor:pointer;font-weight:600">
       By Score
     </button>
+    <button id="btn-sector" onclick="setView('sector')"
+      style="font-size:12px;padding:5px 12px;border:1px solid var(--border);
+             background:var(--bg-card);color:var(--text);cursor:pointer;margin-left:-1px">
+      By Sector
+    </button>
     <button id="btn-industry" onclick="setView('industry')"
       style="font-size:12px;padding:5px 12px;border:1px solid var(--border);border-radius:0 4px 4px 0;
              background:var(--bg-card);color:var(--text);cursor:pointer;margin-left:-1px">
@@ -393,40 +399,45 @@ def build_dashboard(conn):
 </table>
 <script>
 var _origRows = null;
-var _currentView = 'score';
+var _btns = ['score','sector','industry'];
 function setView(view) {{
   var tbody = document.getElementById('results-body');
   if (!_origRows) _origRows = Array.from(tbody.querySelectorAll('tr[data-industry]'));
-  _currentView = view;
   // update button styles
-  var active   = 'border:1px solid var(--accent);background:var(--accent);color:var(--bg);font-weight:600';
-  var inactive = 'border:1px solid var(--border);background:var(--bg-card);color:var(--text);font-weight:normal';
-  document.getElementById('btn-score').style.cssText    += ';' + (view==='score'    ? active : inactive);
-  document.getElementById('btn-industry').style.cssText += ';' + (view==='industry' ? active : inactive);
-  // remove group headers
-  Array.from(tbody.querySelectorAll('tr.industry-header')).forEach(function(el){{el.remove();}});
+  _btns.forEach(function(v) {{
+    var btn = document.getElementById('btn-' + v);
+    if (v === view) {{
+      btn.style.background = 'var(--accent)'; btn.style.color = 'var(--bg)';
+      btn.style.borderColor = 'var(--accent)'; btn.style.fontWeight = '600';
+    }} else {{
+      btn.style.background = 'var(--bg-card)'; btn.style.color = 'var(--text)';
+      btn.style.borderColor = 'var(--border)'; btn.style.fontWeight = 'normal';
+    }}
+  }});
+  // clear group headers
+  Array.from(tbody.querySelectorAll('tr.group-header')).forEach(function(el){{el.remove();}});
   if (view === 'score') {{
     document.getElementById('view-label').textContent = '{len(all_passed)} companies \u00b7 sorted by score';
     _origRows.slice().sort(function(a,b){{return +b.dataset.score - +a.dataset.score;}}).forEach(function(r){{tbody.appendChild(r);}});
     return;
   }}
-  // group by industry alphabetically, sorted by score within each group
+  var key = view === 'sector' ? 'sector' : 'industry';
   var groups = {{}};
   _origRows.forEach(function(r){{
-    var ind = r.dataset.industry || 'Unknown';
-    if (!groups[ind]) groups[ind] = [];
-    groups[ind].push(r);
+    var g = r.dataset[key] || 'Unknown';
+    if (!groups[g]) groups[g] = [];
+    groups[g].push(r);
   }});
-  var industryNames = Object.keys(groups).sort();
-  document.getElementById('view-label').textContent = '{len(all_passed)} companies \u00b7 ' + industryNames.length + ' industries';
-  industryNames.forEach(function(ind){{
-    var members = groups[ind].sort(function(a,b){{return +b.dataset.score - +a.dataset.score;}});
+  var keys = Object.keys(groups).sort();
+  document.getElementById('view-label').textContent = '{len(all_passed)} companies \u00b7 ' + keys.length + ' ' + view + 's';
+  keys.forEach(function(g){{
+    var members = groups[g].sort(function(a,b){{return +b.dataset.score - +a.dataset.score;}});
     var hdr = document.createElement('tr');
-    hdr.className = 'industry-header';
+    hdr.className = 'group-header';
     hdr.innerHTML = '<td colspan="11" style="background:var(--bg-card);color:var(--accent);'
       + 'font-size:11px;letter-spacing:.12em;text-transform:uppercase;padding:8px 12px;'
       + 'font-weight:700;border-top:2px solid var(--border)">'
-      + ind + ' <span style="color:var(--text-dim);font-weight:400;letter-spacing:0;text-transform:none">(' + members.length + ')</span></td>';
+      + g + ' <span style="color:var(--text-dim);font-weight:400;letter-spacing:0;text-transform:none">(' + members.length + ')</span></td>';
     tbody.appendChild(hdr);
     members.forEach(function(r){{tbody.appendChild(r);}});
   }});
