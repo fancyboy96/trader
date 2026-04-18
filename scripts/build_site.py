@@ -363,7 +363,7 @@ def build_dashboard(conn):
   <thead><tr>
     <th>Ticker</th><th>Company</th><th>Sector</th>
     <th class="num">Score</th><th class="num">Mkt Cap</th>
-    <th class="num">Rev Growth</th><th class="num">Gross Margin</th><th class="num">Fwd P/E</th>
+    <th class="num" title="Revenue growth, most recent fiscal year vs prior fiscal year">Rev Growth (YoY)</th><th class="num" title="Gross margin, trailing twelve months">Gross Margin (TTM)</th><th class="num">Fwd P/E</th>
     <th>Report</th>
   </tr></thead>
   <tbody>{a_rows}</tbody>
@@ -394,7 +394,7 @@ def build_dashboard(conn):
   <thead><tr>
     <th>Ticker</th><th>Company</th><th>Sector</th><th>Tier</th>
     <th class="num">Score</th><th class="num">Mkt Cap</th>
-    <th class="num">Rev Growth</th><th class="num">Gross Margin</th><th class="num">Fwd P/E</th>
+    <th class="num" title="Revenue growth, most recent fiscal year vs prior fiscal year">Rev Growth (YoY)</th><th class="num" title="Gross margin, trailing twelve months">Gross Margin (TTM)</th><th class="num">Fwd P/E</th>
     <th class="num">ROE</th><th class="num">D/E</th>
   </tr></thead>
   <tbody>{bc_rows}</tbody>
