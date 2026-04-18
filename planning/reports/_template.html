@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{TICKER}} — Stock Analysis</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --ease-out:      cubic-bezier(0.16, 1, 0.3, 1);
+      --duration-base: 200ms;
+    }
+
+    /* ── Light mode ── */
+    :root, [data-theme="light"] {
+      --bg:        #FFFFFF;
+      --bg-card:   #F4F6FA;
+      --bg-row:    #EDF0F7;
+      --bg-hover:  #E5EAF5;
+      --border:    #D6DCE8;
+      --accent:    #2558C4;
+      --accent-dim:#9BB0D4;
+      --text:      #0C1A36;
+      --text-dim:  #6B7FA0;
+      --text-head: #6B7FA0;
+      --green:     #16A34A;
+      --red:       #DC2626;
+      --blue:      #2563EB;
+    }
+
+    /* ── Dark mode ── */
+    [data-theme="dark"] {
+      --bg:        #0A1220;
+      --bg-card:   #0D1729;
+      --bg-row:    #172036;
+      --bg-hover:  #1E2D45;
+      --border:    #1E2D45;
+      --accent:    #F2BDCC;
+      --accent-dim:#7A3D52;
+      --text:      #F0F4F8;
+      --text-dim:  #7A9AB8;
+      --text-head: #7A9AB8;
+      --green:     #34d399;
+      --red:       #f87171;
+      --blue:      #60a5fa;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Helvetica Neue', 'Helvetica', Arial, sans-serif;
+      font-size: 15px;
+      line-height: 1.65;
+      padding: 40px 32px;
+      max-width: 1100px;
+      margin: 0 auto;
+      transition: background var(--duration-base) var(--ease-out),
+                  color var(--duration-base) var(--ease-out);
+    }
+
+    /* ── Header ── */
+    .report-header {
+      border-bottom: 1px solid var(--accent);
+      padding-bottom: 20px;
+      margin-bottom: 36px;
+    }
+    .report-header .label {
+      color: var(--accent);
+      font-size: 12px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+    .report-header h1 {
+      font-size: 24px;
+      font-weight: normal;
+      color: var(--text);
+      letter-spacing: 0.02em;
+    }
+    .report-header .meta {
+      color: var(--text-dim);
+      font-size: 12px;
+      margin-top: 8px;
+    }
+    .report-header .meta span { color: var(--text-head); }
+    .report-header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+
+    /* ── Sections ── */
+    section { margin-bottom: 44px; }
+
+    .section-title {
+      color: var(--accent);
+      font-size: 12px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 6px;
+      margin-bottom: 18px;
+    }
+
+    /* ── Stat grid ── */
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+    .stat-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      padding: 16px 18px;
+    }
+    .stat-card .stat-label {
+      color: var(--text-dim);
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+    .stat-card .stat-value {
+      color: var(--accent);
+      font-size: 22px;
+      font-weight: bold;
+      letter-spacing: -0.01em;
+    }
+    .stat-card .stat-value.green { color: var(--green); }
+    .stat-card .stat-value.red   { color: var(--red); }
+    .stat-card .stat-value.neutral { color: var(--text); }
+    .stat-card .stat-sub {
+      color: var(--text-dim);
+      font-size: 11px;
+      margin-top: 4px;
+    }
+
+    /* ── Tables ── */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+    thead th {
+      color: var(--text-dim);
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      text-align: left;
+      padding: 6px 10px;
+      border-bottom: 1px solid var(--border);
+    }
+    thead th.num { text-align: right; }
+    tbody tr { border-bottom: 1px solid var(--border); }
+    tbody tr:nth-child(even) { background: var(--bg-row); }
+    tbody tr:hover { background: var(--bg-hover); }
+    td {
+      padding: 7px 10px;
+      color: var(--text);
+      vertical-align: middle;
+    }
+    td.num    { text-align: right; font-variant-numeric: tabular-nums; }
+    td.accent { color: var(--accent); }
+    td.dim    { color: var(--text-dim); }
+    td.green  { color: var(--green); font-weight: 600; }
+    td.red    { color: var(--red);   font-weight: 600; }
+
+    /* ── Signal badge ── */
+    .badge {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 3px 10px;
+      border-radius: 2px;
+    }
+    .badge.buy   { background: #dcfce7; color: #15803d; }
+    .badge.watch { background: #dbeafe; color: #1d4ed8; }
+    .badge.pass  { background: #fee2e2; color: #b91c1c; }
+    [data-theme="dark"] .badge.buy   { background: #14532d; color: #86efac; }
+    [data-theme="dark"] .badge.watch { background: #1e3a5f; color: #93c5fd; }
+    [data-theme="dark"] .badge.pass  { background: #450a0a; color: #fca5a5; }
+
+    /* ── Callout ── */
+    .callout {
+      background: var(--bg-card);
+      border-left: 3px solid var(--accent);
+      padding: 14px 18px;
+      margin-top: 0;
+      color: var(--text);
+      font-size: 14px;
+      line-height: 1.75;
+    }
+    .callout.blue  { border-left-color: var(--blue); }
+    .callout.green { border-left-color: var(--green); }
+    .callout.red   { border-left-color: var(--red); }
+    .callout strong { color: var(--text); }
+
+    /* ── Split blocks ── */
+    .split-row { display: flex; gap: 12px; margin-bottom: 16px; }
+    .split-block {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      padding: 14px 18px;
+      flex: 1;
+    }
+    .split-block .sb-label { color: var(--text-dim); font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 4px; }
+    .split-block .sb-value { font-size: 20px; color: var(--accent); }
+    .split-block .sb-value.green { color: var(--green); }
+    .split-block .sb-value.red   { color: var(--red); }
+    .split-block .sb-sub   { color: var(--text-dim); font-size: 11px; margin-top: 2px; }
+
+    /* ── News items ── */
+    .news-item {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      padding: 12px 16px;
+      margin-bottom: 8px;
+    }
+    .news-item .news-headline {
+      color: var(--text);
+      font-size: 13px;
+      margin-bottom: 4px;
+    }
+    .news-item .news-meta {
+      color: var(--text-dim);
+      font-size: 11px;
+    }
+    .news-item .news-meta .source { color: var(--accent); }
+    .news-item .news-summary {
+      color: var(--text-dim);
+      font-size: 12px;
+      margin-top: 6px;
+      line-height: 1.6;
+    }
+
+    /* ── Verdict block ── */
+    .verdict-block {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      padding: 20px 22px;
+    }
+    .verdict-block .verdict-row {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 14px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--border);
+    }
+    .verdict-block .verdict-label {
+      color: var(--text-dim);
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+    .verdict-block .verdict-body {
+      color: var(--text);
+      font-size: 14px;
+      line-height: 1.75;
+    }
+    .verdict-block .verdict-body strong { color: var(--text); }
+
+    /* ── Theme toggle ── */
+    .theme-toggle {
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      color: var(--text-dim);
+      font-family: inherit;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 4px 10px;
+      cursor: pointer;
+      transition: border-color var(--duration-base), color var(--duration-base);
+      flex-shrink: 0;
+    }
+    .theme-toggle:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* ── Footer ── */
+    .report-footer {
+      border-top: 1px solid var(--border);
+      padding-top: 16px;
+      margin-top: 48px;
+      color: var(--text-dim);
+      font-size: 11px;
+    }
+
+    /* ── Sub-section label ── */
+    .sub-label {
+      color: var(--text-dim);
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin: 20px 0 8px;
+    }
+  </style>
+</head>
+<body>
+
+<!-- ───────────────── HEADER ───────────────── -->
+<header class="report-header">
+  <div class="report-header-row">
+    <div>
+      <div class="label">Trader — Long-Term Portfolio Analysis</div>
+      <h1>{{TICKER}} &mdash; {{COMPANY_NAME}}</h1>
+    </div>
+    <button class="theme-toggle" onclick="toggleTheme()">Dark</button>
+  </div>
+  <div class="meta">
+    Price: <span>{{CURRENT_PRICE}}</span> &nbsp;·&nbsp;
+    As of: <span>{{AS_OF_DATE}}</span> &nbsp;·&nbsp;
+    Sector: <span>{{SECTOR}}</span> &nbsp;·&nbsp;
+    Industry: <span>{{INDUSTRY}}</span> &nbsp;·&nbsp;
+    Generated: <span>{{GENERATED_DATE}}</span>
+  </div>
+</header>
+
+<!-- ───────────────── SNAPSHOT ───────────────── -->
+<section>
+  <div class="section-title">Snapshot</div>
+  <div class="stat-grid">
+    <div class="stat-card">
+      <div class="stat-label">Price</div>
+      <div class="stat-value neutral">{{CURRENT_PRICE}}</div>
+      <div class="stat-sub">{{PRICE_CHANGE_PCT}} YTD</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">52w Range</div>
+      <div class="stat-value neutral" style="font-size:16px">{{52W_LOW}} – {{52W_HIGH}}</div>
+      <div class="stat-sub">{{PCT_FROM_52W_HIGH}} from high</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Market Cap</div>
+      <div class="stat-value neutral" style="font-size:18px">{{MARKET_CAP}}</div>
+      <div class="stat-sub">&nbsp;</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Revenue (ttm)</div>
+      <div class="stat-value neutral" style="font-size:18px">{{REVENUE_TTM}}</div>
+      <div class="stat-sub">{{REVENUE_GROWTH_YOY}} YoY growth</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">P/E (ttm)</div>
+      <div class="stat-value neutral">{{PE_RATIO}}</div>
+      <div class="stat-sub">Fwd P/E: {{FWD_PE}}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">FCF Yield</div>
+      <div class="stat-value neutral">{{FCF_YIELD}}</div>
+      <div class="stat-sub">FCF: {{FCF_TTM}}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Gross Margin</div>
+      <div class="stat-value neutral">{{GROSS_MARGIN}}</div>
+      <div class="stat-sub">Net margin: {{NET_MARGIN}}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Debt / Equity</div>
+      <div class="stat-value neutral">{{DEBT_EQUITY}}</div>
+      <div class="stat-sub">Interest coverage: {{INTEREST_COVERAGE}}x</div>
+    </div>
+  </div>
+</section>
+
+<!-- ───────────────── INVESTMENT THESIS ───────────────── -->
+<section>
+  <div class="section-title">Investment Thesis</div>
+  <div class="callout blue">
+    {{THESIS_BODY}}
+  </div>
+</section>
+
+<!-- ───────────────── FUNDAMENTAL ANALYSIS ───────────────── -->
+<section>
+  <div class="section-title">Fundamental Analysis</div>
+
+  <div class="sub-label" style="margin-top:0">Growth</div>
+  <div class="split-row">
+    <div class="split-block">
+      <div class="sb-label">Revenue CAGR (3yr)</div>
+      <div class="sb-value green">{{REVENUE_CAGR_3Y}}</div>
+      <div class="sb-sub">{{REVENUE_CAGR_NOTE}}</div>
+    </div>
+    <div class="split-block">
+      <div class="sb-label">Earnings CAGR (3yr)</div>
+      <div class="sb-value green">{{EARNINGS_CAGR_3Y}}</div>
+      <div class="sb-sub">{{EARNINGS_CAGR_NOTE}}</div>
+    </div>
+    <div class="split-block">
+      <div class="sb-label">Analyst Est. Growth (fwd)</div>
+      <div class="sb-value">{{FWD_GROWTH_EST}}</div>
+      <div class="sb-sub">{{FWD_GROWTH_NOTE}}</div>
+    </div>
+  </div>
+
+  <div class="sub-label">Valuation vs Peers</div>
+  <table>
+    <thead>
+      <tr>
+        <th>Metric</th>
+        <th class="num">{{TICKER}}</th>
+        <th class="num">Peer Avg</th>
+        <th class="num">Sector Avg</th>
+        <th>Signal</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>P/E (ttm)</td>
+        <td class="num accent">{{PE_RATIO}}</td>
+        <td class="num dim">{{PEER_PE}}</td>
+        <td class="num dim">{{SECTOR_PE}}</td>
+        <td class="green">{{PE_SIGNAL}}</td>
+      </tr>
+      <tr>
+        <td>EV / EBITDA</td>
+        <td class="num accent">{{EV_EBITDA}}</td>
+        <td class="num dim">{{PEER_EV_EBITDA}}</td>
+        <td class="num dim">{{SECTOR_EV_EBITDA}}</td>
+        <td>{{EV_EBITDA_SIGNAL}}</td>
+      </tr>
+      <tr>
+        <td>Price / FCF</td>
+        <td class="num accent">{{P_FCF}}</td>
+        <td class="num dim">{{PEER_P_FCF}}</td>
+        <td class="num dim">{{SECTOR_P_FCF}}</td>
+        <td>{{P_FCF_SIGNAL}}</td>
+      </tr>
+      <tr>
+        <td>PEG Ratio</td>
+        <td class="num accent">{{PEG}}</td>
+        <td class="num dim">{{PEER_PEG}}</td>
+        <td class="num dim">—</td>
+        <td>{{PEG_SIGNAL}}</td>
+      </tr>
+      <tr>
+        <td>ROE</td>
+        <td class="num accent">{{ROE}}</td>
+        <td class="num dim">{{PEER_ROE}}</td>
+        <td class="num dim">{{SECTOR_ROE}}</td>
+        <td>{{ROE_SIGNAL}}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="sub-label">Competitive Position</div>
+  <div class="callout" style="margin-top:0">
+    {{MOAT_BODY}}
+  </div>
+</section>
+
+<!-- ───────────────── NEWS & SENTIMENT ───────────────── -->
+<section>
+  <div class="section-title">News &amp; Sentiment</div>
+
+  <div class="sub-label" style="margin-top:0">Macro Tailwinds</div>
+  <div class="callout blue" style="margin-bottom:16px">
+    {{MACRO_TAILWINDS_BODY}}
+  </div>
+
+  <div class="sub-label">Recent Headlines</div>
+
+  <!-- Repeat .news-item blocks as needed -->
+  <div class="news-item">
+    <div class="news-headline">{{NEWS_HEADLINE_1}}</div>
+    <div class="news-meta"><span class="source">{{NEWS_SOURCE_1}}</span> &nbsp;·&nbsp; {{NEWS_DATE_1}}</div>
+    <div class="news-summary">{{NEWS_SUMMARY_1}}</div>
+  </div>
+
+  <div class="news-item">
+    <div class="news-headline">{{NEWS_HEADLINE_2}}</div>
+    <div class="news-meta"><span class="source">{{NEWS_SOURCE_2}}</span> &nbsp;·&nbsp; {{NEWS_DATE_2}}</div>
+    <div class="news-summary">{{NEWS_SUMMARY_2}}</div>
+  </div>
+
+  <div class="news-item">
+    <div class="news-headline">{{NEWS_HEADLINE_3}}</div>
+    <div class="news-meta"><span class="source">{{NEWS_SOURCE_3}}</span> &nbsp;·&nbsp; {{NEWS_DATE_3}}</div>
+    <div class="news-summary">{{NEWS_SUMMARY_3}}</div>
+  </div>
+</section>
+
+<!-- ───────────────── RISKS ───────────────── -->
+<section>
+  <div class="section-title">Risks</div>
+  <div class="callout red">
+    {{RISKS_BODY}}
+  </div>
+
+  <div class="sub-label">Risk Register</div>
+  <table>
+    <thead>
+      <tr>
+        <th>Risk</th>
+        <th>Likelihood</th>
+        <th>Impact</th>
+        <th>Mitigant</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>{{RISK_1}}</td>
+        <td class="dim">{{RISK_1_LIKELIHOOD}}</td>
+        <td class="red">{{RISK_1_IMPACT}}</td>
+        <td class="dim">{{RISK_1_MITIGANT}}</td>
+      </tr>
+      <tr>
+        <td>{{RISK_2}}</td>
+        <td class="dim">{{RISK_2_LIKELIHOOD}}</td>
+        <td class="dim">{{RISK_2_IMPACT}}</td>
+        <td class="dim">{{RISK_2_MITIGANT}}</td>
+      </tr>
+      <tr>
+        <td>{{RISK_3}}</td>
+        <td class="dim">{{RISK_3_LIKELIHOOD}}</td>
+        <td class="dim">{{RISK_3_IMPACT}}</td>
+        <td class="dim">{{RISK_3_MITIGANT}}</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ───────────────── VERDICT ───────────────── -->
+<section>
+  <div class="section-title">Verdict</div>
+  <div class="verdict-block">
+    <div class="verdict-row">
+      <div>
+        <div class="verdict-label">Recommendation</div>
+      </div>
+      <!-- Change class to: badge buy | badge watch | badge pass -->
+      <span class="badge {{VERDICT_CLASS}}">{{VERDICT}}</span>
+      <div style="margin-left: auto; color: var(--text-dim); font-size: 12px">
+        Suggested weight: <strong style="color: var(--text)">{{SUGGESTED_WEIGHT}}</strong>
+      </div>
+    </div>
+    <div class="verdict-body">
+      {{VERDICT_BODY}}
+    </div>
+  </div>
+</section>
+
+<!-- ───────────────── FOOTER ───────────────── -->
+<footer class="report-footer">
+  Trader &nbsp;·&nbsp; {{TICKER}} — {{COMPANY_NAME}} &nbsp;·&nbsp; Generated {{GENERATED_DATE}} &nbsp;·&nbsp;
+  Data: {{DATA_SOURCE}} &nbsp;·&nbsp; For personal use only. Not financial advice.
+</footer>
+
+<script>
+  function toggleTheme() {
+    const html = document.documentElement;
+    const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    html.setAttribute('data-theme', next);
+    document.querySelector('.theme-toggle').textContent = next === 'dark' ? 'Light' : 'Dark';
+  }
+</script>
+
+</body>
+</html>

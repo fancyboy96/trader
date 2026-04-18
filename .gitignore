@@ -1,0 +1,7 @@
+data/trader.db
+data/trader.db-wal
+data/trader.db-shm
+__pycache__/
+*.pyc
+.env
+.DS_Store
