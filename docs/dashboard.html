@@ -445,10 +445,10 @@ function setView(view) {
     var members = groups[g].sort(function(a,b){return +b.dataset.score - +a.dataset.score;});
     var hdr = document.createElement('tr');
     hdr.className = 'group-header';
-    hdr.innerHTML = '<td colspan="11" style="background:var(--bg-card);color:var(--accent);'
-      + 'font-size:11px;letter-spacing:.12em;text-transform:uppercase;padding:8px 12px;'
-      + 'font-weight:700;border-top:2px solid var(--border)">'
-      + g + ' <span style="color:var(--text-dim);font-weight:400;letter-spacing:0;text-transform:none">(' + members.length + ')</span></td>';
+    hdr.innerHTML = '<td colspan="11" style="background:var(--accent);color:var(--bg);'
+      + 'font-size:11px;letter-spacing:.15em;text-transform:uppercase;padding:7px 14px;'
+      + 'font-weight:700;">'
+      + g + ' <span style="opacity:0.65;font-weight:400;letter-spacing:0;text-transform:none">(' + members.length + ')</span></td>';
     tbody.appendChild(hdr);
     members.forEach(function(r){tbody.appendChild(r);});
   });
