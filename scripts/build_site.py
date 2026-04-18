@@ -311,7 +311,7 @@ def build_dashboard(conn):
     today = date.today().isoformat()
 
     all_passed = conn.execute("""
-        SELECT sr.*, c.name, c.sector, f.market_cap, f.fwd_pe, f.gross_margin,
+        SELECT sr.*, c.name, c.sector, c.industry, f.market_cap, f.fwd_pe, f.gross_margin,
                f.net_margin, f.roe, f.debt_to_equity, f.beta
         FROM screen_results sr
         LEFT JOIN companies c ON sr.ticker = c.ticker
@@ -343,13 +343,14 @@ def build_dashboard(conn):
   <div class="stat-card"><div class="stat-label">Filtered out</div><div class="stat-value neutral">{len(all_filtered)}</div><div class="stat-sub">failed hard filters</div></div>
 </div>"""
 
-    # Single table for all passed tickers
+    # Single table for all passed tickers — rows tagged with data-industry for JS grouping
     rows = ""
     for r in all_passed:
         score_w = min(int(r["score"]), 100)
         bar = f'<div class="score-bar-wrap"><div class="score-bar fill" style="width:{score_w}px"></div><span>{r["score"]:.0f}</span></div>'
+        industry = (r['industry'] or '').replace('"', '&quot;')
         rows += f"""
-    <tr>
+    <tr data-industry="{industry}" data-score="{r['score']:.0f}">
       <td class="accent"><a href="profiles/{r['ticker']}.html">{r['ticker']}</a></td>
       <td>{r['name'] or '—'}</td>
       <td class="dim">{r['sector'] or '—'}</td>
@@ -364,7 +365,15 @@ def build_dashboard(conn):
     </tr>"""
 
     passed_table = f"""
-<table>
+<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+  <span style="font-size:13px;color:var(--text-dim)">{len(all_passed)} companies</span>
+  <button id="group-btn" onclick="toggleGrouping()"
+    style="font-size:12px;padding:5px 12px;border:1px solid var(--border);border-radius:4px;
+           background:var(--bg-card);color:var(--text);cursor:pointer">
+    Group by Industry
+  </button>
+</div>
+<table id="results-table">
   <thead><tr>
     <th>Ticker</th><th>Company</th><th>Sector</th><th>Tier</th>
     <th class="num">Score</th><th class="num">Mkt Cap</th>
@@ -372,8 +381,40 @@ def build_dashboard(conn):
     <th class="num" title="Gross margin, trailing twelve months">Gross Margin (TTM)</th>
     <th class="num">Fwd P/E</th><th class="num">ROE</th><th class="num">D/E</th>
   </tr></thead>
-  <tbody>{rows}</tbody>
-</table>""" if all_passed else '<p style="color:var(--text-dim);font-size:13px">No results.</p>'
+  <tbody id="results-body">{rows}</tbody>
+</table>
+<script>
+var _grouped = false;
+var _origRows = null;
+function toggleGrouping() {{
+  var tbody = document.getElementById('results-body');
+  var btn   = document.getElementById('group-btn');
+  if (!_origRows) _origRows = Array.from(tbody.querySelectorAll('tr[data-industry]'));
+  _grouped = !_grouped;
+  btn.textContent = _grouped ? 'Sort by Score' : 'Group by Industry';
+  // clear existing group headers
+  Array.from(tbody.querySelectorAll('tr.industry-header')).forEach(function(el){{el.remove();}});
+  if (!_grouped) {{
+    var sorted = _origRows.slice().sort(function(a,b){{return +b.dataset.score - +a.dataset.score;}});
+    sorted.forEach(function(r){{tbody.appendChild(r);}});
+    return;
+  }}
+  // group alphabetically by industry, within each group sort by score desc
+  var groups = {{}};
+  _origRows.forEach(function(r){{
+    var ind = r.dataset.industry || 'Unknown';
+    if (!groups[ind]) groups[ind] = [];
+    groups[ind].push(r);
+  }});
+  Object.keys(groups).sort().forEach(function(ind){{
+    var hdr = document.createElement('tr');
+    hdr.className = 'industry-header';
+    hdr.innerHTML = '<td colspan="11" style="background:var(--bg-row);color:var(--accent);font-size:11px;letter-spacing:.12em;text-transform:uppercase;padding:6px 12px;font-weight:600">' + ind + '</td>';
+    tbody.appendChild(hdr);
+    groups[ind].sort(function(a,b){{return +b.dataset.score - +a.dataset.score;}}).forEach(function(r){{tbody.appendChild(r);}});
+  }});
+}}
+</script>""" if all_passed else '<p style="color:var(--text-dim);font-size:13px">No results.</p>'
 
     # Filtered — collapsible
     filtered_rows = "".join(f"""

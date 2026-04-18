@@ -156,7 +156,15 @@
 <section>
   <div class="section-title">Screener Results</div>
   
-<table>
+<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+  <span style="font-size:13px;color:var(--text-dim)">17 companies</span>
+  <button id="group-btn" onclick="toggleGrouping()"
+    style="font-size:12px;padding:5px 12px;border:1px solid var(--border);border-radius:4px;
+           background:var(--bg-card);color:var(--text);cursor:pointer">
+    Group by Industry
+  </button>
+</div>
+<table id="results-table">
   <thead><tr>
     <th>Ticker</th><th>Company</th><th>Sector</th><th>Tier</th>
     <th class="num">Score</th><th class="num">Mkt Cap</th>
@@ -164,8 +172,8 @@
     <th class="num" title="Gross margin, trailing twelve months">Gross Margin (TTM)</th>
     <th class="num">Fwd P/E</th><th class="num">ROE</th><th class="num">D/E</th>
   </tr></thead>
-  <tbody>
-    <tr>
+  <tbody id="results-body">
+    <tr data-industry="Semiconductors" data-score="88">
       <td class="accent"><a href="profiles/NVDA.html">NVDA</a></td>
       <td>NVIDIA Corporation</td>
       <td class="dim">Technology</td>
@@ -178,7 +186,7 @@
       <td class="num dim">101.5%</td>
       <td class="num dim">0.07</td>
     </tr>
-    <tr>
+    <tr data-industry="Semiconductors" data-score="86">
       <td class="accent"><a href="profiles/AVGO.html">AVGO</a></td>
       <td>Broadcom Inc.</td>
       <td class="dim">Technology</td>
@@ -191,7 +199,7 @@
       <td class="num dim">33.4%</td>
       <td class="num dim">0.83</td>
     </tr>
-    <tr>
+    <tr data-industry="Semiconductors" data-score="85">
       <td class="accent"><a href="profiles/TSM.html">TSM</a></td>
       <td>Taiwan Semiconductor Manufacturing Company Limited</td>
       <td class="dim">Technology</td>
@@ -204,7 +212,7 @@
       <td class="num dim">36.2%</td>
       <td class="num dim">0.17</td>
     </tr>
-    <tr>
+    <tr data-industry="Solar" data-score="83">
       <td class="accent"><a href="profiles/FSLR.html">FSLR</a></td>
       <td>First Solar, Inc.</td>
       <td class="dim">Technology</td>
@@ -217,7 +225,7 @@
       <td class="num dim">17.4%</td>
       <td class="num dim">0.07</td>
     </tr>
-    <tr>
+    <tr data-industry="Drug Manufacturers - General" data-score="83">
       <td class="accent"><a href="profiles/LLY.html">LLY</a></td>
       <td>Eli Lilly and Company</td>
       <td class="dim">Healthcare</td>
@@ -230,7 +238,7 @@
       <td class="num dim">101.2%</td>
       <td class="num dim">1.65</td>
     </tr>
-    <tr>
+    <tr data-industry="Medical Devices" data-score="81">
       <td class="accent"><a href="profiles/DXCM.html">DXCM</a></td>
       <td>DexCom, Inc.</td>
       <td class="dim">Healthcare</td>
@@ -243,7 +251,7 @@
       <td class="num dim">34.5%</td>
       <td class="num dim">0.51</td>
     </tr>
-    <tr>
+    <tr data-industry="Computer Hardware" data-score="78">
       <td class="accent"><a href="profiles/ANET.html">ANET</a></td>
       <td>Arista Networks, Inc.</td>
       <td class="dim">Technology</td>
@@ -256,7 +264,7 @@
       <td class="num dim">31.4%</td>
       <td class="num dim">0.01</td>
     </tr>
-    <tr>
+    <tr data-industry="Semiconductor Equipment & Materials" data-score="71">
       <td class="accent"><a href="profiles/ASML.html">ASML</a></td>
       <td>ASML Holding N.V.</td>
       <td class="dim">Technology</td>
@@ -269,7 +277,7 @@
       <td class="num dim">52.2%</td>
       <td class="num dim">0.13</td>
     </tr>
-    <tr>
+    <tr data-industry="Software - Infrastructure" data-score="70">
       <td class="accent"><a href="profiles/PLTR.html">PLTR</a></td>
       <td>Palantir Technologies Inc.</td>
       <td class="dim">Technology</td>
@@ -282,7 +290,7 @@
       <td class="num dim">26.0%</td>
       <td class="num dim">0.03</td>
     </tr>
-    <tr>
+    <tr data-industry="Semiconductors" data-score="68">
       <td class="accent"><a href="profiles/AMD.html">AMD</a></td>
       <td>Advanced Micro Devices, Inc.</td>
       <td class="dim">Technology</td>
@@ -295,7 +303,7 @@
       <td class="num dim">7.1%</td>
       <td class="num dim">0.06</td>
     </tr>
-    <tr>
+    <tr data-industry="Semiconductors" data-score="63">
       <td class="accent"><a href="profiles/ARM.html">ARM</a></td>
       <td>Arm Holdings plc</td>
       <td class="dim">Technology</td>
@@ -308,7 +316,7 @@
       <td class="num dim">11.3%</td>
       <td class="num dim">0.06</td>
     </tr>
-    <tr>
+    <tr data-industry="Electrical Equipment & Parts" data-score="61">
       <td class="accent"><a href="profiles/HUBB.html">HUBB</a></td>
       <td>Hubbell Incorporated</td>
       <td class="dim">Industrials</td>
@@ -321,7 +329,7 @@
       <td class="num dim">24.5%</td>
       <td class="num dim">0.64</td>
     </tr>
-    <tr>
+    <tr data-industry="Medical Instruments & Supplies" data-score="61">
       <td class="accent"><a href="profiles/ISRG.html">ISRG</a></td>
       <td>Intuitive Surgical, Inc.</td>
       <td class="dim">Healthcare</td>
@@ -334,7 +342,7 @@
       <td class="num dim">16.7%</td>
       <td class="num dim">0.01</td>
     </tr>
-    <tr>
+    <tr data-industry="Solar" data-score="58">
       <td class="accent"><a href="profiles/ENPH.html">ENPH</a></td>
       <td>Enphase Energy, Inc.</td>
       <td class="dim">Technology</td>
@@ -347,7 +355,7 @@
       <td class="num dim">17.9%</td>
       <td class="num dim">1.14</td>
     </tr>
-    <tr>
+    <tr data-industry="Specialty Industrial Machinery" data-score="51">
       <td class="accent"><a href="profiles/ETN.html">ETN</a></td>
       <td>Eaton Corporation plc</td>
       <td class="dim">Industrials</td>
@@ -360,7 +368,7 @@
       <td class="num dim">21.5%</td>
       <td class="num dim">0.55</td>
     </tr>
-    <tr>
+    <tr data-industry="Medical Devices" data-score="48">
       <td class="accent"><a href="profiles/GEHC.html">GEHC</a></td>
       <td>GE HealthCare Technologies Inc.</td>
       <td class="dim">Healthcare</td>
@@ -373,7 +381,7 @@
       <td class="num dim">22.4%</td>
       <td class="num dim">0.99</td>
     </tr>
-    <tr>
+    <tr data-industry="Specialty Industrial Machinery" data-score="33">
       <td class="accent"><a href="profiles/ROK.html">ROK</a></td>
       <td>Rockwell Automation, Inc.</td>
       <td class="dim">Industrials</td>
@@ -387,6 +395,38 @@
       <td class="num dim">0.99</td>
     </tr></tbody>
 </table>
+<script>
+var _grouped = false;
+var _origRows = null;
+function toggleGrouping() {
+  var tbody = document.getElementById('results-body');
+  var btn   = document.getElementById('group-btn');
+  if (!_origRows) _origRows = Array.from(tbody.querySelectorAll('tr[data-industry]'));
+  _grouped = !_grouped;
+  btn.textContent = _grouped ? 'Sort by Score' : 'Group by Industry';
+  // clear existing group headers
+  Array.from(tbody.querySelectorAll('tr.industry-header')).forEach(function(el){el.remove();});
+  if (!_grouped) {
+    var sorted = _origRows.slice().sort(function(a,b){return +b.dataset.score - +a.dataset.score;});
+    sorted.forEach(function(r){tbody.appendChild(r);});
+    return;
+  }
+  // group alphabetically by industry, within each group sort by score desc
+  var groups = {};
+  _origRows.forEach(function(r){
+    var ind = r.dataset.industry || 'Unknown';
+    if (!groups[ind]) groups[ind] = [];
+    groups[ind].push(r);
+  });
+  Object.keys(groups).sort().forEach(function(ind){
+    var hdr = document.createElement('tr');
+    hdr.className = 'industry-header';
+    hdr.innerHTML = '<td colspan="11" style="background:var(--bg-row);color:var(--accent);font-size:11px;letter-spacing:.12em;text-transform:uppercase;padding:6px 12px;font-weight:600">' + ind + '</td>';
+    tbody.appendChild(hdr);
+    groups[ind].sort(function(a,b){return +b.dataset.score - +a.dataset.score;}).forEach(function(r){tbody.appendChild(r);});
+  });
+}
+</script>
 </section>
 
 <section>
