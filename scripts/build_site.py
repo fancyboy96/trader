@@ -163,15 +163,8 @@ def html_shell(title: str, body: str) -> str:
 
 
 def site_header(active: str, title: str, subtitle: str = "", prefix: str = "") -> str:
-    pages = [
-        ("dashboard.html", "Dashboard"),
-        ("methodology.html", "Methodology"),
-    ]
-    nav_links = " ".join(
-        f'<a href="{prefix}{href}" class="{"active" if label == active else ""}">{label}</a>'
-        for href, label in pages
-    )
     sub = f'<div class="meta">{subtitle}</div>' if subtitle else ""
+    dash_class = "active" if active == "Dashboard" else ""
     return f"""
 <header class="site-header">
   <div class="site-header-row">
@@ -182,13 +175,13 @@ def site_header(active: str, title: str, subtitle: str = "", prefix: str = "") -
     </div>
     <button class="theme-toggle" onclick="toggleTheme()">Dark</button>
   </div>
-  <nav>{nav_links}</nav>
+  <nav><a href="{prefix}dashboard.html" class="{dash_class}">Dashboard</a></nav>
 </header>"""
 
 
-def footer(page: str) -> str:
+def footer(page: str, prefix: str = "") -> str:
     today = date.today().isoformat()
-    return f'<footer class="report-footer">Pythia &nbsp;·&nbsp; {page} &nbsp;·&nbsp; {today} &nbsp;·&nbsp; For personal use only</footer>'
+    return f'<footer class="report-footer">Pythia &nbsp;·&nbsp; {page} &nbsp;·&nbsp; {today} &nbsp;·&nbsp; For personal use only &nbsp;·&nbsp; <a href="{prefix}methodology.html">Methodology</a></footer>'
 
 
 def fmt_large(v) -> str:
@@ -598,10 +591,7 @@ def build_profile(conn, ticker: str):
     </div>
     <button class="theme-toggle" onclick="toggleTheme()">Dark</button>
   </div>
-  <nav>
-    <a href="../dashboard.html">Dashboard</a>
-    <a href="../methodology.html">Methodology</a>
-  </nav>
+  <nav><a href="../dashboard.html">Dashboard</a></nav>
 </header>
 
 <section>
@@ -618,7 +608,7 @@ def build_profile(conn, ticker: str):
 </section>
 
 <footer class="report-footer">
-  Pythia &nbsp;·&nbsp; {ticker} — {name} &nbsp;·&nbsp; {today} &nbsp;·&nbsp; For personal use only
+  Pythia &nbsp;·&nbsp; {ticker} — {name} &nbsp;·&nbsp; {today} &nbsp;·&nbsp; For personal use only &nbsp;·&nbsp; <a href="../methodology.html">Methodology</a>
 </footer>"""
 
     (PROFILES / f"{ticker}.html").write_text(html_shell(f"{ticker} — {name}", body))
