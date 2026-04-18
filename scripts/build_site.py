@@ -2,7 +2,9 @@
 Generates the Pythia static site into docs/.
 
 Pages produced:
-  docs/index.html               — screener dashboard
+  docs/index.html               — landing page
+  docs/dashboard.html           — screener results dashboard
+  docs/methodology.html         — scoring criteria and tier definitions
   docs/profiles/TICKER.html     — company profile per ticker in screen_results
 
 Run after refresh.py, news.py, and screen.py:
@@ -13,7 +15,7 @@ from pathlib import Path
 from datetime import date
 from db import get_conn, init_db
 
-DOCS = Path(__file__).parent.parent / "docs"
+DOCS     = Path(__file__).parent.parent / "docs"
 PROFILES = DOCS / "profiles"
 
 
@@ -39,12 +41,17 @@ CSS = """
            transition:background var(--dur) var(--ease-out),color var(--dur) var(--ease-out); }
     a { color:var(--accent); text-decoration:none; }
     a:hover { text-decoration:underline; }
-    .report-header { border-bottom:1px solid var(--accent); padding-bottom:20px; margin-bottom:36px; }
-    .report-header-row { display:flex; justify-content:space-between; align-items:flex-start; }
+    .site-header { border-bottom:1px solid var(--accent); padding-bottom:20px; margin-bottom:36px; }
+    .site-header-row { display:flex; justify-content:space-between; align-items:flex-start; }
     .label { color:var(--accent); font-size:12px; letter-spacing:.15em; text-transform:uppercase; margin-bottom:6px; }
     h1 { font-size:24px; font-weight:normal; letter-spacing:.02em; }
+    h2 { font-size:18px; font-weight:normal; margin-bottom:12px; }
     .meta { color:var(--text-dim); font-size:12px; margin-top:8px; }
     .meta span { color:var(--text-dim); font-weight:600; }
+    nav { display:flex; gap:24px; margin-top:14px; font-size:12px; }
+    nav a { color:var(--text-dim); letter-spacing:.05em; text-transform:uppercase; font-size:11px; }
+    nav a:hover { color:var(--accent); text-decoration:none; }
+    nav a.active { color:var(--accent); border-bottom:1px solid var(--accent); padding-bottom:1px; }
     section { margin-bottom:44px; }
     .section-title { color:var(--accent); font-size:12px; letter-spacing:.15em; text-transform:uppercase;
                      border-bottom:1px solid var(--border); padding-bottom:6px; margin-bottom:18px; }
@@ -67,6 +74,8 @@ CSS = """
     td.num { text-align:right; font-variant-numeric:tabular-nums; }
     td.dim { color:var(--text-dim); }
     td.accent { color:var(--accent); font-weight:600; }
+    td.green { color:var(--green); font-weight:600; }
+    td.red { color:var(--red); }
     .badge { display:inline-block; font-size:10px; font-weight:700; letter-spacing:.1em;
              text-transform:uppercase; padding:3px 10px; border-radius:2px; }
     .badge.A { background:#dcfce7; color:#15803d; }
@@ -80,6 +89,8 @@ CSS = """
     .callout { background:var(--bg-card); border-left:3px solid var(--accent);
                padding:14px 18px; color:var(--text); font-size:14px; line-height:1.75; }
     .callout.blue { border-left-color:var(--blue); }
+    .callout.green { border-left-color:var(--green); }
+    .callout.red { border-left-color:var(--red); }
     .news-item { background:var(--bg-card); border:1px solid var(--border); padding:12px 16px; margin-bottom:8px; }
     .news-item .news-headline { color:var(--text); font-size:13px; margin-bottom:4px; }
     .news-item .news-meta { color:var(--text-dim); font-size:11px; }
@@ -97,6 +108,32 @@ CSS = """
                      color:var(--text-dim); font-size:11px; }
     .back-link { font-size:12px; color:var(--text-dim); margin-bottom:24px; display:inline-block; }
     .sub-label { color:var(--text-dim); font-size:10px; letter-spacing:.1em; text-transform:uppercase; margin:20px 0 8px; }
+    /* Landing page */
+    .hero { padding:48px 0 36px; }
+    .hero .wordmark { font-size:42px; font-weight:200; letter-spacing:.12em; color:var(--accent);
+                      text-transform:uppercase; margin-bottom:8px; }
+    .hero .tagline { color:var(--text-dim); font-size:16px; line-height:1.6; max-width:560px; margin-bottom:32px; }
+    .nav-cards { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:12px; margin-bottom:48px; }
+    .nav-card { background:var(--bg-card); border:1px solid var(--border); padding:24px 22px;
+                display:block; transition:border-color var(--dur); }
+    .nav-card:hover { border-color:var(--accent); text-decoration:none; }
+    .nav-card .card-label { color:var(--accent); font-size:11px; letter-spacing:.12em;
+                            text-transform:uppercase; margin-bottom:8px; }
+    .nav-card .card-title { color:var(--text); font-size:17px; font-weight:normal; margin-bottom:8px; }
+    .nav-card .card-desc { color:var(--text-dim); font-size:13px; line-height:1.6; }
+    /* Methodology page */
+    .meth-intro { color:var(--text); font-size:14px; line-height:1.8; margin-bottom:0; }
+    .tier-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:12px; }
+    .tier-card { background:var(--bg-card); border:1px solid var(--border); padding:18px 20px; }
+    .tier-card .tier-badge-row { margin-bottom:10px; }
+    .tier-card .tier-range { color:var(--text-dim); font-size:12px; margin:4px 0 8px; }
+    .tier-card .tier-meaning { color:var(--text); font-size:13px; line-height:1.6; }
+    .score-cat { background:var(--bg-card); border:1px solid var(--border);
+                 padding:18px 20px; margin-bottom:12px; }
+    .score-cat .cat-header { display:flex; justify-content:space-between; align-items:baseline;
+                             margin-bottom:12px; padding-bottom:10px; border-bottom:1px solid var(--border); }
+    .score-cat .cat-name { color:var(--accent); font-size:12px; letter-spacing:.1em; text-transform:uppercase; }
+    .score-cat .cat-pts { color:var(--text); font-size:18px; }
 """
 
 THEME_JS = """
@@ -106,8 +143,7 @@ THEME_JS = """
     document.documentElement.setAttribute('data-theme', next);
     document.querySelector('.theme-toggle').textContent = next === 'dark' ? 'Light' : 'Dark';
   }
-</script>
-"""
+</script>"""
 
 
 def html_shell(title: str, body: str) -> str:
@@ -126,6 +162,35 @@ def html_shell(title: str, body: str) -> str:
 </html>"""
 
 
+def site_header(active: str, title: str, subtitle: str = "", prefix: str = "") -> str:
+    pages = [
+        ("dashboard.html", "Dashboard"),
+        ("methodology.html", "Methodology"),
+    ]
+    nav_links = " ".join(
+        f'<a href="{prefix}{href}" class="{"active" if label == active else ""}">{label}</a>'
+        for href, label in pages
+    )
+    sub = f'<div class="meta">{subtitle}</div>' if subtitle else ""
+    return f"""
+<header class="site-header">
+  <div class="site-header-row">
+    <div>
+      <div class="label">Pythia</div>
+      <h1>{title}</h1>
+      {sub}
+    </div>
+    <button class="theme-toggle" onclick="toggleTheme()">Dark</button>
+  </div>
+  <nav>{nav_links}</nav>
+</header>"""
+
+
+def footer(page: str) -> str:
+    today = date.today().isoformat()
+    return f'<footer class="report-footer">Pythia &nbsp;·&nbsp; {page} &nbsp;·&nbsp; {today} &nbsp;·&nbsp; For personal use only</footer>'
+
+
 def fmt_large(v) -> str:
     if v is None: return "—"
     if v >= 1e12: return f"${v/1e12:.2f}T"
@@ -133,27 +198,91 @@ def fmt_large(v) -> str:
     if v >= 1e6:  return f"${v/1e6:.2f}M"
     return f"${v:,.0f}"
 
-
 def fmt_pct(v) -> str:
     return f"{v*100:.1f}%" if v is not None else "—"
 
-
 def fmt_x(v) -> str:
     return f"{v:.1f}x" if v is not None else "—"
-
 
 def fmt_num(v, dp=2) -> str:
     return f"{v:,.{dp}f}" if v is not None else "—"
 
 
-# ── Index page ───────────────────────────────────────────────────────────────
+# ── Landing page ─────────────────────────────────────────────────────────────
 
-def build_index(conn):
+def build_landing(conn):
+    today = date.today().isoformat()
+
+    total    = conn.execute("SELECT COUNT(*) FROM screen_results").fetchone()[0]
+    tier_a   = conn.execute("SELECT COUNT(*) FROM screen_results WHERE tier='A' AND passed_filters=1").fetchone()[0]
+    tier_b   = conn.execute("SELECT COUNT(*) FROM screen_results WHERE tier='B' AND passed_filters=1").fetchone()[0]
+    last_run = conn.execute("SELECT MAX(run_date) FROM screen_results").fetchone()[0] or "—"
+
+    body = f"""
+<header class="site-header">
+  <div class="site-header-row">
+    <div><div class="label">Portfolio Research</div></div>
+    <button class="theme-toggle" onclick="toggleTheme()">Dark</button>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="wordmark">Pythia</div>
+  <div class="tagline">Fundamental stock analysis and long-term portfolio research.<br>Identify quality businesses. Understand the numbers. Build with conviction.</div>
+</div>
+
+<div class="nav-cards">
+  <a class="nav-card" href="dashboard.html">
+    <div class="card-label">Screener</div>
+    <div class="card-title">Dashboard</div>
+    <div class="card-desc">All tickers ranked by fundamental score. Tier A and B candidates highlighted. Last run: {last_run}.</div>
+  </a>
+  <a class="nav-card" href="methodology.html">
+    <div class="card-label">Reference</div>
+    <div class="card-title">Methodology</div>
+    <div class="card-desc">How scores are calculated. Pass/fail filter thresholds. Tier definitions and what each means in practice.</div>
+  </a>
+</div>
+
+<section>
+  <div class="section-title">At a Glance</div>
+  <div class="stat-grid">
+    <div class="stat-card">
+      <div class="stat-label">Universe</div>
+      <div class="stat-value neutral">{total}</div>
+      <div class="stat-sub">tickers in database</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Tier A</div>
+      <div class="stat-value green">{tier_a}</div>
+      <div class="stat-sub">strong candidates</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Tier B</div>
+      <div class="stat-value neutral">{tier_b}</div>
+      <div class="stat-sub">watch list</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Last Screened</div>
+      <div class="stat-value neutral" style="font-size:16px">{last_run}</div>
+      <div class="stat-sub">&nbsp;</div>
+    </div>
+  </div>
+</section>
+
+{footer("Home")}"""
+
+    (DOCS / "index.html").write_text(html_shell("Home", body))
+    print("  index.html — landing page")
+
+
+# ── Dashboard page ────────────────────────────────────────────────────────────
+
+def build_dashboard(conn):
     today = date.today().isoformat()
 
     results = conn.execute("""
-        SELECT sr.*, c.name, c.sector, c.industry, f.market_cap, f.revenue_ttm,
-               f.fwd_pe, f.gross_margin, f.free_cashflow, f.debt_to_equity
+        SELECT sr.*, c.name, c.sector, f.market_cap, f.fwd_pe, f.gross_margin
         FROM screen_results sr
         LEFT JOIN companies c ON sr.ticker = c.ticker
         LEFT JOIN fundamentals f ON sr.ticker = f.ticker AND f.snapshot_date = (
@@ -167,11 +296,8 @@ def build_index(conn):
         "SELECT COUNT(*) FROM screen_results WHERE passed_filters = 0"
     ).fetchone()[0]
 
-    tier_counts = {t: 0 for t in "ABCD"}
-    for r in results:
-        tier_counts[r["tier"]] = tier_counts.get(r["tier"], 0) + 1
+    tier_counts = {t: sum(1 for r in results if r["tier"] == t) for t in "ABCD"}
 
-    # Stat grid
     stats = f"""
 <div class="stat-grid">
   <div class="stat-card">
@@ -196,15 +322,13 @@ def build_index(conn):
   </div>
 </div>"""
 
-    # Results table
     rows_html = ""
     for r in results:
         score_w = min(int(r["score"]), 100)
         bar = f'<div class="score-bar-wrap"><div class="score-bar fill" style="width:{score_w}px"></div><span>{r["score"]:.0f}</span></div>'
-        profile_link = f'<a href="profiles/{r["ticker"]}.html">{r["ticker"]}</a>'
         rows_html += f"""
     <tr>
-      <td class="accent">{profile_link}</td>
+      <td class="accent"><a href="profiles/{r['ticker']}.html">{r['ticker']}</a></td>
       <td>{r['name'] or '—'}</td>
       <td class="dim">{r['sector'] or '—'}</td>
       <td><span class="badge {r['tier']}">{r['tier']}</span></td>
@@ -215,38 +339,20 @@ def build_index(conn):
       <td class="num dim">{fmt_x(r['fwd_pe'])}</td>
     </tr>"""
 
+    empty = '<p style="color:var(--text-dim);font-size:13px">No results yet. Run <code>screen.py</code> after loading tickers with <code>refresh.py</code>.</p>'
+
     table = f"""
 <table>
-  <thead>
-    <tr>
-      <th>Ticker</th>
-      <th>Company</th>
-      <th>Sector</th>
-      <th>Tier</th>
-      <th class="num">Score</th>
-      <th class="num">Mkt Cap</th>
-      <th class="num">Rev Growth</th>
-      <th class="num">Gross Margin</th>
-      <th class="num">Fwd P/E</th>
-    </tr>
-  </thead>
-  <tbody>{rows_html}
-  </tbody>
-</table>"""
-
-    empty_note = "" if results else '<p style="color:var(--text-dim);font-size:13px">No results yet. Run <code>screen.py</code> after loading tickers with <code>refresh.py</code>.</p>'
+  <thead><tr>
+    <th>Ticker</th><th>Company</th><th>Sector</th><th>Tier</th>
+    <th class="num">Score</th><th class="num">Mkt Cap</th>
+    <th class="num">Rev Growth</th><th class="num">Gross Margin</th><th class="num">Fwd P/E</th>
+  </tr></thead>
+  <tbody>{rows_html}</tbody>
+</table>""" if results else empty
 
     body = f"""
-<header class="report-header">
-  <div class="report-header-row">
-    <div>
-      <div class="label">Pythia — Portfolio Research</div>
-      <h1>Screener Dashboard</h1>
-    </div>
-    <button class="theme-toggle" onclick="toggleTheme()">Dark</button>
-  </div>
-  <div class="meta">Last run: <span>{today}</span> &nbsp;·&nbsp; Criteria: <span>screening-criteria.md</span></div>
-</header>
+{site_header("Dashboard", "Screener Dashboard", f"Last run: {today} &nbsp;·&nbsp; Criteria: screening-criteria.md")}
 
 <section>
   <div class="section-title">Overview</div>
@@ -255,50 +361,155 @@ def build_index(conn):
 
 <section>
   <div class="section-title">Results</div>
-  {empty_note}{table if results else ''}
+  {table}
 </section>
 
-<footer class="report-footer">
-  Pythia &nbsp;·&nbsp; Screener Dashboard &nbsp;·&nbsp; {today} &nbsp;·&nbsp; For personal use only
-</footer>"""
+{footer("Screener Dashboard")}"""
 
-    path = DOCS / "index.html"
-    path.write_text(html_shell("Screener Dashboard", body))
-    print(f"  index.html — {len(results)} tickers")
+    (DOCS / "dashboard.html").write_text(html_shell("Screener Dashboard", body))
+    print(f"  dashboard.html — {len(results)} tickers")
 
 
-# ── Profile page ─────────────────────────────────────────────────────────────
+# ── Methodology page ──────────────────────────────────────────────────────────
+
+def build_methodology():
+    tiers = [
+        ("A", "75–100", "Strong candidate. Proceed to full fundamental report and consider a position."),
+        ("B", "50–74",  "Watch. Promising but a condition must be met — price pullback, catalyst, or more data."),
+        ("C", "25–49",  "Weak. Pass unless there is a specific catalyst thesis not captured by the numbers."),
+        ("D", "0–24",   "Exclude. Does not meet the quality bar at current metrics."),
+    ]
+    tier_cards = "".join(f"""
+  <div class="tier-card">
+    <div class="tier-badge-row"><span class="badge {t}">{t}</span></div>
+    <div class="tier-range">{rng} points</div>
+    <div class="tier-meaning">{meaning}</div>
+  </div>""" for t, rng, meaning in tiers)
+
+    filters = [
+        ("Market cap",     "≥ $2B",   "Avoid micro/small-cap liquidity risk"),
+        ("Revenue (ttm)",  "≥ $500M", "Minimum business scale"),
+        ("Gross margin",   "≥ 30%",   "Indicates pricing power or moat"),
+        ("Debt / equity",  "≤ 2.0x",  "Avoid overleveraged balance sheets"),
+        ("Current ratio",  "≥ 1.0",   "Basic solvency — can cover near-term obligations"),
+        ("Free cash flow", "> 0",     "Must be generating cash, not just accounting profit"),
+    ]
+    filter_rows = "".join(f"""
+    <tr><td>{f}</td><td class="accent">{cond}</td><td class="dim">{note}</td></tr>"""
+        for f, cond, note in filters)
+
+    categories = [
+        ("Growth", "30", [
+            ("Revenue growth YoY",    "< 5% → 0 pts",  "5–15% → 5 pts",  "> 15% → 10 pts"),
+            ("Revenue CAGR (3yr)",    "< 5% → 0 pts",  "5–20% → 5 pts",  "> 20% → 10 pts"),
+            ("EPS growth YoY",        "< 0% → 0 pts",  "0–15% → 5 pts",  "> 15% → 10 pts"),
+        ]),
+        ("Profitability", "25", [
+            ("Gross margin",          "< 30% → 0 pts", "30–50% → 5 pts", "> 50% → 10 pts"),
+            ("Net margin",            "< 5% → 0 pts",  "5–15% → 5 pts",  "> 15% → 10 pts"),
+            ("Return on equity",      "< 10% → 0 pts", "10–20% → 3 pts", "> 20% → 5 pts"),
+        ]),
+        ("Valuation", "25", [
+            ("Forward P/E",           "> 50 → 0 pts",  "25–50 → 5 pts",  "< 25 → 10 pts"),
+            ("PEG ratio",             "> 3 → 0 pts",   "1.5–3 → 5 pts",  "< 1.5 → 10 pts"),
+            ("FCF yield",             "< 1% → 0 pts",  "1–3% → 3 pts",   "> 3% → 5 pts"),
+        ]),
+        ("Balance Sheet", "20", [
+            ("Debt / equity",         "> 1.5x → 0 pts","0.5–1.5x → 5 pts","< 0.5x → 10 pts"),
+            ("Current ratio",         "< 1.2 → 0 pts", "1.2–2.0 → 3 pts","≥ 2.0 → 5 pts"),
+            ("Free cash flow",        "Negative → 0 pts", "—",            "Positive → 5 pts"),
+        ]),
+    ]
+
+    cat_blocks = ""
+    for cat, pts, signals in categories:
+        sig_rows = "".join(f"""
+      <tr>
+        <td>{sig}</td>
+        <td class="dim">{low}</td>
+        <td class="dim">{mid}</td>
+        <td class="green">{high}</td>
+      </tr>""" for sig, low, mid, high in signals)
+        cat_blocks += f"""
+<div class="score-cat">
+  <div class="cat-header">
+    <div class="cat-name">{cat}</div>
+    <div class="cat-pts">{pts} pts</div>
+  </div>
+  <table>
+    <thead><tr><th>Signal</th><th>Low band</th><th>Mid band</th><th class="green">High band</th></tr></thead>
+    <tbody>{sig_rows}</tbody>
+  </table>
+</div>"""
+
+    body = f"""
+{site_header("Methodology", "Methodology")}
+
+<section>
+  <div class="section-title">Overview</div>
+  <div class="callout blue" style="margin-top:0">
+    Screening is a shortlist tool, not a buy signal. Every Tier A output still requires a manual fundamental report before any position is taken. The score surfaces candidates worth investigating — it does not replace analysis.
+  </div>
+</section>
+
+<section>
+  <div class="section-title">Pass / Fail Filters</div>
+  <p class="meth-intro" style="margin-bottom:16px">Hard cutoffs applied before scoring. A ticker that fails any filter is excluded entirely and assigned Tier D regardless of other metrics.</p>
+  <table>
+    <thead><tr><th>Filter</th><th>Threshold</th><th>Rationale</th></tr></thead>
+    <tbody>{filter_rows}</tbody>
+  </table>
+</section>
+
+<section>
+  <div class="section-title">Scoring (0 – 100 pts)</div>
+  <p class="meth-intro" style="margin-bottom:20px">Each signal awards points within its band. NULL values (data not available from yfinance) score 0 for that signal rather than disqualifying the ticker.</p>
+  {cat_blocks}
+</section>
+
+<section>
+  <div class="section-title">Tiers</div>
+  <div class="tier-grid">{tier_cards}
+  </div>
+  <div class="callout" style="margin-top:16px">
+    <strong>Verdict language.</strong> Tier A → <strong>BUY</strong> (conviction entry, strong fundamentals). Tier B → <strong>WATCH</strong> (promising, condition to be met). Tier C/D → <strong>PASS</strong> (not compelling at current valuation or risk profile).
+  </div>
+</section>
+
+<section>
+  <div class="section-title">Data Source &amp; Refresh</div>
+  <p class="meth-intro">Fundamental data is pulled via <strong>yfinance</strong> and stored in a local SQLite database (<code>data/trader.db</code>). Prices cover a 2-year rolling window. Screening criteria are defined in <code>planning/screening-criteria.md</code> — that file is the source of truth; <code>screen.py</code> implements it.</p>
+</section>
+
+{footer("Methodology")}"""
+
+    (DOCS / "methodology.html").write_text(html_shell("Methodology", body))
+    print("  methodology.html")
+
+
+# ── Profile page ──────────────────────────────────────────────────────────────
 
 def build_profile(conn, ticker: str):
-    sr = conn.execute(
-        "SELECT * FROM screen_results WHERE ticker = ?", (ticker,)
-    ).fetchone()
-
-    c = conn.execute("SELECT * FROM companies WHERE ticker = ?", (ticker,)).fetchone()
-
-    f = conn.execute("""
+    sr = conn.execute("SELECT * FROM screen_results WHERE ticker = ?", (ticker,)).fetchone()
+    c  = conn.execute("SELECT * FROM companies WHERE ticker = ?", (ticker,)).fetchone()
+    f  = conn.execute("""
         SELECT * FROM fundamentals WHERE ticker = ?
         ORDER BY snapshot_date DESC LIMIT 1
     """, (ticker,)).fetchone()
-
     prices = conn.execute("""
-        SELECT date, close FROM prices WHERE ticker = ?
-        ORDER BY date DESC LIMIT 1
+        SELECT date, close FROM prices WHERE ticker = ? ORDER BY date DESC LIMIT 1
     """, (ticker,)).fetchone()
-
     news_rows = conn.execute("""
-        SELECT * FROM news WHERE ticker = ?
-        ORDER BY published_at DESC LIMIT 8
+        SELECT * FROM news WHERE ticker = ? ORDER BY published_at DESC LIMIT 8
     """, (ticker,)).fetchall()
 
-    name = (c and c["name"]) or ticker
-    sector = (c and c["sector"]) or "—"
-    industry = (c and c["industry"]) or "—"
+    name        = (c and c["name"])        or ticker
+    sector      = (c and c["sector"])      or "—"
+    industry    = (c and c["industry"])    or "—"
     description = (c and c["description"]) or ""
-    price = prices["close"] if prices else None
-    price_date = prices["date"] if prices else "—"
+    price       = prices["close"] if prices else None
+    price_date  = prices["date"]  if prices else "—"
 
-    # Snapshot grid
     snap = f"""
 <div class="stat-grid">
   <div class="stat-card">
@@ -314,7 +525,7 @@ def build_profile(conn, ticker: str):
   <div class="stat-card">
     <div class="stat-label">Revenue (ttm)</div>
     <div class="stat-value neutral" style="font-size:18px">{fmt_large(f and f['revenue_ttm'])}</div>
-    <div class="stat-sub">Rev growth: {fmt_pct(sr and sr['revenue_growth_yoy'])}</div>
+    <div class="stat-sub">Growth: {fmt_pct(sr and sr['revenue_growth_yoy'])}</div>
   </div>
   <div class="stat-card">
     <div class="stat-label">Gross Margin</div>
@@ -343,61 +554,54 @@ def build_profile(conn, ticker: str):
   </div>
 </div>"""
 
-    # Score breakdown
     if sr and sr["passed_filters"]:
         breakdown = f"""
 <div class="sub-label">Score breakdown</div>
 <table>
   <thead><tr><th>Category</th><th class="num">Score</th><th class="num">Max</th></tr></thead>
   <tbody>
-    <tr><td>Growth</td><td class="num accent">{sr['score_growth']:.0f}</td><td class="num dim">30</td></tr>
-    <tr><td>Profitability</td><td class="num accent">{sr['score_profitability']:.0f}</td><td class="num dim">25</td></tr>
-    <tr><td>Valuation</td><td class="num accent">{sr['score_valuation']:.0f}</td><td class="num dim">25</td></tr>
-    <tr><td>Balance Sheet</td><td class="num accent">{sr['score_balance_sheet']:.0f}</td><td class="num dim">20</td></tr>
+    <tr><td>Growth</td>        <td class="num accent">{sr['score_growth']:.0f}</td>        <td class="num dim">30</td></tr>
+    <tr><td>Profitability</td> <td class="num accent">{sr['score_profitability']:.0f}</td>  <td class="num dim">25</td></tr>
+    <tr><td>Valuation</td>     <td class="num accent">{sr['score_valuation']:.0f}</td>      <td class="num dim">25</td></tr>
+    <tr><td>Balance Sheet</td> <td class="num accent">{sr['score_balance_sheet']:.0f}</td>  <td class="num dim">20</td></tr>
   </tbody>
 </table>"""
     else:
         reason = (sr and sr["filter_fail_reason"]) or "unknown"
-        breakdown = f'<div class="callout" style="border-left-color:var(--red)">Failed hard filter: {reason}</div>'
+        breakdown = f'<div class="callout" style="border-left-color:var(--red);margin-top:12px">Failed hard filter: {reason}</div>'
 
-    # Description
     desc_html = f'<div class="callout blue" style="margin-top:0">{description[:800]}</div>' if description else ""
 
-    # News
     news_html = ""
     for n in news_rows:
-        title = n["title"] or ""
-        url   = n["url"] or "#"
-        src   = n["source"] or ""
-        pub   = (n["published_at"] or "")[:10]
-        summ  = n["summary"] or ""
+        summ = n["summary"] or ""
         news_html += f"""
 <div class="news-item">
-  <div class="news-headline"><a href="{url}" target="_blank" rel="noopener">{title}</a></div>
-  <div class="news-meta"><span class="source">{src}</span> &nbsp;·&nbsp; {pub}</div>
+  <div class="news-headline"><a href="{n['url'] or '#'}" target="_blank" rel="noopener">{n['title'] or ''}</a></div>
+  <div class="news-meta"><span class="source">{n['source'] or ''}</span> &nbsp;·&nbsp; {(n['published_at'] or '')[:10]}</div>
   {'<div class="news-summary">' + summ[:200] + '</div>' if summ else ''}
 </div>"""
 
     if not news_html:
-        news_html = '<p style="color:var(--text-dim);font-size:13px">No news stored. Run <code>python scripts/news.py ' + ticker + '</code></p>'
+        news_html = f'<p style="color:var(--text-dim);font-size:13px">No news stored. Run <code>python scripts/news.py {ticker}</code></p>'
 
     today = date.today().isoformat()
     body = f"""
-<a class="back-link" href="../index.html">← Back to dashboard</a>
+<a class="back-link" href="../dashboard.html">← Back to dashboard</a>
 
-<header class="report-header">
-  <div class="report-header-row">
+<header class="site-header">
+  <div class="site-header-row">
     <div>
       <div class="label">Pythia — Company Profile</div>
       <h1>{ticker} &mdash; {name}</h1>
+      <div class="meta">Sector: <span>{sector}</span> &nbsp;·&nbsp; Industry: <span>{industry}</span> &nbsp;·&nbsp; Generated: <span>{today}</span></div>
     </div>
     <button class="theme-toggle" onclick="toggleTheme()">Dark</button>
   </div>
-  <div class="meta">
-    Sector: <span>{sector}</span> &nbsp;·&nbsp;
-    Industry: <span>{industry}</span> &nbsp;·&nbsp;
-    Generated: <span>{today}</span>
-  </div>
+  <nav>
+    <a href="../dashboard.html">Dashboard</a>
+    <a href="../methodology.html">Methodology</a>
+  </nav>
 </header>
 
 <section>
@@ -414,11 +618,10 @@ def build_profile(conn, ticker: str):
 </section>
 
 <footer class="report-footer">
-  Pythia &nbsp;·&nbsp; {ticker} Profile &nbsp;·&nbsp; {today} &nbsp;·&nbsp; For personal use only
+  Pythia &nbsp;·&nbsp; {ticker} — {name} &nbsp;·&nbsp; {today} &nbsp;·&nbsp; For personal use only
 </footer>"""
 
-    path = PROFILES / f"{ticker}.html"
-    path.write_text(html_shell(f"{ticker} — {name}", body))
+    (PROFILES / f"{ticker}.html").write_text(html_shell(f"{ticker} — {name}", body))
 
 
 # ── Entry point ───────────────────────────────────────────────────────────────
@@ -431,18 +634,17 @@ def main():
     conn = get_conn()
     print("Building Pythia site...")
 
-    build_index(conn)
+    build_landing(conn)
+    build_dashboard(conn)
+    build_methodology()
 
-    tickers = [r["ticker"] for r in conn.execute(
-        "SELECT ticker FROM screen_results"
-    ).fetchall()]
-
+    tickers = [r["ticker"] for r in conn.execute("SELECT ticker FROM screen_results").fetchall()]
     for ticker in tickers:
         build_profile(conn, ticker)
 
     conn.close()
     print(f"  profiles/ — {len(tickers)} pages")
-    print(f"Done → docs/")
+    print("Done → docs/")
 
 
 if __name__ == "__main__":
