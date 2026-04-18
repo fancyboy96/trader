@@ -41,6 +41,9 @@ CSS = """
            transition:background var(--dur) var(--ease-out),color var(--dur) var(--ease-out); }
     a { color:var(--accent); text-decoration:none; }
     a:hover { text-decoration:underline; }
+    code { font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:13px;
+           background:var(--bg-card); border:1px solid var(--border); border-radius:3px;
+           padding:1px 5px; word-break:break-all; }
     .site-header { border-bottom:1px solid var(--accent); padding-bottom:20px; margin-bottom:36px; }
     .site-header-row { display:flex; justify-content:space-between; align-items:flex-start; }
     .label { color:var(--accent); font-size:12px; letter-spacing:.15em; text-transform:uppercase; margin-bottom:6px; }
@@ -544,7 +547,7 @@ def build_methodology():
 
 <section>
   <div class="section-title">Data Source &amp; Refresh</div>
-  <p class="meth-intro">Fundamental data is pulled via <strong>yfinance</strong> and stored in a local SQLite database (<code>data/trader.db</code>). Prices cover a 2-year rolling window. Screening criteria are defined in <code>planning/screening-criteria.md</code> — that file is the source of truth; <code>screen.py</code> implements it.</p>
+  <p class="meth-intro">Fundamental data is pulled via <strong>yfinance</strong> and stored in a local SQLite database (<code>data/trader.db</code>). Prices cover a 2-year rolling window. Screening criteria are defined in <code>planning/screening-criteria.md</code>, the source of truth. <code>screen.py</code> implements it.</p>
 </section>
 
 {footer("Methodology")}"""
