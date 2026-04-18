@@ -131,3 +131,23 @@ trader/
 - [ ] Screener for initial candidates — use a tool (Finviz, Simplywall.st) or build filters in SQLite?
 - [ ] DCF: simple manual inputs in the report, or scripted from loaded financials?
 - [ ] Portfolio tracking — do we want a separate portfolio.md or dashboard once positions are taken?
+
+---
+
+## Backlog
+
+### Programmatic stock and play discovery pipeline
+
+Design and build a pipeline that automatically surfaces promising stocks and thematic plays without manual curation.
+
+Ideas to explore:
+- **News/trend clustering** — pull headlines from a news API (NewsAPI, Polygon.io, or GDELT), group by theme using keyword or embedding similarity, and surface clusters gaining momentum
+- **Screener-first discovery** — run fundamental filters against a broad universe (S&P 500, Russell 1000, or a curated ETF holdings list) rather than a manually maintained ticker list; auto-promote passing tickers into the watchlist
+- **Earnings signal detection** — monitor earnings call transcripts or SEC filings for language signals (guidance raises, margin expansion language, new product mentions)
+- **Play generation** — given a set of trending topics, map them to sectors and industries, then find the top-scoring tickers in those industries from the screener; auto-draft a play stub for manual review
+- **Momentum overlay** — combine fundamental score with price momentum (e.g. 3-month relative strength) to prioritise which Tier B/C tickers to investigate next
+
+Dependencies to resolve first:
+- Choose and set up a news API with sufficient coverage
+- Decide on the stock universe (which tickers to screen across)
+- GDELT / BigQuery setup (deferred)
