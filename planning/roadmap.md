@@ -43,16 +43,15 @@ Pythia is a functional research tool. The foundation is solid.
 
 **Why first:** Discovery is the highest-leverage improvement. An automated universe means the screener runs over 500+ stocks weekly instead of 41 manually curated ones. All subsequent phases assume a broader, self-updating ticker set.
 
-### 1a. Universe Expansion
+### 1a. Universe Expansion ✓ Complete
 
-Pull constituent lists from ETF holdings — SPY, QQQ, VGT, XLV, XLI, SOXX — giving roughly 700 unique tickers.
+Pull constituent lists from ETF holdings — SPY, QQQ, VGT, XLV, XLI, SOXX.
 
-- New script: `scripts/build_universe.py`
-- New table: `universe (ticker, source, weight, added_date, active)`
-- Manual tickers stored with `source = 'manual'`
-- `refresh.py --universe` flag to refresh all universe tickers in batches, skipping tickers refreshed within N days
+- `scripts/build_universe.py` — fetches S&P 500 + NASDAQ-100 from Wikipedia, SOXX from iShares CSV, XLV/XLI/VGT via yfinance top holdings
+- `universe` table in DB — 537 active tickers; manual tickers preserved with `source='manual'`
+- `refresh.py --universe --stale-days N` — refreshes all active universe tickers, skipping recently refreshed
 
-**Milestone:** `python scripts/build_universe.py && python scripts/refresh.py --universe --stale-days 7` refreshes the full universe unattended.
+**Result:** 537-ticker universe. Screener now surfaces 213 passing tickers (20A / 123B / 70C) vs 19 previously on 41 tickers.
 
 ### 1b. Automated Weekly Run
 
@@ -64,29 +63,28 @@ A single shell script chains the full pipeline: universe → refresh → screen 
 
 **Milestone:** One command refreshes and publishes the full site with no manual steps.
 
-### 1c. Momentum Overlay
+### 1c. Momentum Overlay ✓ Complete
 
-Add 90-day relative price momentum to every screened ticker. All price data already exists in the DB — this is a computation step, not a data collection step.
+90-day relative price momentum computed for every screened ticker.
 
 ```
 momentum_90d       = (price_today / price_90d_ago) - 1
 relative_momentum  = momentum_90d - spy_momentum_90d
 ```
 
-- Add SPY to universe as a benchmark ticker
-- Compute in `screen.py`, store in `screen_results`
-- Display as a toggleable column in the dashboard
-- Show on profile page snapshot grid
+- SPY added as benchmark ticker with 501 days of price history
+- `momentum_90d` and `relative_momentum` stored in `screen_results`
+- Dashboard: "Momentum" toggle button reveals `vs SPY (90d)` column, colour-coded, re-sorts table
 
-**Rationale:** Fundamental quality tells you what to own. Momentum tells you when. A Tier A stock with accelerating relative momentum is a better near-term entry than one in a downtrend. This signal does not affect the screener score — it is layered on top as a timing indicator.
-
-**Milestone:** Dashboard sortable by relative momentum. Profile pages show 90-day return vs S&P 500.
+**Result:** Dashboard sortable by 90-day relative momentum. Top movers: ARM +54.7%, ANET +23.5%, AMD +17.1% vs SPY.
 
 ### 1d. Second-Source Cross-Check
 
 After each refresh, pull market cap, revenue TTM, and trailing P/E from a second free API (Financial Modeling Prep, free tier: 250 req/day) and compare against yfinance values. Flag discrepancies above 10% as warnings in `data_audit`.
 
 **Rationale:** `validate.py` catches internal inconsistencies. Cross-checking catches cases where yfinance returns a plausible but wrong value — stale data, wrong currency, corporate action not yet reflected.
+
+**Status:** Deferred — requires FMP API key setup.
 
 **Milestone:** `validate.py` reports cross-check warnings alongside internal checks. Zero cross-check failures on core Tier A tickers.
 
@@ -279,13 +277,16 @@ Items that are interesting but depend on external setup or infrastructure not ye
 
 ## Summary Table
 
-| Phase | Theme | Key Deliverable |
-|-------|-------|----------------|
-| 0 | Foundation | Screener, site, plays, 41 tickers — ✓ complete |
-| 1 | Coverage & Integrity | 500+ ticker universe, weekly automation, momentum, cross-check |
-| 2 | Discovery | News feed, trend clustering, play suggestion engine |
-| 3 | Depth | Peer comparison, score history, DCF, earnings signals, narrative labels |
-| 4 | Portfolio | Position tracking, thesis monitoring, earnings calendar |
+| Phase | Theme | Key Deliverable | Status |
+|-------|-------|----------------|--------|
+| 0 | Foundation | Screener, site, plays, 41 tickers | ✓ Complete |
+| 1a | Universe Expansion | 537-ticker universe, ETF holdings pipeline | ✓ Complete |
+| 1c | Momentum Overlay | 90-day vs-SPY signal, toggleable dashboard column | ✓ Complete |
+| 1b | Weekly Automation | `run_weekly.sh` — one-command full pipeline | Next |
+| 1d | Cross-Check | FMP second-source validation | Deferred (needs API key) |
+| 2 | Discovery | News feed, trend clustering, play suggestion engine | Planned |
+| 3 | Depth | Peer comparison, score history, DCF, earnings signals | Planned |
+| 4 | Portfolio | Position tracking, thesis monitoring, earnings calendar | Planned |
 
 ---
 

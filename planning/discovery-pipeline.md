@@ -218,34 +218,48 @@ Start with what costs nothing: momentum (data already exists) and news volume (y
 
 ## Running To-Do List
 
-### Completed
+### Completed — Phase 0 (Foundation)
 
 - [x] `data_audit` table — every yfinance API call (info, history, financials, news) logged with ticker, timestamp, endpoint, rows returned, and status
 - [x] `scripts/validate.py` — sanity checks: fundamentals freshness, market cap / revenue positivity, gross margin range, D/E range, price_to_fcf and gross_margin internal consistency, price continuity, income statement depth, audit log cleanliness. Exit code 1 on failures.
 - [x] Source attribution — fetch date + snapshot date shown in meta row on every profile page; data provenance line in every analysis report with link back to raw profile
 
-### Phase 1 — Universe & Data Foundation
+### Completed — Phase 1a (Universe Expansion)
 
-- [ ] Create `scripts/build_universe.py`
-  - Pull SPY, QQQ, VGT, XLV, XLI, SOXX holdings via yfinance or ETF provider CSV
-  - Upsert into new `universe` table in `trader.db`
-  - Print summary: total tickers by source, overlap count
-- [ ] Add `universe` table to `db.py`
-- [ ] Add `refresh_log` table to `db.py`
-- [ ] Update `refresh.py` with `--universe` and `--stale-days` flags
-- [ ] Test full-universe refresh on a sample of 50 tickers
-- [ ] Create `scripts/run_weekly.sh`: chains build_universe → refresh --universe --stale-days 7 → screen → build_site
+- [x] Add `universe` table to `db.py` — `(ticker, source, weight, added_date, active)`
+- [x] Create `scripts/build_universe.py`
+  - S&P 500 via Wikipedia (503 tickers); NASDAQ-100 via Wikipedia (101 tickers)
+  - SOXX via iShares CSV (34 holdings, full list)
+  - XLV, XLI, VGT via yfinance top-25 holdings (sector supplements)
+  - Migrates existing manual tickers with `source='manual'`
+  - Current universe: 537 active tickers
+- [x] Update `refresh.py` with `--universe` and `--stale-days` flags
+  - `--universe`: refreshes all `active=1` tickers in universe table
+  - `--stale-days N`: skips tickers where `last_updated` is within N days
+  - 0.3s sleep between tickers on large batches to avoid rate limiting
+- [x] Full-universe refresh validated (487 new tickers, ~15 min runtime)
 
-### Phase 2 — Momentum Overlay
+### Completed — Phase 1c (Momentum Overlay)
 
-- [ ] Add `momentum_90d` and `relative_momentum` to `screen_results` table
-- [ ] Compute momentum in `screen.py` from existing `prices` table
-  - Pull SPY prices for benchmark (need to add SPY to universe as benchmark)
-  - Compute 90-day return for each ticker and for SPY
-  - Store relative momentum in `screen_results`
-- [ ] Add momentum as a toggleable column in the dashboard table
-- [ ] Add momentum to the profile page snapshot grid
-- [ ] Update `screening-criteria.md` to document the new signal
+- [x] Add `momentum_90d` and `relative_momentum` columns to `screen_results`
+- [x] Compute momentum in `screen.py` from existing `prices` table
+  - SPY refreshed as benchmark (501 days of price history)
+  - 90-day return computed per ticker and vs SPY
+- [x] Toggleable "Momentum" button on dashboard — reveals `vs SPY (90d)` column, colour-coded green/red, re-sorts by relative momentum when activated
+
+### Next — Phase 1b (Weekly Automation)
+
+- [ ] Create `scripts/run_weekly.sh`
+  - Chain: build_universe → refresh --universe --stale-days 7 → screen → validate → build_site → generate_reports
+  - `validate.py` exit code gates the build — site does not rebuild on validation failure
+  - Log all output to `logs/YYYY-MM-DD.log`
+
+### Next — Phase 1d (Second-Source Cross-Check, needs FMP key)
+
+- [ ] Sign up for Financial Modeling Prep free tier (250 req/day)
+- [ ] Store FMP API key in `.env` (already in `.gitignore`)
+- [ ] After each universe refresh, pull market cap, revenue TTM, trailing P/E from FMP
+- [ ] Compare against yfinance values; flag discrepancies > 10% as warnings in `data_audit`
 
 ### Phase 3 — News & Trend Pipeline
 

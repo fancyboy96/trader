@@ -146,6 +146,16 @@ A single SQLite file. All tables use `ON CONFLICT ... DO UPDATE` upserts so scri
 | title, summary, source, url | TEXT |
 | sentiment | TEXT | NULL / positive / negative / neutral |
 
+**`universe`** — investment universe; tickers eligible for screening.
+
+| Column | Type | Notes |
+|--------|------|-------|
+| ticker | TEXT PK | |
+| source | TEXT | Comma-separated ETF IDs or 'manual' |
+| weight | REAL | Max weight across sources (0–1), NULL if unavailable |
+| added_date | TEXT | ISO date |
+| active | INTEGER | 1 = included in universe refresh |
+
 **`screen_results`** — one row per ticker, overwritten on each screen run.
 
 | Column | Type |
@@ -158,6 +168,8 @@ A single SQLite file. All tables use `ON CONFLICT ... DO UPDATE` upserts so scri
 | tier | TEXT (A/B/C/D) |
 | score_growth, score_profitability, score_valuation, score_balance_sheet | REAL |
 | revenue_growth_yoy, revenue_cagr_3y, eps_growth_yoy | REAL |
+| momentum_90d | REAL | (price_today / price_90d_ago) - 1 |
+| relative_momentum | REAL | momentum_90d minus SPY momentum_90d |
 
 ### Known Data Quirks
 
@@ -248,8 +260,10 @@ Each play lives in `scripts/plays_data.py` as a Python dict:
 
 | Play | Status | Tickers |
 |------|--------|---------|
-| AI Infrastructure | Active | NVDA, AVGO, TSM, ANET |
+| AI Infrastructure | Active | NVDA, AVGO, TSM, ANET, MU |
 | GLP-1 & Metabolic Health | Active | LLY, DXCM |
+| Enterprise AI Platform | Active | MSFT, NOW, INTU, PLTR |
+| Digital Advertising | Active | APP, TTD |
 | Clean Energy Transition | Watch | FSLR |
 | Quantum Computing | Watch | MSFT, GOOGL, IBM, IONQ, RGTI, QBTS |
 
@@ -315,11 +329,12 @@ trader/
 │   ├── plays/
 │   │   └── {id}.html
 │   ├── profiles/
-│   │   └── {TICKER}.html
+│   │   └── {TICKER}.html            ← 537 pages (full universe)
 │   └── reports/
-│       └── {TICKER}-{DATE}.html
+│       └── {TICKER}-{DATE}.html     ← 20 Tier A reports
 ├── planning/
 │   ├── project-overview.md          ← this file
+│   ├── roadmap.md                   ← phased product roadmap
 │   ├── screening-criteria.md        ← screener source of truth
 │   ├── discovery-pipeline.md        ← programmatic discovery design + to-do
 │   ├── how-to-add-a-play.md         ← step-by-step play workflow
@@ -327,12 +342,15 @@ trader/
 │   └── watchlist.md                 ← candidate tracking
 ├── scripts/
 │   ├── db.py                        ← schema + connection helper
+│   ├── build_universe.py            ← pull ETF holdings into universe table
 │   ├── refresh.py                   ← pull fundamentals + prices via yfinance
 │   ├── news.py                      ← pull headlines via yfinance
-│   ├── screen.py                    ← run screener, write screen_results
+│   ├── screen.py                    ← run screener + momentum, write screen_results
+│   ├── validate.py                  ← sanity checks on DB data quality
 │   ├── build_site.py                ← generate all static HTML
 │   ├── generate_reports.py          ← generate Tier A analysis reports
-│   └── plays_data.py                ← curated plays registry
+│   ├── plays_data.py                ← curated plays registry
+│   └── save_session.py              ← save Claude session transcripts to planning/sessions/
 └── _shared/
     └── standards.md                 ← prose style + design system (shared with Orbit)
 ```
@@ -341,19 +359,33 @@ trader/
 
 ## Scripts Reference
 
+### `build_universe.py`
+
+Pull ETF constituent lists and populate the `universe` table.
+
+```bash
+python3 scripts/build_universe.py             # fetch all sources and write to DB
+python3 scripts/build_universe.py --dry-run   # show counts without writing
+```
+
+Sources: S&P 500 and NASDAQ-100 via Wikipedia; SOXX via iShares CSV; XLV, XLI, VGT via yfinance top holdings. Existing manual tickers are migrated with `source='manual'`. Current universe: 537 tickers.
+
 ### `refresh.py`
 
 Pull fundamentals, 2-year price history, and annual income statements for one or more tickers.
 
 ```bash
-python3 scripts/refresh.py NVDA AAPL          # specific tickers
-python3 scripts/refresh.py --all              # all tickers in companies table
+python3 scripts/refresh.py NVDA AAPL                     # specific tickers
+python3 scripts/refresh.py --all                          # all tickers in companies table
+python3 scripts/refresh.py --universe                     # all active universe tickers
+python3 scripts/refresh.py --universe --stale-days 7      # skip tickers refreshed within 7 days
 ```
 
 **Key behaviour:**
 - Upserts into `companies`, `fundamentals`, `prices`, `income_annual`
 - Safe to re-run; overwrites same-date snapshots
 - `debt_to_equity` divided by 100 on write (yfinance quirk)
+- `--stale-days` checks `companies.last_updated`; skips fresh tickers to avoid rate limits
 
 ### `news.py`
 
@@ -364,9 +396,19 @@ python3 scripts/news.py NVDA AAPL
 python3 scripts/news.py --all
 ```
 
+### `validate.py`
+
+Run sanity checks on loaded data. Exit code 0 = all passed; exit code 1 = failures found.
+
+```bash
+python3 scripts/validate.py
+```
+
+Checks: fundamentals freshness, market cap / revenue positivity, gross margin range, price_to_fcf consistency, price continuity and recency, income statement depth, audit log presence.
+
 ### `screen.py`
 
-Score all tickers in the database and write results to `screen_results`.
+Score all tickers in the database and write results to `screen_results`. Also computes 90-day momentum vs SPY.
 
 ```bash
 python3 scripts/screen.py                     # run, display Tier B and above
@@ -400,24 +442,30 @@ Not a script — a data file. Edit directly to add, update, or close plays. Then
 
 ## Running the Pipeline
 
-### Full refresh and publish
+### Full universe refresh and publish
 
 ```bash
-python3 scripts/refresh.py --all
-python3 scripts/news.py --all
-python3 scripts/screen.py
-python3 scripts/build_site.py
-python3 scripts/generate_reports.py
+cd scripts
+python3 build_universe.py
+python3 refresh.py --universe --stale-days 7
+python3 news.py --all
+python3 screen.py
+python3 validate.py                          # gates the build; fix failures before continuing
+python3 build_site.py
+python3 generate_reports.py
+cd ..
 git add docs/ && git commit -m "Weekly refresh $(date +%Y-%m-%d)" && git push
 ```
 
-### Add a new ticker
+### Add a new ticker manually
 
 ```bash
-python3 scripts/refresh.py TICKER
-python3 scripts/news.py TICKER
-python3 scripts/screen.py
-python3 scripts/build_site.py
+cd scripts
+python3 refresh.py TICKER
+python3 news.py TICKER
+python3 screen.py
+python3 build_site.py
+cd ..
 git add docs/ && git push
 ```
 
@@ -450,14 +498,19 @@ Key design rules:
 
 Full detail in `planning/discovery-pipeline.md`. Summary:
 
-### Near-term
+### Completed (Phase 0 + Phase 1a/1c)
 
 - [x] Data validation script (`scripts/validate.py`) — sanity checks on fundamentals, prices, income, and audit log after every refresh
 - [x] Source attribution — fetch date and snapshot date shown on every profile page and analysis report; data provenance line links back to raw profile from report
 - [x] `data_audit` table — every yfinance API call logged with timestamp, endpoint, rows returned, and status
-- [ ] Universe expansion — pull S&P 500 / ETF constituent lists, screen the full universe automatically
-- [ ] Scheduled refresh script — batch refresh stale tickers weekly
-- [ ] Momentum overlay — add 90-day relative momentum to screener scores using existing price data
+- [x] Universe expansion (`scripts/build_universe.py`) — 537 tickers from S&P 500, NASDAQ-100, SOXX, XLV, XLI, VGT; `universe` table in DB; manual tickers preserved with `source='manual'`
+- [x] `refresh.py --universe --stale-days N` — batch refresh all active universe tickers, skipping recently refreshed ones
+- [x] Momentum overlay — `momentum_90d` and `relative_momentum` (vs SPY) computed in `screen.py`; toggleable column on dashboard that sorts by vs-SPY return
+
+### Next (Phase 1b + 1d)
+
+- [ ] Automated weekly run script (`scripts/run_weekly.sh`) — chains build_universe → refresh --universe --stale-days 7 → screen → validate → build_site; validate gates the build; logs to `logs/YYYY-MM-DD.log`
+- [ ] Second-source cross-check (needs FMP API key) — after each refresh, pull market cap, revenue TTM, and trailing P/E from Financial Modeling Prep (free tier: 250 req/day) and compare against yfinance; flag discrepancies > 10% in `data_audit`
 
 ### Medium-term
 
