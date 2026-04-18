@@ -351,7 +351,19 @@ def build_dashboard(conn):
   <div class="stat-card"><div class="stat-label">Filtered out</div><div class="stat-value neutral">{len(all_filtered)}</div><div class="stat-sub">failed hard filters</div></div>
 </div>"""
 
-    # Single table for all passed tickers — rows tagged with data-industry for JS grouping
+    # Build ticker → play titles mapping for JS
+    ticker_plays = {}
+    for p in PLAYS:
+        for t in p["tickers"]:
+            ticker_plays.setdefault(t, []).append(p["title"])
+    ticker_plays_js = "{" + ", ".join(
+        f'"{t}": {["||".join(titles)]}' for t, titles in ticker_plays.items()
+    ) + "}"
+    # emit as JS-safe dict: {TICKER: "Play A||Play B", ...}
+    import json
+    ticker_plays_js = json.dumps({t: "||".join(titles) for t, titles in ticker_plays.items()})
+
+    # Single table for all passed tickers — rows tagged for JS grouping
     rows = ""
     for r in all_passed:
         score_w = min(int(r["score"]), 100)
@@ -389,9 +401,14 @@ def build_dashboard(conn):
       By Sector
     </button>
     <button id="btn-industry" onclick="setView('industry')"
-      style="font-size:12px;padding:5px 12px;border:1px solid var(--border);border-radius:0 4px 4px 0;
+      style="font-size:12px;padding:5px 12px;border:1px solid var(--border);
              background:var(--bg-card);color:var(--text);cursor:pointer;margin-left:-1px">
       By Industry
+    </button>
+    <button id="btn-play" onclick="setView('play')"
+      style="font-size:12px;padding:5px 12px;border:1px solid var(--border);border-radius:0 4px 4px 0;
+             background:var(--bg-card);color:var(--text);cursor:pointer;margin-left:-1px">
+      By Play
     </button>
   </div>
 </div>
@@ -407,11 +424,11 @@ def build_dashboard(conn):
 </table>
 <script>
 var _origRows = null;
-var _btns = ['score','sector','industry'];
+var _btns = ['score','sector','industry','play'];
+var _tickerPlays = {ticker_plays_js};
 function setView(view) {{
   var tbody = document.getElementById('results-body');
   if (!_origRows) _origRows = Array.from(tbody.querySelectorAll('tr[data-industry]'));
-  // update button styles
   _btns.forEach(function(v) {{
     var btn = document.getElementById('btn-' + v);
     if (v === view) {{
@@ -422,11 +439,46 @@ function setView(view) {{
       btn.style.borderColor = 'var(--border)'; btn.style.fontWeight = 'normal';
     }}
   }});
-  // clear group headers
   Array.from(tbody.querySelectorAll('tr.group-header')).forEach(function(el){{el.remove();}});
   if (view === 'score') {{
     document.getElementById('view-label').textContent = '{len(all_passed)} companies \u00b7 sorted by score';
     _origRows.slice().sort(function(a,b){{return +b.dataset.score - +a.dataset.score;}}).forEach(function(r){{tbody.appendChild(r);}});
+    return;
+  }}
+  function makeHeader(label, count) {{
+    var hdr = document.createElement('tr');
+    hdr.className = 'group-header';
+    hdr.innerHTML = '<td colspan="11" style="background:var(--accent);color:var(--bg);'
+      + 'font-size:11px;letter-spacing:.15em;text-transform:uppercase;padding:7px 14px;font-weight:700">'
+      + label + ' <span style="opacity:0.65;font-weight:400;letter-spacing:0;text-transform:none">(' + count + ')</span></td>';
+    return hdr;
+  }}
+  function byScore(arr) {{ return arr.slice().sort(function(a,b){{return +b.dataset.score - +a.dataset.score;}}); }}
+  if (view === 'play') {{
+    // group by play; a ticker can appear under multiple plays
+    // tickers not in any play go into Unassigned
+    var groups = {{}};
+    _origRows.forEach(function(r) {{
+      var ticker = r.querySelector('td.accent a') ? r.querySelector('td.accent a').textContent.trim() : '';
+      var plays = _tickerPlays[ticker] ? _tickerPlays[ticker].split('||') : [];
+      if (plays.length === 0) {{
+        if (!groups['Unassigned']) groups['Unassigned'] = [];
+        groups['Unassigned'].push(r);
+      }} else {{
+        plays.forEach(function(p) {{
+          if (!groups[p]) groups[p] = [];
+          groups[p].push(r);
+        }});
+      }}
+    }});
+    var playKeys = Object.keys(groups).filter(function(k){{return k !== 'Unassigned';}}).sort();
+    if (groups['Unassigned']) playKeys.push('Unassigned');
+    document.getElementById('view-label').textContent = '{len(all_passed)} companies \u00b7 ' + playKeys.filter(function(k){{return k!=='Unassigned';}}).length + ' plays';
+    playKeys.forEach(function(g) {{
+      var members = byScore(groups[g]);
+      tbody.appendChild(makeHeader(g, members.length));
+      members.forEach(function(r){{tbody.appendChild(r);}});
+    }});
     return;
   }}
   var key = view === 'sector' ? 'sector' : 'industry';
@@ -439,15 +491,8 @@ function setView(view) {{
   var keys = Object.keys(groups).sort();
   document.getElementById('view-label').textContent = '{len(all_passed)} companies \u00b7 ' + keys.length + ' ' + view + 's';
   keys.forEach(function(g){{
-    var members = groups[g].sort(function(a,b){{return +b.dataset.score - +a.dataset.score;}});
-    var hdr = document.createElement('tr');
-    hdr.className = 'group-header';
-    hdr.innerHTML = '<td colspan="11" style="background:var(--accent);color:var(--bg);'
-      + 'font-size:11px;letter-spacing:.15em;text-transform:uppercase;padding:7px 14px;'
-      + 'font-weight:700;">'
-      + g + ' <span style="opacity:0.65;font-weight:400;letter-spacing:0;text-transform:none">(' + members.length + ')</span></td>';
-    tbody.appendChild(hdr);
-    members.forEach(function(r){{tbody.appendChild(r);}});
+    tbody.appendChild(makeHeader(g, groups[g].length));
+    byScore(groups[g]).forEach(function(r){{tbody.appendChild(r);}});
   }});
 }}
 </script>""" if all_passed else '<p style="color:var(--text-dim);font-size:13px">No results.</p>'
