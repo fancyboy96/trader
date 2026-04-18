@@ -268,6 +268,523 @@ NARRATIVES = {
         ),
         "weight": "4–5%",
     },
+    "PDD": {
+        "thesis": (
+            "PDD Holdings operates Pinduoduo, China's largest agricultural and value e-commerce platform, "
+            "and Temu, the fast-growing international marketplace for discounted manufactured goods. "
+            "Revenue grew 59% YoY to $68B with gross margins of 62%, an extraordinary combination for a "
+            "company at this scale. The business generates significant free cash flow and carries no net debt. "
+            "Temu has rapidly established market presence across the US, EU, and emerging markets by leveraging "
+            "direct factory-to-consumer supply chains."
+        ),
+        "moat": (
+            "Pinduoduo's social commerce model — group buying, gamification, and agricultural supply chain "
+            "integration — is deeply embedded in rural and lower-tier Chinese city consumer behaviour. "
+            "The agricultural procurement network gives Pinduoduo unique cost advantages in fresh produce "
+            "that are difficult to replicate. Temu benefits from the same supply chain as Pinduoduo, enabling "
+            "price points that Western platforms cannot match without restructuring their cost base."
+        ),
+        "tailwinds": (
+            "Global demand for value merchandise is durable across economic cycles. Temu's marketing spend "
+            "is generating substantial brand recognition in developed markets at a pace that rivals early "
+            "Amazon international expansion. The agricultural digitalisation opportunity in China remains "
+            "largely untapped at the smaller producer level."
+        ),
+        "risks": [
+            ("US–China trade war / tariffs", "High", "High", "Section 301 tariffs and de minimis rule changes directly target Temu's model"),
+            ("China regulatory risk", "Medium", "High", "Platform regulation in China remains unpredictable; PDD has faced previous scrutiny"),
+            ("ADR / delisting risk", "Low–Medium", "Medium", "US-listed Chinese ADRs carry PCAOB audit and potential delisting risk"),
+            ("Temu margin dilution", "Medium", "Medium", "Aggressive marketing spend is subsidising Temu's growth; profitability timeline uncertain"),
+        ],
+        "verdict": "watch",
+        "verdict_text": (
+            "PDD is the highest-scoring company on this screen on fundamental metrics alone — 59% revenue "
+            "growth, 62% gross margins, 90 screener score — but the geopolitical risk is material and "
+            "not fully quantifiable. The de minimis exemption changes and Section 301 tariff escalation "
+            "are a direct threat to Temu's unit economics. The business quality is exceptional; the "
+            "risk profile warrants a watch posture rather than initiation at full size. "
+            "Monitor trade policy developments. Consider a small starter position if tariff risk stabilises."
+        ),
+        "weight": "0–3%",
+    },
+    "APP": {
+        "thesis": (
+            "AppLovin operates AXON, an AI-powered advertising engine that matches mobile app advertisements "
+            "to users at scale across a network of 140,000+ mobile apps. Revenue grew 70% YoY to $4.7B "
+            "following the AXON 2.0 upgrade in 2024, which dramatically improved targeting accuracy and "
+            "monetisation rates. The company is divesting its mobile gaming studio business to focus entirely "
+            "on the software platform. Gross margins have expanded toward 75% as the platform mix increases."
+        ),
+        "moat": (
+            "AXON's prediction models are trained on a proprietary data set of mobile app engagement signals "
+            "accumulated over a decade. The accuracy of these models compounds with scale: more advertisers "
+            "generate more auction data, which improves predictions, which attracts more advertisers. "
+            "The data flywheel is the moat. AppLovin's independence from any single app store or walled garden "
+            "makes it a neutral infrastructure layer that publishers prefer over Google or Meta alternatives."
+        ),
+        "tailwinds": (
+            "Mobile advertising spend is recovering and growing as app install economics improve. "
+            "The post-ATT (App Tracking Transparency) advertising market is consolidating toward platforms "
+            "with on-device or first-party data signals — AXON's contextual approach benefits from this. "
+            "Expansion into connected TV and e-commerce advertising is an early-stage but large opportunity. "
+            "Studio divestiture will improve both margins and investor clarity on the platform business."
+        ),
+        "risks": [
+            ("Platform concentration", "Medium", "High", "Mobile gaming is still the primary advertiser vertical; diversification is early-stage"),
+            ("AXON model risk", "Low–Medium", "High", "A significant targeting accuracy regression could cause rapid advertiser churn"),
+            ("Regulatory / privacy", "Medium", "Medium", "Increased mobile privacy regulation could reduce signal availability"),
+            ("Valuation", "Medium", "Medium", "Revenue growth rate must remain elevated to justify current pricing"),
+        ],
+        "verdict": "buy",
+        "verdict_text": (
+            "AppLovin is growing revenue at 70% YoY with gross margins expanding toward 75%. "
+            "The AXON 2.0 upgrade has demonstrated that the platform can sustain high growth rates at scale. "
+            "The planned gaming studio divestiture will simplify the business and reveal the true software "
+            "platform economics. The combination of data-flywheel moat, high margins, and a large underpenetrated "
+            "addressable market (e-commerce, CTV) makes this one of the most compelling growth platforms "
+            "on this screen. Initiate a position."
+        ),
+        "weight": "4–6%",
+    },
+    "INCY": {
+        "thesis": (
+            "Incyte is a commercial-stage pharmaceutical company focused on oncology and inflammation. "
+            "Its primary asset, Jakafi (ruxolitinib), is the standard of care for myelofibrosis and "
+            "polycythemia vera — rare blood cancers with no adequate prior treatments. Jakafi's revenue "
+            "has grown steadily over twelve years, and the pipeline includes itacitinib (graft-versus-host "
+            "disease), pemigatinib (cholangiocarcinoma), and several early-stage immuno-oncology assets."
+        ),
+        "moat": (
+            "Jakafi holds orphan drug status in its approved indications, providing market exclusivity "
+            "and premium pricing. The JAK inhibitor class pioneered by ruxolitinib has become the "
+            "reference mechanism for myeloproliferative neoplasms, creating deep physician familiarity "
+            "and prescribing habit. Royalties from Novartis's ruxolitinib licence (sold as Scemblix) "
+            "provide an additional revenue stream. The haematology/oncology specialist salesforce "
+            "is difficult and expensive to replicate."
+        ),
+        "tailwinds": (
+            "The myelofibrosis patient population is underdiagnosed and underpenetrated globally. "
+            "International Jakafi revenue is growing as regulatory approvals expand in Japan, EU, "
+            "and emerging markets. The graft-versus-host disease indication for ruxolitinib (Opzelura) "
+            "opens a new patient population. Pipeline assets in atopic dermatitis and vitiligo address "
+            "large markets with unmet need."
+        ),
+        "risks": [
+            ("Jakafi patent cliff", "High", "High", "Core Jakafi composition-of-matter patents expire 2027–2028; generics will follow"),
+            ("Pipeline execution", "Medium", "High", "Revenue replacement from pipeline requires successful late-stage readouts"),
+            ("Competition in JAK inhibitors", "Medium", "Medium", "Abbvie's upadacitinib and Pfizer's tofacitinib compete in inflammation"),
+            ("Revenue concentration", "High", "High", "Jakafi represents ~70% of total revenue; patent expiry is an existential transition"),
+        ],
+        "verdict": "watch",
+        "verdict_text": (
+            "Incyte's fundamental metrics are excellent — 21% revenue growth, 76% gross margins, "
+            "strong balance sheet — but the Jakafi patent cliff arriving in 2027–2028 creates a "
+            "binary transition risk. The pipeline must deliver to sustain current revenue levels. "
+            "The screener score of 85 reflects trailing strength, not forward visibility. "
+            "Watch for Phase 3 pipeline readouts and genericisation timeline updates before initiating. "
+            "This is a value opportunity if pipeline assets de-risk, not a growth compounder."
+        ),
+        "weight": "0–2%",
+    },
+    "NEM": {
+        "thesis": (
+            "Newmont is the world's largest gold mining company by production, with operations across "
+            "Nevada, Australia, Ghana, Peru, and Canada. Revenue grew 21% YoY to $19B driven by gold "
+            "price appreciation. Newmont benefits from structurally elevated gold prices as central banks "
+            "globally increase reserves and investors seek inflation hedges. The 2023 Newcrest acquisition "
+            "added high-quality copper-gold assets and extended the reserve life of the portfolio."
+        ),
+        "moat": (
+            "Scale in mining creates cost advantages through shared infrastructure, procurement, "
+            "and technical expertise. Newmont's tier-one asset base (mines with long reserve lives, "
+            "low costs, and stable jurisdictions) commands a premium valuation versus smaller miners. "
+            "The gold reserve base provides multi-decade production visibility. However, mining "
+            "is fundamentally a commodity business — the moat is operational efficiency, not pricing power."
+        ),
+        "tailwinds": (
+            "Gold prices are supported by central bank reserve diversification away from USD assets, "
+            "geopolitical uncertainty, and inflation hedging demand. Copper exposure from the Newcrest "
+            "assets provides an additional tailwind from the energy transition (EV motors, grid infrastructure). "
+            "All-in sustaining cost (AISC) improvements from portfolio optimisation underway."
+        ),
+        "risks": [
+            ("Gold price cyclicality", "High", "High", "Revenue and earnings are directly levered to gold price; a sustained decline would sharply reduce profits"),
+            ("Operational execution", "Medium", "Medium", "Newcrest integration and cost reduction targets carry execution risk"),
+            ("Geopolitical / jurisdiction risk", "Medium", "Medium", "Ghana and Peru operations face periodic political uncertainty"),
+            ("Capital intensity", "Medium", "Low", "Mining requires continuous reinvestment; free cash flow conversion lags EBITDA"),
+        ],
+        "verdict": "watch",
+        "verdict_text": (
+            "Newmont is a well-run business in a sector that passes fundamental filters only when gold "
+            "prices are elevated — which they currently are. The high score reflects the current gold price "
+            "environment, not a durable business quality advantage. For a portfolio seeking commodity "
+            "or inflation diversification, Newmont is the highest-quality vehicle. For a growth-focused "
+            "portfolio, the cyclicality and capital intensity are disqualifying. "
+            "Watch status: appropriate as a small macro hedge, not a core growth position."
+        ),
+        "weight": "0–3%",
+    },
+    "INTU": {
+        "thesis": (
+            "Intuit operates the dominant small business financial software platform in North America: "
+            "QuickBooks (accounting), TurboTax (tax preparation), Credit Karma (personal finance), "
+            "and Mailchimp (SMB marketing). Revenue grew 16% YoY to $18B. Intuit Assist, the AI layer "
+            "embedded across all products, is automating data entry, anomaly detection, and tax filing "
+            "workflows in ways that deepen the switching cost for existing customers and improve "
+            "monetisation per user."
+        ),
+        "moat": (
+            "QuickBooks holds 80%+ share of US small business accounting software, a position "
+            "built over 35 years of product development and network effects from accountants and bookkeepers "
+            "who are trained on and recommend the platform. TurboTax's data advantages compound annually: "
+            "prior-year returns pre-populate automatically, making switching to a competitor painful. "
+            "Credit Karma's consumer financial data creates a two-sided marketplace with lenders. "
+            "These are not easily dislodged positions."
+        ),
+        "tailwinds": (
+            "SMB adoption of cloud-based accounting software is still incomplete — many small businesses "
+            "remain on desktop software or spreadsheets. AI automation is increasing the value proposition: "
+            "tasks that previously required a bookkeeper can now be handled by Intuit's platform. "
+            "International QuickBooks expansion is a long-duration growth vector. "
+            "Credit Karma's revenue recovers as consumer lending markets normalise."
+        ),
+        "risks": [
+            ("IRS Direct File", "Medium", "Medium", "Free government tax filing could erode TurboTax's lower-tier market; complexity segments remain protected"),
+            ("Credit Karma cyclicality", "Medium", "Medium", "Lending marketplace revenue is sensitive to interest rates and credit availability"),
+            ("Valuation", "Low–Medium", "Low", "Fwd P/E 25x and PEG 1.84 represent a fair but not cheap entry point"),
+            ("AI commoditisation of tax prep", "Low (near-term)", "Medium (long-term)", "AI could lower barriers to entry in tax software over the next decade"),
+        ],
+        "verdict": "buy",
+        "verdict_text": (
+            "Intuit compounds revenue at 14% CAGR over three years with 80% gross margins and 20% ROE. "
+            "The AI integration is not speculative — Intuit Assist is live across all products and is "
+            "measurably reducing support costs and improving retention. The multi-product platform "
+            "with deep switching costs is the archetype of durable software economics. "
+            "At a fwd P/E of 25x, the valuation is reasonable for this quality. Initiate a position."
+        ),
+        "weight": "4–5%",
+    },
+    "PTC": {
+        "thesis": (
+            "PTC provides product lifecycle management (PLM) and industrial IoT software to manufacturers "
+            "globally. Its flagship platforms — Windchill (PLM), Creo (CAD), ThingWorx (IIoT), and "
+            "Vuforia (augmented reality) — are deeply embedded in engineering and manufacturing workflows "
+            "at aerospace, defence, automotive, and industrial customers. Revenue grew 19% YoY as the "
+            "business completed its transition from perpetual licences to recurring SaaS and "
+            "subscription contracts."
+        ),
+        "moat": (
+            "PLM software is the system of record for product design data. Migrating a 20-year product "
+            "history from Windchill to a competitor system is a multi-year, high-risk undertaking that "
+            "most enterprise customers avoid indefinitely. Creo CAD is similarly sticky — engineers build "
+            "careers on specific CAD tools, and retraining is costly. Regulatory compliance requirements "
+            "in aerospace and medical device manufacturing further lock in PTC's platforms."
+        ),
+        "tailwinds": (
+            "Digital thread and digital twin adoption is accelerating across manufacturing as companies "
+            "connect physical production with design data. IIoT monitoring of manufacturing equipment "
+            "is an early-stage but large opportunity. Defence spending growth in NATO countries benefits "
+            "PTC's large aerospace and defence customer base. "
+            "ServiceMax (field service management) adds a post-sale service revenue stream."
+        ),
+        "risks": [
+            ("Siemens and Dassault competition", "Medium", "Medium", "Both offer comparable PLM suites with strong enterprise relationships"),
+            ("Transition execution", "Low", "Low", "Subscription transition substantially complete; ARR growth is the relevant metric"),
+            ("Customer concentration", "Medium", "Low", "Aerospace and defence is a significant vertical; sector downturns would affect PTC"),
+            ("Valuation", "Low–Medium", "Low", "Fwd P/E 25x and PEG 1.23 are reasonable for a recurring revenue industrial software business"),
+        ],
+        "verdict": "buy",
+        "verdict_text": (
+            "PTC is the least well-known name on the Tier A list but one of the most defensively positioned. "
+            "Industrial PLM and IIoT software has some of the highest switching costs in enterprise software. "
+            "Revenue grows at 19% YoY with 83% gross margins and a fully transitioned SaaS model. "
+            "The fwd P/E of 25x and PEG of 1.23 are among the most attractive on this screen for the "
+            "quality of the business. Initiate a position."
+        ),
+        "weight": "3–5%",
+    },
+    "TTD": {
+        "thesis": (
+            "The Trade Desk operates the largest independent demand-side platform (DSP) for programmatic "
+            "advertising, serving agencies and brands that buy digital advertising inventory across "
+            "connected TV, mobile, display, and audio. Revenue grew 18.5% YoY to $2.4B. The company's "
+            "independence from any walled garden (it does not own media inventory) positions it as the "
+            "neutral infrastructure layer that agencies prefer for cross-channel planning. "
+            "Unified ID 2.0 (UID2) is becoming an industry-standard identity solution for cookieless targeting."
+        ),
+        "moat": (
+            "The Trade Desk's data flywheel: more advertisers generate more bid data, improving prediction "
+            "models, which deliver better campaign outcomes, which attract more advertisers. "
+            "Independence from publisher inventory (unlike Google's DV360) is a genuine differentiator — "
+            "agencies trust TTD with cross-media budget allocation because it has no conflict of interest. "
+            "UID2 adoption creates a standards-level network effect that benefits the platform long-term."
+        ),
+        "tailwinds": (
+            "Connected TV advertising is shifting spend from linear broadcast as streaming viewership "
+            "grows and measurement capabilities improve. The Trade Desk is the leading DSP for CTV "
+            "programmatic buying. Third-party cookie deprecation is driving demand for identity solutions "
+            "like UID2. Retail media networks are integrating with TTD's platform to offer first-party "
+            "purchase data for targeting."
+        ),
+        "risks": [
+            ("Google competition", "High", "High", "Google's DV360 benefits from YouTube inventory access TTD cannot match"),
+            ("CTV deal dependency", "Medium", "Medium", "Netflix, Disney+, and major streamers could exclude independent DSPs"),
+            ("Valuation", "Medium", "Medium", "Fwd P/E 35x is elevated; any growth deceleration would re-rate sharply"),
+            ("Cookie timelines", "Low", "Low", "Cookie deprecation delays reduce urgency of UID2 adoption by publishers"),
+        ],
+        "verdict": "buy",
+        "verdict_text": (
+            "The Trade Desk is the best-positioned independent advertising technology platform in the "
+            "market. Revenue grows at 18.5% YoY with 81% gross margins and a strong net cash balance sheet. "
+            "CTV is still in the early innings of programmatic adoption — the addressable market is expanding "
+            "faster than TTD's current growth rate implies. The fwd P/E of 35x is the primary risk, but "
+            "for a business with genuine platform moat in a large and growing market, it is justifiable. "
+            "Initiate a position."
+        ),
+        "weight": "3–5%",
+    },
+    "DECK": {
+        "thesis": (
+            "Deckers Outdoor is the parent company of HOKA (performance running footwear) and UGG "
+            "(premium sheepskin boots). HOKA is the primary growth engine: revenue has grown from under "
+            "$400M to over $2B in five years, taking meaningful market share from established athletic "
+            "brands in the performance running category. UGG provides stable, high-margin revenue with "
+            "brand durability across decades. Deckers carries no long-term debt and generates strong "
+            "free cash flow."
+        ),
+        "moat": (
+            "HOKA's midsole geometry and cushioning technology have created a distinctive product that "
+            "commands premium pricing ($130–$250) while maintaining strong sell-through at retail. "
+            "Professional running community endorsement and podiatric clinical preference have driven "
+            "word-of-mouth adoption that advertising cannot replicate easily. "
+            "UGG's brand equity in premium comfort footwear has proven durable across fashion cycles "
+            "since the 1970s. Both brands have high repeat purchase rates."
+        ),
+        "tailwinds": (
+            "HOKA is expanding from core running into trail, hiking, and lifestyle categories — each "
+            "representing meaningful TAM expansion beyond competitive road running. International "
+            "penetration for HOKA is early: Europe and Asia are significantly underpenetrated. "
+            "DTC (direct-to-consumer) channel growth is improving margins. The premium outdoor and "
+            "performance footwear category is growing faster than broad athletic footwear."
+        ),
+        "risks": [
+            ("HOKA brand momentum", "Medium", "High", "Brand heat in footwear is difficult to sustain; early Nike and UA trajectories show eventual deceleration"),
+            ("UGG fashion cyclicality", "Medium", "Medium", "UGG's appeal has proven durable, but is not immune to trend risk"),
+            ("Wholesale dependency", "Medium", "Low", "Significant revenue through third-party retail creates margin and inventory risk"),
+            ("Competition from incumbents", "Medium", "Medium", "Nike, Adidas, and On Running are all investing in the cushioning/performance category"),
+        ],
+        "verdict": "buy",
+        "verdict_text": (
+            "Deckers is the most straightforward consumer quality name on this screen. No debt, "
+            "30% EPS growth, 16% revenue CAGR, and two brands with genuine consumer loyalty. "
+            "HOKA's international expansion provides a runway that the market is not fully pricing. "
+            "The fwd P/E of 11x for a business of this quality represents an attractive entry point. "
+            "Initiate a position."
+        ),
+        "weight": "3–5%",
+    },
+    "MU": {
+        "thesis": (
+            "Micron Technology manufactures DRAM and NAND flash memory — the storage and working memory "
+            "that every computing system requires. Revenue grew 49% YoY to $35B as the memory cycle "
+            "recovered sharply from the 2023 trough. The key forward narrative is High Bandwidth Memory "
+            "(HBM): Micron is the third supplier of HBM alongside Samsung and SK Hynix, and its HBM3E "
+            "has been qualified and is shipping to NVIDIA for H200 and Blackwell GPU platforms. "
+            "HBM commands 5–8x the ASP of standard DRAM."
+        ),
+        "moat": (
+            "Memory manufacturing requires mastery of sub-5nm lithography, advanced packaging, and "
+            "yield optimisation processes accumulated over decades. The three-supplier oligopoly "
+            "(Samsung, SK Hynix, Micron) creates a structurally disciplined supply market compared to "
+            "historical cycles when excess entrants caused prolonged oversupply. "
+            "HBM supply constraints are manufacturing-limited: CoW (chip-on-wafer) stacking yield is "
+            "difficult to scale quickly, creating a natural barrier to rapid supply increases."
+        ),
+        "tailwinds": (
+            "AI model inference requires increasing HBM capacity per GPU as context windows expand. "
+            "Micron is supply-constrained on HBM through 2025–2026 based on customer communications. "
+            "PC and smartphone end markets are in a replacement cycle after a prolonged downturn. "
+            "Data center DRAM demand is secular, not cyclical."
+        ),
+        "risks": [
+            ("Cycle peak timing", "High", "High", "Memory is deeply cyclical; the current upcycle will eventually turn — timing is unknowable"),
+            ("Samsung capex response", "Medium", "High", "Samsung has historically flooded supply during upcycles; HBM discipline is newer and less tested"),
+            ("China competition", "Low–Medium", "Medium", "CXMT is expanding DRAM capacity aggressively but remains behind on advanced nodes"),
+            ("Execution on HBM ramp", "Low–Medium", "High", "HBM yield improvements and capacity ramp are critical to the investment thesis"),
+        ],
+        "verdict": "watch",
+        "verdict_text": (
+            "Micron scores 80 on the screener because the memory cycle is currently in an upcycle — "
+            "the same screen in 2023 would have placed Micron in Tier D. The HBM story is real: "
+            "Micron is a qualified supplier for NVIDIA's most critical products, and HBM economics "
+            "are structurally better than commodity DRAM. But timing the memory cycle is notoriously "
+            "difficult. Watch status: monitor HBM capacity ramp progress and any signs of DRAM "
+            "oversupply in commodity segments. Consider a small position sized for cyclicality."
+        ),
+        "weight": "2–4%",
+    },
+    "NOW": {
+        "thesis": (
+            "ServiceNow provides cloud-based enterprise workflow automation, with the Now Platform "
+            "serving as the operating system for IT service management, HR, legal, finance, and "
+            "customer operations. Revenue grew 21% YoY to $11B. The AI transition is ServiceNow's "
+            "primary growth accelerator: Now Assist embeds generative AI across every workflow module, "
+            "increasing per-seat value and driving upsell on the existing installed base. "
+            "The platform's horizontal applicability across departments has enabled ServiceNow to "
+            "expand far beyond its original IT helpdesk origins."
+        ),
+        "moat": (
+            "ServiceNow is the system of record for IT operations at large enterprises. Once workflows, "
+            "approvals, and integrations are built on the Now Platform, migrating them is a multi-year "
+            "re-engineering project. The platform's configurability — allowing non-developers to build "
+            "workflows — creates internal champions across business units who resist displacement. "
+            "Renewal rates above 98% reflect the depth of this operational embedding."
+        ),
+        "tailwinds": (
+            "AI Agents built on the Now Platform are automating tasks that previously required human "
+            "intervention: L1 IT support, HR onboarding, contract approvals. Each agent increases the "
+            "value of the platform without requiring incremental headcount from the customer. "
+            "Government and regulated-industry adoption is accelerating as FedRAMP authorisation "
+            "expands. The Pro Plus and Enterprise Plus AI tiers carry materially higher ASPs."
+        ),
+        "risks": [
+            ("Valuation", "High", "Medium", "Fwd P/E 50x+ is pricing in sustained high growth; any deceleration would be severely punished"),
+            ("Salesforce and Microsoft competition", "Medium", "Medium", "Both are investing in workflow automation — Microsoft via Power Platform, Salesforce via Flow"),
+            ("Execution on AI monetisation", "Low–Medium", "High", "Now Assist adoption must convert to measurable ARR expansion to justify the multiple"),
+            ("Macro sensitivity", "Medium", "Low", "IT budget cuts disproportionately affect software renewals in a downturn"),
+        ],
+        "verdict": "buy",
+        "verdict_text": (
+            "ServiceNow is the highest-quality enterprise software franchise on this screen after Microsoft. "
+            "21% revenue growth, 79% gross margins, 98%+ renewal rates, and a platform that becomes "
+            "more valuable with every AI capability added. The fwd P/E of 50x+ is the obvious risk — "
+            "this is only appropriate at a position size that reflects the valuation premium. "
+            "Initiate a smaller position than the balance sheet quality alone would suggest. "
+            "Add on any significant pullback."
+        ),
+        "weight": "3–5%",
+    },
+    "MSFT": {
+        "thesis": (
+            "Microsoft is the dominant enterprise technology platform across cloud (Azure), productivity "
+            "(Microsoft 365), developer tools (GitHub), gaming (Xbox), and AI (Copilot). Azure is the "
+            "second-largest public cloud by revenue and growing at 31% — faster than the overall company "
+            "revenue growth of 15%. Copilot is embedded across Microsoft 365, GitHub, Azure, and Dynamics, "
+            "creating an AI upsell layer across the entire product portfolio. Microsoft holds a 49% stake "
+            "in OpenAI and exclusive rights to GPT model deployment in Azure."
+        ),
+        "moat": (
+            "The Microsoft 365 suite (Outlook, Teams, Word, Excel, SharePoint) is the default productivity "
+            "environment for the global enterprise. Switching costs are generational — entire organisations "
+            "are trained on and operationally dependent on Microsoft tools. Azure benefits from enterprise "
+            "trust, compliance certifications, and hybrid cloud integration with Windows Server estates. "
+            "GitHub holds 90%+ of developer workflow activity for hosted code. The combination of these "
+            "positions makes Microsoft the widest-moat technology company in the world."
+        ),
+        "tailwinds": (
+            "Azure's growth rate is accelerating as AI workloads migrate to cloud. Copilot for Microsoft 365 "
+            "at $30/user/month represents a 25–30% premium to base M365 pricing — adoption at even modest "
+            "rates adds billions in incremental ARR. GitHub Copilot is the most widely adopted AI coding "
+            "assistant. Azure OpenAI is the primary enterprise API for GPT-4 and GPT-4o deployments."
+        ),
+        "risks": [
+            ("Antitrust / regulatory", "Medium", "Low", "EU and US scrutiny of Teams bundling and AI market position is ongoing"),
+            ("OpenAI dependency", "Low–Medium", "Medium", "Exclusive Azure relationship could change if OpenAI's corporate structure evolves"),
+            ("Azure growth deceleration", "Low–Medium", "High", "Any slowdown in Azure growth rate would re-rate the stock materially"),
+            ("Valuation at scale", "Low", "Low", "Fwd P/E 23x for the quality and breadth of the franchise is not demanding"),
+        ],
+        "verdict": "buy",
+        "verdict_text": (
+            "Microsoft is the foundational enterprise technology holding for any portfolio. "
+            "The Copilot upsell cycle is still in early adoption phases and represents a "
+            "multi-billion dollar incremental revenue opportunity on an already massive base. "
+            "At a fwd P/E of 23x, the stock is valued in line with the S&P 500 despite "
+            "materially superior growth and moat characteristics. "
+            "Initiate a position. This is a core holding — size it accordingly."
+        ),
+        "weight": "8–10%",
+    },
+    "BSX": {
+        "thesis": (
+            "Boston Scientific develops medical devices across electrophysiology, endoscopy, urology, "
+            "and neuromodulation. Revenue grew 20% YoY to $16B. The two primary growth drivers are "
+            "WATCHMAN FLX (left atrial appendage closure for atrial fibrillation patients who cannot "
+            "take anticoagulants) and FARAPULSE (pulsed field ablation for AF). Both are taking share "
+            "from surgical and drug-based alternatives in large and growing patient populations."
+        ),
+        "moat": (
+            "Medical device companies with clinically differentiated products build procedural moats: "
+            "physicians trained on a specific technique are reluctant to switch. The WATCHMAN procedure "
+            "requires specialised catheter lab training and patient selection expertise that creates "
+            "durable physician and hospital preference. FARAPULSE's pulsed field ablation technology "
+            "offers a safer tissue-selective ablation profile than radiofrequency — "
+            "clinical differentiation that supports pricing power."
+        ),
+        "tailwinds": (
+            "Atrial fibrillation prevalence increases with age — the ageing of the global population "
+            "is a structural demand driver for both WATCHMAN and FARAPULSE. Oral anticoagulant "
+            "alternatives carry bleeding risk that the WATCHMAN procedure eliminates, expanding the "
+            "eligible patient pool. Pulsed field ablation is replacing radiofrequency ablation "
+            "as the preferred energy modality — BSX is the market leader in PFA."
+        ),
+        "risks": [
+            ("Reimbursement policy", "Medium", "High", "CMS coverage determinations for WATCHMAN expansions are a gating factor"),
+            ("Medtronic and Abbott competition", "Medium", "Medium", "Both competitors are developing competing LAA closure and PFA devices"),
+            ("Integration execution", "Low", "Low", "BSX has an active M&A strategy; integration risk is managed but real"),
+            ("Debt level", "Low–Medium", "Low", "D/E of 0.73x is manageable with strong FCF; acquisition history adds complexity"),
+        ],
+        "verdict": "buy",
+        "verdict_text": (
+            "Boston Scientific is growing revenue at 20% YoY — exceptional for a large-cap medtech — "
+            "with WATCHMAN and FARAPULSE in the early-to-mid stages of their adoption curves. "
+            "The EP (electrophysiology) market is large, growing, and BSX holds leading positions "
+            "in the two most important new procedural categories. "
+            "At a fwd P/E of 25x, the valuation is appropriate for the growth trajectory. "
+            "Initiate a position."
+        ),
+        "weight": "3–5%",
+    },
+    "NVMI": {
+        "thesis": (
+            "Nova Ltd. provides metrology and process control equipment to semiconductor manufacturers. "
+            "Its optical and X-ray measurement tools verify that chip dimensions and material properties "
+            "meet specifications during and after fabrication — a quality control step that is mandatory "
+            "at every process node. Revenue grew 31% YoY. Nova's customers include TSMC, Samsung, "
+            "Intel, and all major memory manufacturers. As process nodes shrink below 3nm, measurement "
+            "accuracy requirements become more stringent, increasing Nova's value per wafer."
+        ),
+        "moat": (
+            "Process control equipment is highly specialised and validated against specific process "
+            "recipes at each customer fab. Switching a metrology tool requires re-qualification of the "
+            "process — a costly and time-consuming activity that customers avoid without strong reason. "
+            "Nova's technical expertise in optical metrology and its OCD (optical critical dimension) "
+            "measurement algorithms are developed in close collaboration with leading-edge fabs. "
+            "The company holds a strong position alongside KLA Corporation at the most advanced nodes."
+        ),
+        "tailwinds": (
+            "Advanced node transitions (5nm → 3nm → 2nm) require more metrology steps per wafer, "
+            "not fewer — Nova's revenue per wafer increases with complexity. Gate-all-around (GAA) "
+            "transistors and backside power delivery at 2nm nodes create new measurement challenges "
+            "that Nova's tools are designed to address. Memory HBM and advanced DRAM nodes similarly "
+            "require denser metrology coverage. Fab capacity expansions globally add new tool purchases."
+        ),
+        "risks": [
+            ("Customer concentration", "High", "Medium", "TSMC alone represents a large share of revenue; any capex pause would affect Nova"),
+            ("KLA competition", "Medium", "Medium", "KLA is the dominant metrology and process control supplier with far greater scale"),
+            ("Illiquidity / small cap", "Medium", "Low", "Nova is a ~$4B market cap Israeli company with lower liquidity than peers"),
+            ("Export controls", "Low–Medium", "Medium", "US export control changes affecting chip equipment could impact sales to certain customers"),
+        ],
+        "verdict": "watch",
+        "verdict_text": (
+            "Nova is the highest-quality small-cap idea on this screen — 31% revenue growth, 54% gross "
+            "margins, essentially no debt, and an irreplaceable position in the semiconductor equipment "
+            "supply chain. The primary concerns are KLA's dominant market position in the broader "
+            "metrology category and the smaller cap / liquidity profile. "
+            "Watch status reflects size and concentration risks. A position is warranted for "
+            "portfolios comfortable with small-cap exposure to semiconductor capex."
+        ),
+        "weight": "1–3%",
+    },
 }
 
 

@@ -86,6 +86,8 @@
     .score-bar-wrap { display:flex; align-items:center; gap:8px; }
     .score-bar { height:6px; background:var(--accent-dim); flex-shrink:0; min-width:2px; }
     .score-bar.fill { background:var(--accent); }
+    .mom-col { display:none; }
+    #results-table.show-mom .mom-col { display:table-cell; }
     .theme-toggle { background:transparent; border:1px solid var(--border); border-radius:4px;
                     color:var(--text-dim); font-family:inherit; font-size:10px; font-weight:600;
                     letter-spacing:.08em; text-transform:uppercase; padding:4px 10px; cursor:pointer;
@@ -146,7 +148,7 @@
   <a class="nav-card" href="dashboard.html">
     <div class="card-label">Screener</div>
     <div class="card-title">Dashboard</div>
-    <div class="card-desc">All tickers ranked by fundamental score. Tier A and B candidates highlighted. Last run: 2026-04-18.</div>
+    <div class="card-desc">All tickers ranked by fundamental score. Tier A and B candidates highlighted. Last run: 2026-04-19.</div>
   </a>
 </div>
 
@@ -155,22 +157,22 @@
   <div class="stat-grid">
     <div class="stat-card">
       <div class="stat-label">Universe</div>
-      <div class="stat-value neutral">41</div>
+      <div class="stat-value neutral">537</div>
       <div class="stat-sub">tickers in database</div>
     </div>
     <div class="stat-card">
       <div class="stat-label">Tier A</div>
-      <div class="stat-value green">8</div>
+      <div class="stat-value green">20</div>
       <div class="stat-sub">strong candidates</div>
     </div>
     <div class="stat-card">
       <div class="stat-label">Tier B</div>
-      <div class="stat-value neutral">9</div>
+      <div class="stat-value neutral">123</div>
       <div class="stat-sub">watch list</div>
     </div>
     <div class="stat-card">
       <div class="stat-label">Last Screened</div>
-      <div class="stat-value neutral" style="font-size:16px">2026-04-18</div>
+      <div class="stat-value neutral" style="font-size:16px">2026-04-19</div>
       <div class="stat-sub">&nbsp;</div>
     </div>
   </div>
@@ -181,7 +183,7 @@
 </section>
 
 <footer class="report-footer">
-  Pythia &nbsp;·&nbsp; Home &nbsp;·&nbsp; 2026-04-18 &nbsp;·&nbsp; <a href="https://fancyboy96.github.io/trader/methodology.html">Methodology</a> &nbsp;·&nbsp; For personal use only
+  Pythia &nbsp;·&nbsp; Home &nbsp;·&nbsp; 2026-04-19 &nbsp;·&nbsp; <a href="https://fancyboy96.github.io/trader/methodology.html">Methodology</a> &nbsp;·&nbsp; For personal use only
   <div style="margin-top:10px;font-size:11px;color:var(--text-dim);line-height:1.6;max-width:800px">This site is produced for personal research purposes only. Nothing here constitutes financial advice, an investment recommendation, or an offer to buy or sell any security. All data is sourced from public APIs and may be inaccurate, delayed, or incomplete. Past performance is not indicative of future results. Do your own research. Consult a licensed financial adviser before making any investment decision.</div>
 </footer>
 

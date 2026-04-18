@@ -124,6 +124,32 @@ def compute_growth(conn, ticker: str) -> tuple[float | None, float | None, float
     return revenue_growth_yoy, revenue_cagr_3y, eps_growth_yoy
 
 
+# ── Momentum ────────────────────────────────────────────────────────────────
+
+def compute_momentum(conn, ticker: str) -> tuple[float | None, float | None]:
+    """Return (momentum_90d, relative_momentum_vs_spy). Both None if data unavailable."""
+    def price_return_90d(t: str) -> float | None:
+        latest = conn.execute(
+            "SELECT close, date FROM prices WHERE ticker=? ORDER BY date DESC LIMIT 1", (t,)
+        ).fetchone()
+        if not latest:
+            return None
+        past = conn.execute(
+            "SELECT close FROM prices WHERE ticker=? AND date <= date(?, '-90 days') ORDER BY date DESC LIMIT 1",
+            (t, latest["date"])
+        ).fetchone()
+        if not past or not past["close"] or past["close"] == 0:
+            return None
+        return (latest["close"] / past["close"]) - 1
+
+    ticker_mom = price_return_90d(ticker)
+    spy_mom    = price_return_90d("SPY")
+    if ticker_mom is None:
+        return None, None
+    rel = (ticker_mom - spy_mom) if spy_mom is not None else None
+    return ticker_mom, rel
+
+
 # ── Main ────────────────────────────────────────────────────────────────────
 
 def run_screen(min_tier: str = "D", verbose: bool = False):
@@ -150,6 +176,7 @@ def run_screen(min_tier: str = "D", verbose: bool = False):
         passed, fail_reason = apply_filters(f)
 
         rev_yoy, rev_cagr, eps_yoy = compute_growth(conn, ticker)
+        mom_90d, rel_mom = compute_momentum(conn, ticker)
 
         if passed:
             sg  = score_growth(f, rev_yoy, rev_cagr, eps_yoy)
@@ -166,8 +193,9 @@ def run_screen(min_tier: str = "D", verbose: bool = False):
             INSERT INTO screen_results (
                 ticker, run_date, passed_filters, filter_fail_reason,
                 score, tier, score_growth, score_profitability, score_valuation, score_balance_sheet,
-                revenue_growth_yoy, revenue_cagr_3y, eps_growth_yoy
-            ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)
+                revenue_growth_yoy, revenue_cagr_3y, eps_growth_yoy,
+                momentum_90d, relative_momentum
+            ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
             ON CONFLICT(ticker) DO UPDATE SET
                 run_date=excluded.run_date, passed_filters=excluded.passed_filters,
                 filter_fail_reason=excluded.filter_fail_reason, score=excluded.score,
@@ -176,9 +204,12 @@ def run_screen(min_tier: str = "D", verbose: bool = False):
                 score_balance_sheet=excluded.score_balance_sheet,
                 revenue_growth_yoy=excluded.revenue_growth_yoy,
                 revenue_cagr_3y=excluded.revenue_cagr_3y,
-                eps_growth_yoy=excluded.eps_growth_yoy
+                eps_growth_yoy=excluded.eps_growth_yoy,
+                momentum_90d=excluded.momentum_90d,
+                relative_momentum=excluded.relative_momentum
         """, (ticker, run_date, int(passed), fail_reason,
-              total, t, sg, sp, sv, sb, rev_yoy, rev_cagr, eps_yoy))
+              total, t, sg, sp, sv, sb, rev_yoy, rev_cagr, eps_yoy,
+              mom_90d, rel_mom))
 
         results.append({
             "ticker": ticker, "name": f["name"], "sector": f["sector"],
@@ -186,6 +217,7 @@ def run_screen(min_tier: str = "D", verbose: bool = False):
             "score": total, "tier": t,
             "sg": sg, "sp": sp, "sv": sv, "sb": sb,
             "rev_yoy": rev_yoy, "rev_cagr": rev_cagr, "eps_yoy": eps_yoy,
+            "momentum_90d": mom_90d, "relative_momentum": rel_mom,
         })
 
     conn.commit()

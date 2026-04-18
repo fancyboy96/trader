@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AVGO — Broadcom Inc. — Pythia</title>
+  <script>const t=localStorage.getItem("pythia-theme");if(t)document.documentElement.setAttribute("data-theme",t);</script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root { --ease-out: cubic-bezier(0.16,1,0.3,1); --dur: 200ms; }
+    :root, [data-theme="light"] {
+      --bg:#FFFFFF; --bg-card:#F4F6FA; --bg-row:#EDF0F7; --bg-hover:#E5EAF5;
+      --border:#D6DCE8; --accent:#2558C4; --accent-dim:#9BB0D4;
+      --text:#0C1A36; --text-dim:#6B7FA0; --green:#16A34A; --red:#DC2626; --blue:#2563EB;
+    }
+    [data-theme="dark"] {
+      --bg:#0A1220; --bg-card:#0D1729; --bg-row:#172036; --bg-hover:#1E2D45;
+      --border:#1E2D45; --accent:#F2BDCC; --accent-dim:#7A3D52;
+      --text:#F0F4F8; --text-dim:#7A9AB8; --green:#34d399; --red:#f87171; --blue:#60a5fa;
+    }
+    body { background:var(--bg); color:var(--text);
+           font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;
+           font-size:15px; line-height:1.65; padding:40px 32px;
+           max-width:1100px; margin:0 auto;
+           transition:background var(--dur) var(--ease-out),color var(--dur) var(--ease-out); }
+    a { color:var(--accent); text-decoration:none; }
+    a:hover { text-decoration:underline; }
+    code { font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:13px;
+           background:var(--bg-card); border:1px solid var(--border); border-radius:3px;
+           padding:1px 5px; word-break:break-all; }
+    .site-header { border-bottom:1px solid var(--accent); padding-bottom:20px; margin-bottom:36px; }
+    .site-header-row { display:flex; justify-content:space-between; align-items:flex-start; }
+    .label { color:var(--accent); font-size:12px; letter-spacing:.15em; text-transform:uppercase; margin-bottom:6px; }
+    h1 { font-size:24px; font-weight:normal; letter-spacing:.02em; }
+    h2 { font-size:18px; font-weight:normal; margin-bottom:12px; }
+    .meta { color:var(--text-dim); font-size:12px; margin-top:8px; }
+    .meta span { color:var(--text-dim); font-weight:600; }
+    nav { display:flex; gap:24px; margin-top:14px; font-size:12px; }
+    nav a { color:var(--text-dim); letter-spacing:.05em; text-transform:uppercase; font-size:11px; }
+    nav a:hover { color:var(--accent); text-decoration:none; }
+    nav a.active { color:var(--accent); border-bottom:1px solid var(--accent); padding-bottom:1px; }
+    section { margin-bottom:44px; }
+    .section-title { color:var(--accent); font-size:12px; letter-spacing:.15em; text-transform:uppercase;
+                     border-bottom:1px solid var(--border); padding-bottom:6px; margin-bottom:18px; }
+    .stat-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:12px; margin-bottom:8px; }
+    .stat-card { background:var(--bg-card); border:1px solid var(--border); padding:16px 18px; }
+    .stat-card .stat-label { color:var(--text-dim); font-size:11px; letter-spacing:.1em; text-transform:uppercase; margin-bottom:6px; }
+    .stat-card .stat-value { color:var(--accent); font-size:22px; font-weight:bold; }
+    .stat-card .stat-value.neutral { color:var(--text); }
+    .stat-card .stat-value.green { color:var(--green); }
+    .stat-card .stat-value.red { color:var(--red); }
+    .stat-card .stat-sub { color:var(--text-dim); font-size:11px; margin-top:4px; }
+    table { width:100%; border-collapse:collapse; font-size:13px; }
+    thead th { color:var(--text-dim); font-size:11px; letter-spacing:.08em; text-transform:uppercase;
+               text-align:left; padding:6px 10px; border-bottom:1px solid var(--border); }
+    thead th.num { text-align:right; }
+    tbody tr { border-bottom:1px solid var(--border); }
+    tbody tr:nth-child(even) { background:var(--bg-row); }
+    tbody tr:hover { background:var(--bg-hover); }
+    td { padding:7px 10px; vertical-align:middle; }
+    td.num { text-align:right; font-variant-numeric:tabular-nums; }
+    td.dim { color:var(--text-dim); }
+    td.accent { color:var(--accent); font-weight:600; }
+    td.green { color:var(--green); font-weight:600; }
+    td.red { color:var(--red); }
+    .badge { display:inline-block; font-size:10px; font-weight:700; letter-spacing:.1em;
+             text-transform:uppercase; padding:3px 10px; border-radius:2px; }
+    .badge.A { background:#dcfce7; color:#15803d; }
+    .badge.B { background:#dbeafe; color:#1d4ed8; }
+    .badge.C { background:#fef9c3; color:#854d0e; }
+    .badge.D { background:#fee2e2; color:#b91c1c; }
+    [data-theme="dark"] .badge.A { background:#14532d; color:#86efac; }
+    [data-theme="dark"] .badge.B { background:#1e3a5f; color:#93c5fd; }
+    [data-theme="dark"] .badge.C { background:#422006; color:#fde68a; }
+    [data-theme="dark"] .badge.D { background:#450a0a; color:#fca5a5; }
+    .callout { background:var(--bg-card); border-left:3px solid var(--accent);
+               padding:14px 18px; color:var(--text); font-size:14px; line-height:1.75; }
+    .callout.blue { border-left-color:var(--blue); }
+    .callout.green { border-left-color:var(--green); }
+    .callout.red { border-left-color:var(--red); }
+    .news-item { background:var(--bg-card); border:1px solid var(--border); padding:12px 16px; margin-bottom:8px; }
+    .news-item .news-headline { color:var(--text); font-size:13px; margin-bottom:4px; }
+    .news-item .news-meta { color:var(--text-dim); font-size:11px; }
+    .news-item .news-meta .source { color:var(--accent); }
+    .news-item .news-summary { color:var(--text-dim); font-size:12px; margin-top:6px; line-height:1.6; }
+    .score-bar-wrap { display:flex; align-items:center; gap:8px; }
+    .score-bar { height:6px; background:var(--accent-dim); flex-shrink:0; min-width:2px; }
+    .score-bar.fill { background:var(--accent); }
+    .mom-col { display:none; }
+    #results-table.show-mom .mom-col { display:table-cell; }
+    .theme-toggle { background:transparent; border:1px solid var(--border); border-radius:4px;
+                    color:var(--text-dim); font-family:inherit; font-size:10px; font-weight:600;
+                    letter-spacing:.08em; text-transform:uppercase; padding:4px 10px; cursor:pointer;
+                    transition:border-color var(--dur),color var(--dur); flex-shrink:0; }
+    .theme-toggle:hover { border-color:var(--accent); color:var(--accent); }
+    .report-footer { border-top:1px solid var(--border); padding-top:16px; margin-top:48px;
+                     color:var(--text-dim); font-size:11px; }
+    .back-link { font-size:12px; color:var(--text-dim); margin-bottom:24px; display:inline-block; }
+    .sub-label { color:var(--text-dim); font-size:10px; letter-spacing:.1em; text-transform:uppercase; margin:20px 0 8px; }
+    /* Landing page */
+    .hero { padding:48px 0 36px; }
+    .hero .wordmark { font-size:42px; font-weight:200; letter-spacing:.12em; color:var(--accent);
+                      text-transform:uppercase; margin-bottom:8px; }
+    .hero .tagline { color:var(--text-dim); font-size:16px; line-height:1.6; max-width:560px; margin-bottom:32px; }
+    .nav-cards { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:12px; margin-bottom:48px; }
+    .nav-card { background:var(--bg-card); border:1px solid var(--border); padding:24px 22px;
+                display:block; transition:border-color var(--dur); }
+    .nav-card:hover { border-color:var(--accent); text-decoration:none; }
+    .nav-card .card-label { color:var(--accent); font-size:11px; letter-spacing:.12em;
+                            text-transform:uppercase; margin-bottom:8px; }
+    .nav-card .card-title { color:var(--text); font-size:17px; font-weight:normal; margin-bottom:8px; }
+    .nav-card .card-desc { color:var(--text-dim); font-size:13px; line-height:1.6; }
+    /* Methodology page */
+    .meth-intro { color:var(--text); font-size:14px; line-height:1.8; margin-bottom:0; }
+    .tier-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:12px; }
+    .tier-card { background:var(--bg-card); border:1px solid var(--border); padding:18px 20px; }
+    .tier-card .tier-badge-row { margin-bottom:10px; }
+    .tier-card .tier-range { color:var(--text-dim); font-size:12px; margin:4px 0 8px; }
+    .tier-card .tier-meaning { color:var(--text); font-size:13px; line-height:1.6; }
+    .score-cat { background:var(--bg-card); border:1px solid var(--border);
+                 padding:18px 20px; margin-bottom:12px; }
+    .score-cat .cat-header { display:flex; justify-content:space-between; align-items:baseline;
+                             margin-bottom:12px; padding-bottom:10px; border-bottom:1px solid var(--border); }
+    .score-cat .cat-name { color:var(--accent); font-size:12px; letter-spacing:.1em; text-transform:uppercase; }
+    .score-cat .cat-pts { color:var(--text); font-size:18px; }
+
+    .prose { color:var(--text); font-size:14px; line-height:1.8; }
+    .prose p { margin-bottom:12px; }
+  </style>
+</head>
+<body>
+
+<a class="back-link" href="../dashboard.html">← Back to dashboard</a>
+
+<header class="site-header">
+  <div class="site-header-row">
+    <div>
+      <div class="label">Pythia — Analysis Report</div>
+      <h1>AVGO &mdash; Broadcom Inc.</h1>
+      <div class="meta">
+        <span style="font-weight:600">NASDAQ: AVGO</span> &nbsp;·&nbsp; Sector: <span>Technology</span> &nbsp;·&nbsp;
+        Industry: <span>Semiconductors</span> &nbsp;·&nbsp;
+        Generated: <span>2026-04-19</span>
+      </div>
+    </div>
+    <button class="theme-toggle" onclick="toggleTheme()">Dark</button>
+  </div>
+  <nav>
+    <a href="../index.html">Home</a>
+    <a href="../dashboard.html">Dashboard</a>
+  </nav>
+</header>
+
+<section>
+  <div class="section-title">Snapshot</div>
+  
+<div class="stat-grid">
+  <div class="stat-card"><div class="stat-label">Price</div><div class="stat-value neutral">$406.54</div><div class="stat-sub">-1.6% from 52w high</div></div>
+  <div class="stat-card"><div class="stat-label">52w Range</div><div class="stat-value neutral" style="font-size:16px">$160.31 – $412.95</div><div class="stat-sub">&nbsp;</div></div>
+  <div class="stat-card"><div class="stat-label">Market Cap</div><div class="stat-value neutral" style="font-size:18px">$1.93T</div><div class="stat-sub">&nbsp;</div></div>
+  <div class="stat-card"><div class="stat-label">Revenue (ttm)</div><div class="stat-value neutral" style="font-size:16px">$68.28B</div><div class="stat-sub">Growth: 23.9%</div></div>
+  <div class="stat-card"><div class="stat-label">Gross Margin</div><div class="stat-value neutral">76.7%</div><div class="stat-sub">Net margin: 36.6%</div></div>
+  <div class="stat-card"><div class="stat-label">FCF (ttm)</div><div class="stat-value neutral" style="font-size:18px">$25.50B</div><div class="stat-sub">FCF yield: 1.3%</div></div>
+  <div class="stat-card"><div class="stat-label">Fwd P/E</div><div class="stat-value neutral">22.4x</div><div class="stat-sub">PEG: 0.87</div></div>
+  <div class="stat-card"><div class="stat-label">ROE</div><div class="stat-value neutral">33.4%</div><div class="stat-sub">D/E: 0.83</div></div>
+  <div class="stat-card"><div class="stat-label">Screen Score</div><div class="stat-value neutral">86 <span style="font-size:14px;font-weight:normal">/ 100</span></div><div class="stat-sub">Tier: <span class="badge A">A</span></div></div>
+</div>
+<div style="margin-top:10px;font-size:11px;color:var(--text-dim)">
+  Structured data: <strong>yfinance</strong> &nbsp;·&nbsp; Fetched: <strong>2026-04-18</strong> &nbsp;·&nbsp; Snapshot: <strong>2026-04-18</strong>
+  &nbsp;·&nbsp; <a href="../profiles/AVGO.html" style="color:var(--text-dim)">View raw profile →</a>
+</div>
+  
+<div class="sub-label">Score breakdown</div>
+<table>
+  <thead><tr><th>Category</th><th class="num">Score</th><th class="num">Max</th></tr></thead>
+  <tbody>
+    <tr><td>Growth</td>        <td class="num accent">30</td>        <td class="num dim">30</td></tr>
+    <tr><td>Profitability</td> <td class="num accent">25</td>  <td class="num dim">25</td></tr>
+    <tr><td>Valuation</td>     <td class="num accent">23</td>      <td class="num dim">25</td></tr>
+    <tr><td>Balance Sheet</td> <td class="num accent">8</td>  <td class="num dim">20</td></tr>
+  </tbody>
+</table>
+</section>
+
+<section>
+  <div class="section-title">Investment Thesis</div>
+  <div class="callout blue"><div class="prose"><p>Broadcom supplies custom AI ASICs to three of the largest hyperscalers (Google, Meta, ByteDance) and holds dominant share in networking silicon for AI clusters through its Tomahawk and Jericho product lines. The 2023 VMware acquisition adds a recurring enterprise software stream that now contributes roughly 40% of revenue and improves margin quality.</p></div></div>
+</section>
+
+<section>
+  <div class="section-title">Fundamental Analysis</div>
+  <div class="sub-label" style="margin-top:0">Competitive Position</div>
+  <div class="callout"><div class="prose"><p>Custom ASIC design partnerships are built over years and are deeply embedded in customer roadmaps. Broadcom co-designs silicon with hyperscalers, creating relationships that are expensive to displace. Networking silicon holds 60%+ share in merchant Ethernet switching for hyperscale. VMware's virtualisation stack has high switching costs across the enterprise installed base.</p></div></div>
+  <div class="sub-label">Macro Tailwinds</div>
+  <div class="callout blue"><div class="prose"><p>Custom silicon demand is rising as hyperscalers seek to optimise cost-per-inference on specific workloads. Broadcom's XPU business is growing faster than total revenue. AI networking upgrades from 400G to 800G and 1.6T drive continued Tomahawk refresh cycles. VMware revenue is stabilising following integration and customer renegotiations.</p></div></div>
+</section>
+
+<section>
+  <div class="section-title">Risks</div>
+  
+<table>
+  <thead><tr><th>Risk</th><th>Likelihood</th><th>Impact</th><th>Mitigant</th></tr></thead>
+  <tbody>
+    <tr><td>Customer concentration</td><td class="dim">Medium</td><td class="dim">High</td><td class="dim">Google and Meta each represent ~20% of revenue; diversification is limited</td></tr>
+    <tr><td>Custom ASIC competition</td><td class="dim">Low–Medium</td><td class="dim">Medium</td><td class="dim">Marvell competing on ASIC design; takes years to displace</td></tr>
+    <tr><td>VMware churn</td><td class="dim">Low–Medium</td><td class="dim">Medium</td><td class="dim">Some customers evaluating alternatives post-acquisition pricing changes</td></tr>
+    <tr><td>Debt load</td><td class="dim">Low</td><td class="dim">Low</td><td class="dim">D/E of 0.83x; strong FCF of $25.5B services debt comfortably</td></tr></tbody>
+</table>
+</section>
+
+<section>
+  <div class="section-title">Recent News</div>
+  
+<div class="news-item">
+  <div class="news-headline"><a href="https://finance.yahoo.com/news/the-software-rebound-is-real-but-not-every-big-name-is-back-chart-of-the-day-121425237.html" target="_blank" rel="noopener">The software rebound is real, but not every big name is back: Chart of the Day</a></div>
+  <div class="news-meta"><span class="source">Yahoo Finance</span> &nbsp;·&nbsp; 2026-04-18</div>
+  <div class="news-summary">Software stocks just posted their best week in two and a half decades.</div>
+</div>
+<div class="news-item">
+  <div class="news-headline"><a href="https://finance.yahoo.com/markets/stocks/articles/broadcom-inc-avgo-among-unstoppable-094234110.html" target="_blank" rel="noopener">Broadcom Inc (AVGO) Among the Unstoppable Growth Stocks to Invest In According to Reddit</a></div>
+  <div class="news-meta"><span class="source">Insider Monkey</span> &nbsp;·&nbsp; 2026-04-18</div>
+  <div class="news-summary">​Broadcom Inc. (NASDAQ:AVGO) is one of the Unstoppable Growth Stocks to Invest In According to Reddit. On April 14, Broadcom Inc. (NASDAQ:AVGO) was reiterated with a Buy rating by UBS with a price target of $475. The bul</div>
+</div>
+<div class="news-item">
+  <div class="news-headline"><a href="https://finance.yahoo.com/markets/stocks/articles/broadcom-inc-avgo-stock-surges-084343892.html" target="_blank" rel="noopener">Broadcom Inc. (AVGO) Stock Surges Due to AI-related Deals</a></div>
+  <div class="news-meta"><span class="source">Insider Monkey</span> &nbsp;·&nbsp; 2026-04-18</div>
+  <div class="news-summary">Broadcom Inc. (NASDAQ:AVGO) is one of the 10 Best Data Center Stocks To Buy For the Long Term. The stock posted a 133.04% increment from a year ago, and a 14.63% year-to-date growth. As of writing, AVGO’s stock has jumpe</div>
+</div>
+<div class="news-item">
+  <div class="news-headline"><a href="https://finance.yahoo.com/markets/stocks/articles/navitas-semiconductor-nvts-board-veteran-030815097.html" target="_blank" rel="noopener">Will Navitas Semiconductor’s (NVTS) New Board Veteran Quietly Reshape Its Execution And Governance Priorities?</a></div>
+  <div class="news-meta"><span class="source">Simply Wall St.</span> &nbsp;·&nbsp; 2026-04-18</div>
+  <div class="news-summary">Navitas Semiconductor has added semiconductor veteran Gregory M. Fischer to its Board of Directors, effective April 13, 2026, with responsibilities on the Compensation and Executive Steering committees. Fischer’s four de</div>
+</div>
+<div class="news-item">
+  <div class="news-headline"><a href="https://www.fool.com/investing/2026/04/17/i-sold-my-warner-bros-shares-and-bought-these-2-gr/" target="_blank" rel="noopener">I Sold My Warner Bros. Shares and Bought These 2 Growth Stocks Instead. The AI Supercycle Made It Obvious.</a></div>
+  <div class="news-meta"><span class="source">Motley Fool</span> &nbsp;·&nbsp; 2026-04-17</div>
+  <div class="news-summary">Broadcom and AMD look poised to be the next big AI winners.</div>
+</div>
+<div class="news-item">
+  <div class="news-headline"><a href="https://www.barrons.com/articles/marvell-stock-broadcom-price-b4f6add8?siteid=yhoof2&yptr=yahoo" target="_blank" rel="noopener">Marvell and Broadcom Stocks Are on Fire. They’re Not Done Yet.</a></div>
+  <div class="news-meta"><span class="source">Barrons.com</span> &nbsp;·&nbsp; 2026-04-17</div>
+  <div class="news-summary">Broadcom stock is up 31% while Marvell has risen 41% in April. Oppenheimer analysts back both to keep going.</div>
+</div>
+</section>
+
+<section>
+  <div class="section-title">Verdict</div>
+  <div class="verdict-block">
+    <div class="verdict-row">
+      <div><div class="verdict-label">Recommendation</div></div>
+      <span class="badge buy">BUY</span>
+      <div style="margin-left:auto;color:var(--text-dim);font-size:12px">
+        Suggested weight: <strong style="color:var(--text)">6–8%</strong>
+      </div>
+    </div>
+    <div class="verdict-body prose"><p>Broadcom compounds revenue at 24% over three years with 77% gross margins. The fwd P/E of 22x and PEG of 0.87 represent fair value for a business with this quality of earnings. The VMware acquisition has absorbed the market's attention; as integration noise fades, the combined business's recurring revenue profile warrants a higher multiple. Initiate a position.</p></div>
+  </div>
+</section>
+
+<footer class="report-footer">
+  Pythia &nbsp;·&nbsp; AVGO Analysis Report &nbsp;·&nbsp; 2026-04-19 &nbsp;·&nbsp; <a href="https://fancyboy96.github.io/trader/methodology.html">Methodology</a> &nbsp;·&nbsp; For personal use only
+  <div style="margin-top:10px;font-size:11px;color:var(--text-dim);line-height:1.6;max-width:800px">This report is produced for personal research purposes only. Nothing here constitutes financial advice, an investment recommendation, or an offer to buy or sell any security. All data is sourced from public APIs and may be inaccurate, delayed, or incomplete. Past performance is not indicative of future results. Do your own research. Consult a licensed financial adviser before making any investment decision.</div>
+</footer>
+
+<script>
+  function toggleTheme() {
+    const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', next);
+    localStorage.setItem('pythia-theme', next);
+    document.querySelector('.theme-toggle').textContent = next === 'dark' ? 'Light' : 'Dark';
+  }
+  document.addEventListener('DOMContentLoaded', function() {
+    const theme = document.documentElement.getAttribute('data-theme');
+    const btn = document.querySelector('.theme-toggle');
+    if (btn) btn.textContent = theme === 'dark' ? 'Light' : 'Dark';
+  });
+</script>
+</body>
+</html>

@@ -4,12 +4,15 @@ Upserts into trader.db.
 
 Usage:
     python scripts/refresh.py NVDA AAPL MSFT
-    python scripts/refresh.py --all          (refreshes every ticker in companies table)
+    python scripts/refresh.py --all                      # every ticker in companies table
+    python scripts/refresh.py --universe                 # every active ticker in universe table
+    python scripts/refresh.py --universe --stale-days 7  # skip tickers refreshed within 7 days
 """
 
 import sys
+import time
 import argparse
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 import yfinance as yf
 from db import get_conn, init_db
 
@@ -219,27 +222,64 @@ def refresh_ticker(ticker: str):
         conn.close()
 
 
+def is_stale(ticker: str, stale_days: int) -> bool:
+    """Return True if ticker was last refreshed more than stale_days ago (or never)."""
+    conn = get_conn()
+    row = conn.execute(
+        "SELECT last_updated FROM companies WHERE ticker=?", (ticker,)
+    ).fetchone()
+    conn.close()
+    if not row or not row["last_updated"]:
+        return True
+    try:
+        last = date.fromisoformat(row["last_updated"])
+        return (date.today() - last).days >= stale_days
+    except ValueError:
+        return True
+
+
 def main():
     parser = argparse.ArgumentParser(description="Refresh fundamentals and prices for tickers")
     parser.add_argument("tickers", nargs="*", help="Ticker symbols")
     parser.add_argument("--all", action="store_true", help="Refresh all tickers in companies table")
+    parser.add_argument("--universe", action="store_true", help="Refresh all active tickers in universe table")
+    parser.add_argument("--stale-days", type=int, default=0, metavar="N",
+                        help="With --universe: skip tickers refreshed within N days (0 = refresh all)")
     args = parser.parse_args()
 
     init_db()
 
-    tickers = args.tickers
+    tickers = list(args.tickers)
+
     if args.all:
         conn = get_conn()
         tickers = [r["ticker"] for r in conn.execute("SELECT ticker FROM companies").fetchall()]
         conn.close()
+
+    if args.universe:
+        conn = get_conn()
+        universe = [r["ticker"] for r in conn.execute(
+            "SELECT ticker FROM universe WHERE active=1 ORDER BY ticker"
+        ).fetchall()]
+        conn.close()
+        if args.stale_days > 0:
+            before = len(universe)
+            universe = [t for t in universe if is_stale(t, args.stale_days)]
+            skipped = before - len(universe)
+            if skipped:
+                print(f"  Skipping {skipped} ticker(s) refreshed within {args.stale_days} day(s)")
+        tickers = universe
 
     if not tickers:
         parser.print_help()
         sys.exit(1)
 
     print(f"Refreshing {len(tickers)} ticker(s)...")
-    for t in tickers:
+    for i, t in enumerate(tickers, 1):
+        print(f"  [{i}/{len(tickers)}]", end=" ")
         refresh_ticker(t)
+        if len(tickers) > 10:
+            time.sleep(0.3)   # be polite to yfinance on large batches
     print("Done.")
 
 

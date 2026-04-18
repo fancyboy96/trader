@@ -114,8 +114,22 @@ def init_db():
             score_balance_sheet REAL,
             revenue_growth_yoy  REAL,
             revenue_cagr_3y     REAL,
-            eps_growth_yoy      REAL
+            eps_growth_yoy      REAL,
+            momentum_90d        REAL,     -- (price_today / price_90d_ago) - 1
+            relative_momentum   REAL      -- momentum_90d - SPY momentum_90d
         );
+
+        -- Investment universe — tickers eligible for screening
+        -- source: comma-separated ETF IDs where this ticker appears, or 'manual'
+        CREATE TABLE IF NOT EXISTS universe (
+            ticker      TEXT PRIMARY KEY,
+            source      TEXT,       -- e.g. 'SPY,QQQ' or 'manual'
+            weight      REAL,       -- max weight across sources (0-1), NULL if unavailable
+            added_date  TEXT,
+            active      INTEGER DEFAULT 1
+        );
+
+        CREATE INDEX IF NOT EXISTS idx_universe_active ON universe(active);
 
         -- Audit log for every API fetch attempt
         CREATE TABLE IF NOT EXISTS data_audit (
@@ -128,6 +142,14 @@ def init_db():
             note            TEXT
         );
 
+        -- Migrate: add momentum columns to screen_results if they don't exist yet
+    """)
+    for col, typedef in [("momentum_90d", "REAL"), ("relative_momentum", "REAL")]:
+        try:
+            conn.execute(f"ALTER TABLE screen_results ADD COLUMN {col} {typedef}")
+        except Exception:
+            pass  # column already exists
+    conn.executescript("""
         CREATE INDEX IF NOT EXISTS idx_fundamentals_ticker ON fundamentals(ticker);
         CREATE INDEX IF NOT EXISTS idx_prices_ticker       ON prices(ticker);
         CREATE INDEX IF NOT EXISTS idx_news_ticker         ON news(ticker);

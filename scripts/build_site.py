@@ -104,6 +104,8 @@ CSS = """
     .score-bar-wrap { display:flex; align-items:center; gap:8px; }
     .score-bar { height:6px; background:var(--accent-dim); flex-shrink:0; min-width:2px; }
     .score-bar.fill { background:var(--accent); }
+    .mom-col { display:none; }
+    #results-table.show-mom .mom-col { display:table-cell; }
     .theme-toggle { background:transparent; border:1px solid var(--border); border-radius:4px;
                     color:var(--text-dim); font-family:inherit; font-size:10px; font-weight:600;
                     letter-spacing:.08em; text-transform:uppercase; padding:4px 10px; cursor:pointer;
@@ -336,7 +338,8 @@ def build_dashboard(conn):
 
     all_passed = conn.execute("""
         SELECT sr.*, c.name, c.sector, c.industry, f.market_cap, f.fwd_pe, f.gross_margin,
-               f.net_margin, f.roe, f.debt_to_equity, f.beta
+               f.net_margin, f.roe, f.debt_to_equity, f.beta,
+               sr.momentum_90d, sr.relative_momentum
         FROM screen_results sr
         LEFT JOIN companies c ON sr.ticker = c.ticker
         LEFT JOIN fundamentals f ON sr.ticker = f.ticker AND f.snapshot_date = (
@@ -386,8 +389,12 @@ def build_dashboard(conn):
         bar = f'<div class="score-bar-wrap"><div class="score-bar fill" style="width:{score_w}px"></div><span>{r["score"]:.0f}</span></div>'
         industry = (r['industry'] or '').replace('"', '&quot;')
         sector   = (r['sector']   or '').replace('"', '&quot;')
+        rel_mom  = r["relative_momentum"]
+        mom_val  = fmt_pct(rel_mom) if rel_mom is not None else "—"
+        mom_cls  = "green" if rel_mom and rel_mom > 0 else ("red" if rel_mom and rel_mom < 0 else "dim")
+        mom_data = f"{rel_mom:.4f}" if rel_mom is not None else ""
         rows += f"""
-    <tr data-industry="{industry}" data-sector="{sector}" data-score="{r['score']:.0f}">
+    <tr data-industry="{industry}" data-sector="{sector}" data-score="{r['score']:.0f}" data-momentum="{mom_data}">
       <td class="accent"><a href="profiles/{r['ticker']}.html">{r['ticker']}</a></td>
       <td>{r['name'] or '—'}</td>
       <td class="dim">{r['sector'] or '—'}</td>
@@ -399,6 +406,7 @@ def build_dashboard(conn):
       <td class="num dim">{fmt_x(r['fwd_pe'])}</td>
       <td class="num dim">{fmt_pct(r['roe'])}</td>
       <td class="num dim">{fmt_num(r['debt_to_equity'])}</td>
+      <td class="num {mom_cls} mom-col">{mom_val}</td>
     </tr>"""
 
     passed_table = f"""
@@ -426,6 +434,11 @@ def build_dashboard(conn):
              background:var(--bg-card);color:var(--text);cursor:pointer;margin-left:-1px">
       By Play
     </button>
+    <button id="btn-mom" onclick="toggleMomentum()"
+      style="font-size:12px;padding:5px 12px;border:1px solid var(--border);border-radius:4px;
+             background:var(--bg-card);color:var(--text);cursor:pointer;margin-left:8px">
+      Momentum
+    </button>
   </div>
 </div>
 <table id="results-table">
@@ -435,6 +448,7 @@ def build_dashboard(conn):
     <th class="num" title="Revenue growth, most recent fiscal year vs prior fiscal year">Rev Growth (YoY)</th>
     <th class="num" title="Gross margin, trailing twelve months">Gross Margin (TTM)</th>
     <th class="num">Fwd P/E</th><th class="num">ROE</th><th class="num">D/E</th>
+    <th class="num mom-col" title="90-day price return vs S&amp;P 500">vs SPY (90d)</th>
   </tr></thead>
   <tbody id="results-body">{rows}</tbody>
 </table>
@@ -442,6 +456,34 @@ def build_dashboard(conn):
 var _origRows = null;
 var _btns = ['score','sector','industry','play'];
 var _tickerPlays = {ticker_plays_js};
+var _showMom = false;
+function toggleMomentum() {{
+  _showMom = !_showMom;
+  var tbl = document.getElementById('results-table');
+  var btn = document.getElementById('btn-mom');
+  if (_showMom) {{
+    tbl.classList.add('show-mom');
+    btn.style.background = 'var(--accent)'; btn.style.color = 'var(--bg)';
+    btn.style.borderColor = 'var(--accent)'; btn.style.fontWeight = '600';
+    // re-sort by relative momentum when toggled on
+    var tbody = document.getElementById('results-body');
+    if (!_origRows) _origRows = Array.from(tbody.querySelectorAll('tr[data-industry]'));
+    var sorted = _origRows.slice().sort(function(a,b){{return +b.dataset.momentum - +a.dataset.momentum;}});
+    Array.from(tbody.querySelectorAll('tr.group-header')).forEach(function(el){{el.remove();}});
+    sorted.forEach(function(r){{tbody.appendChild(r);}});
+    document.getElementById('view-label').textContent = '{len(all_passed)} companies \u00b7 sorted by momentum vs S\u0026P 500';
+    _btns.forEach(function(v) {{
+      var b = document.getElementById('btn-' + v);
+      b.style.background = 'var(--bg-card)'; b.style.color = 'var(--text)';
+      b.style.borderColor = 'var(--border)'; b.style.fontWeight = 'normal';
+    }});
+  }} else {{
+    tbl.classList.remove('show-mom');
+    btn.style.background = 'var(--bg-card)'; btn.style.color = 'var(--text)';
+    btn.style.borderColor = 'var(--border)'; btn.style.fontWeight = 'normal';
+    setView('score');
+  }}
+}}
 function setView(view) {{
   var tbody = document.getElementById('results-body');
   if (!_origRows) _origRows = Array.from(tbody.querySelectorAll('tr[data-industry]'));
@@ -464,7 +506,7 @@ function setView(view) {{
   function makeHeader(label, count) {{
     var hdr = document.createElement('tr');
     hdr.className = 'group-header';
-    hdr.innerHTML = '<td colspan="11" style="background:var(--accent);color:var(--bg);'
+    hdr.innerHTML = '<td colspan="12" style="background:var(--accent);color:var(--bg);'
       + 'font-size:11px;letter-spacing:.15em;text-transform:uppercase;padding:7px 14px;font-weight:700">'
       + label + ' <span style="opacity:0.65;font-weight:400;letter-spacing:0;text-transform:none">(' + count + ')</span></td>';
     return hdr;

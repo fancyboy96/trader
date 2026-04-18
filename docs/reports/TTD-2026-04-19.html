@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TTD — The Trade Desk, Inc. — Pythia</title>
+  <script>const t=localStorage.getItem("pythia-theme");if(t)document.documentElement.setAttribute("data-theme",t);</script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root { --ease-out: cubic-bezier(0.16,1,0.3,1); --dur: 200ms; }
+    :root, [data-theme="light"] {
+      --bg:#FFFFFF; --bg-card:#F4F6FA; --bg-row:#EDF0F7; --bg-hover:#E5EAF5;
+      --border:#D6DCE8; --accent:#2558C4; --accent-dim:#9BB0D4;
+      --text:#0C1A36; --text-dim:#6B7FA0; --green:#16A34A; --red:#DC2626; --blue:#2563EB;
+    }
+    [data-theme="dark"] {
+      --bg:#0A1220; --bg-card:#0D1729; --bg-row:#172036; --bg-hover:#1E2D45;
+      --border:#1E2D45; --accent:#F2BDCC; --accent-dim:#7A3D52;
+      --text:#F0F4F8; --text-dim:#7A9AB8; --green:#34d399; --red:#f87171; --blue:#60a5fa;
+    }
+    body { background:var(--bg); color:var(--text);
+           font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;
+           font-size:15px; line-height:1.65; padding:40px 32px;
+           max-width:1100px; margin:0 auto;
+           transition:background var(--dur) var(--ease-out),color var(--dur) var(--ease-out); }
+    a { color:var(--accent); text-decoration:none; }
+    a:hover { text-decoration:underline; }
+    code { font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:13px;
+           background:var(--bg-card); border:1px solid var(--border); border-radius:3px;
+           padding:1px 5px; word-break:break-all; }
+    .site-header { border-bottom:1px solid var(--accent); padding-bottom:20px; margin-bottom:36px; }
+    .site-header-row { display:flex; justify-content:space-between; align-items:flex-start; }
+    .label { color:var(--accent); font-size:12px; letter-spacing:.15em; text-transform:uppercase; margin-bottom:6px; }
+    h1 { font-size:24px; font-weight:normal; letter-spacing:.02em; }
+    h2 { font-size:18px; font-weight:normal; margin-bottom:12px; }
+    .meta { color:var(--text-dim); font-size:12px; margin-top:8px; }
+    .meta span { color:var(--text-dim); font-weight:600; }
+    nav { display:flex; gap:24px; margin-top:14px; font-size:12px; }
+    nav a { color:var(--text-dim); letter-spacing:.05em; text-transform:uppercase; font-size:11px; }
+    nav a:hover { color:var(--accent); text-decoration:none; }
+    nav a.active { color:var(--accent); border-bottom:1px solid var(--accent); padding-bottom:1px; }
+    section { margin-bottom:44px; }
+    .section-title { color:var(--accent); font-size:12px; letter-spacing:.15em; text-transform:uppercase;
+                     border-bottom:1px solid var(--border); padding-bottom:6px; margin-bottom:18px; }
+    .stat-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:12px; margin-bottom:8px; }
+    .stat-card { background:var(--bg-card); border:1px solid var(--border); padding:16px 18px; }
+    .stat-card .stat-label { color:var(--text-dim); font-size:11px; letter-spacing:.1em; text-transform:uppercase; margin-bottom:6px; }
+    .stat-card .stat-value { color:var(--accent); font-size:22px; font-weight:bold; }
+    .stat-card .stat-value.neutral { color:var(--text); }
+    .stat-card .stat-value.green { color:var(--green); }
+    .stat-card .stat-value.red { color:var(--red); }
+    .stat-card .stat-sub { color:var(--text-dim); font-size:11px; margin-top:4px; }
+    table { width:100%; border-collapse:collapse; font-size:13px; }
+    thead th { color:var(--text-dim); font-size:11px; letter-spacing:.08em; text-transform:uppercase;
+               text-align:left; padding:6px 10px; border-bottom:1px solid var(--border); }
+    thead th.num { text-align:right; }
+    tbody tr { border-bottom:1px solid var(--border); }
+    tbody tr:nth-child(even) { background:var(--bg-row); }
+    tbody tr:hover { background:var(--bg-hover); }
+    td { padding:7px 10px; vertical-align:middle; }
+    td.num { text-align:right; font-variant-numeric:tabular-nums; }
+    td.dim { color:var(--text-dim); }
+    td.accent { color:var(--accent); font-weight:600; }
+    td.green { color:var(--green); font-weight:600; }
+    td.red { color:var(--red); }
+    .badge { display:inline-block; font-size:10px; font-weight:700; letter-spacing:.1em;
+             text-transform:uppercase; padding:3px 10px; border-radius:2px; }
+    .badge.A { background:#dcfce7; color:#15803d; }
+    .badge.B { background:#dbeafe; color:#1d4ed8; }
+    .badge.C { background:#fef9c3; color:#854d0e; }
+    .badge.D { background:#fee2e2; color:#b91c1c; }
+    [data-theme="dark"] .badge.A { background:#14532d; color:#86efac; }
+    [data-theme="dark"] .badge.B { background:#1e3a5f; color:#93c5fd; }
+    [data-theme="dark"] .badge.C { background:#422006; color:#fde68a; }
+    [data-theme="dark"] .badge.D { background:#450a0a; color:#fca5a5; }
+    .callout { background:var(--bg-card); border-left:3px solid var(--accent);
+               padding:14px 18px; color:var(--text); font-size:14px; line-height:1.75; }
+    .callout.blue { border-left-color:var(--blue); }
+    .callout.green { border-left-color:var(--green); }
+    .callout.red { border-left-color:var(--red); }
+    .news-item { background:var(--bg-card); border:1px solid var(--border); padding:12px 16px; margin-bottom:8px; }
+    .news-item .news-headline { color:var(--text); font-size:13px; margin-bottom:4px; }
+    .news-item .news-meta { color:var(--text-dim); font-size:11px; }
+    .news-item .news-meta .source { color:var(--accent); }
+    .news-item .news-summary { color:var(--text-dim); font-size:12px; margin-top:6px; line-height:1.6; }
+    .score-bar-wrap { display:flex; align-items:center; gap:8px; }
+    .score-bar { height:6px; background:var(--accent-dim); flex-shrink:0; min-width:2px; }
+    .score-bar.fill { background:var(--accent); }
+    .mom-col { display:none; }
+    #results-table.show-mom .mom-col { display:table-cell; }
+    .theme-toggle { background:transparent; border:1px solid var(--border); border-radius:4px;
+                    color:var(--text-dim); font-family:inherit; font-size:10px; font-weight:600;
+                    letter-spacing:.08em; text-transform:uppercase; padding:4px 10px; cursor:pointer;
+                    transition:border-color var(--dur),color var(--dur); flex-shrink:0; }
+    .theme-toggle:hover { border-color:var(--accent); color:var(--accent); }
+    .report-footer { border-top:1px solid var(--border); padding-top:16px; margin-top:48px;
+                     color:var(--text-dim); font-size:11px; }
+    .back-link { font-size:12px; color:var(--text-dim); margin-bottom:24px; display:inline-block; }
+    .sub-label { color:var(--text-dim); font-size:10px; letter-spacing:.1em; text-transform:uppercase; margin:20px 0 8px; }
+    /* Landing page */
+    .hero { padding:48px 0 36px; }
+    .hero .wordmark { font-size:42px; font-weight:200; letter-spacing:.12em; color:var(--accent);
+                      text-transform:uppercase; margin-bottom:8px; }
+    .hero .tagline { color:var(--text-dim); font-size:16px; line-height:1.6; max-width:560px; margin-bottom:32px; }
+    .nav-cards { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:12px; margin-bottom:48px; }
+    .nav-card { background:var(--bg-card); border:1px solid var(--border); padding:24px 22px;
+                display:block; transition:border-color var(--dur); }
+    .nav-card:hover { border-color:var(--accent); text-decoration:none; }
+    .nav-card .card-label { color:var(--accent); font-size:11px; letter-spacing:.12em;
+                            text-transform:uppercase; margin-bottom:8px; }
+    .nav-card .card-title { color:var(--text); font-size:17px; font-weight:normal; margin-bottom:8px; }
+    .nav-card .card-desc { color:var(--text-dim); font-size:13px; line-height:1.6; }
+    /* Methodology page */
+    .meth-intro { color:var(--text); font-size:14px; line-height:1.8; margin-bottom:0; }
+    .tier-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:12px; }
+    .tier-card { background:var(--bg-card); border:1px solid var(--border); padding:18px 20px; }
+    .tier-card .tier-badge-row { margin-bottom:10px; }
+    .tier-card .tier-range { color:var(--text-dim); font-size:12px; margin:4px 0 8px; }
+    .tier-card .tier-meaning { color:var(--text); font-size:13px; line-height:1.6; }
+    .score-cat { background:var(--bg-card); border:1px solid var(--border);
+                 padding:18px 20px; margin-bottom:12px; }
+    .score-cat .cat-header { display:flex; justify-content:space-between; align-items:baseline;
+                             margin-bottom:12px; padding-bottom:10px; border-bottom:1px solid var(--border); }
+    .score-cat .cat-name { color:var(--accent); font-size:12px; letter-spacing:.1em; text-transform:uppercase; }
+    .score-cat .cat-pts { color:var(--text); font-size:18px; }
+
+    .prose { color:var(--text); font-size:14px; line-height:1.8; }
+    .prose p { margin-bottom:12px; }
+  </style>
+</head>
+<body>
+
+<a class="back-link" href="../dashboard.html">← Back to dashboard</a>
+
+<header class="site-header">
+  <div class="site-header-row">
+    <div>
+      <div class="label">Pythia — Analysis Report</div>
+      <h1>TTD &mdash; The Trade Desk, Inc.</h1>
+      <div class="meta">
+        <span style="font-weight:600">NASDAQ: TTD</span> &nbsp;·&nbsp; Sector: <span>Communication Services</span> &nbsp;·&nbsp;
+        Industry: <span>Advertising Agencies</span> &nbsp;·&nbsp;
+        Generated: <span>2026-04-19</span>
+      </div>
+    </div>
+    <button class="theme-toggle" onclick="toggleTheme()">Dark</button>
+  </div>
+  <nav>
+    <a href="../index.html">Home</a>
+    <a href="../dashboard.html">Dashboard</a>
+  </nav>
+</header>
+
+<section>
+  <div class="section-title">Snapshot</div>
+  
+<div class="stat-grid">
+  <div class="stat-card"><div class="stat-label">Price</div><div class="stat-value neutral">$22.47</div><div class="stat-sub">-75.4% from 52w high</div></div>
+  <div class="stat-card"><div class="stat-label">52w Range</div><div class="stat-value neutral" style="font-size:16px">$19.74 – $91.45</div><div class="stat-sub">&nbsp;</div></div>
+  <div class="stat-card"><div class="stat-label">Market Cap</div><div class="stat-value neutral" style="font-size:18px">$10.70B</div><div class="stat-sub">&nbsp;</div></div>
+  <div class="stat-card"><div class="stat-label">Revenue (ttm)</div><div class="stat-value neutral" style="font-size:16px">$2.90B</div><div class="stat-sub">Growth: 18.5%</div></div>
+  <div class="stat-card"><div class="stat-label">Gross Margin</div><div class="stat-value neutral">78.6%</div><div class="stat-sub">Net margin: 15.3%</div></div>
+  <div class="stat-card"><div class="stat-label">FCF (ttm)</div><div class="stat-value neutral" style="font-size:18px">$601.55M</div><div class="stat-sub">FCF yield: 5.6%</div></div>
+  <div class="stat-card"><div class="stat-label">Fwd P/E</div><div class="stat-value neutral">9.4x</div><div class="stat-sub">PEG: 0.87</div></div>
+  <div class="stat-card"><div class="stat-label">ROE</div><div class="stat-value neutral">16.3%</div><div class="stat-sub">D/E: 0.18</div></div>
+  <div class="stat-card"><div class="stat-label">Screen Score</div><div class="stat-value neutral">81 <span style="font-size:14px;font-weight:normal">/ 100</span></div><div class="stat-sub">Tier: <span class="badge A">A</span></div></div>
+</div>
+<div style="margin-top:10px;font-size:11px;color:var(--text-dim)">
+  Structured data: <strong>yfinance</strong> &nbsp;·&nbsp; Fetched: <strong>2026-04-18</strong> &nbsp;·&nbsp; Snapshot: <strong>2026-04-19</strong>
+  &nbsp;·&nbsp; <a href="../profiles/TTD.html" style="color:var(--text-dim)">View raw profile →</a>
+</div>
+  
+<div class="sub-label">Score breakdown</div>
+<table>
+  <thead><tr><th>Category</th><th class="num">Score</th><th class="num">Max</th></tr></thead>
+  <tbody>
+    <tr><td>Growth</td>        <td class="num accent">25</td>        <td class="num dim">30</td></tr>
+    <tr><td>Profitability</td> <td class="num accent">23</td>  <td class="num dim">25</td></tr>
+    <tr><td>Valuation</td>     <td class="num accent">25</td>      <td class="num dim">25</td></tr>
+    <tr><td>Balance Sheet</td> <td class="num accent">8</td>  <td class="num dim">20</td></tr>
+  </tbody>
+</table>
+</section>
+
+<section>
+  <div class="section-title">Investment Thesis</div>
+  <div class="callout blue"><div class="prose"><p>The Trade Desk operates the largest independent demand-side platform (DSP) for programmatic advertising, serving agencies and brands that buy digital advertising inventory across connected TV, mobile, display, and audio. Revenue grew 18.5% YoY to $2.4B. The company's independence from any walled garden (it does not own media inventory) positions it as the neutral infrastructure layer that agencies prefer for cross-channel planning. Unified ID 2.0 (UID2) is becoming an industry-standard identity solution for cookieless targeting.</p></div></div>
+</section>
+
+<section>
+  <div class="section-title">Fundamental Analysis</div>
+  <div class="sub-label" style="margin-top:0">Competitive Position</div>
+  <div class="callout"><div class="prose"><p>The Trade Desk's data flywheel: more advertisers generate more bid data, improving prediction models, which deliver better campaign outcomes, which attract more advertisers. Independence from publisher inventory (unlike Google's DV360) is a genuine differentiator — agencies trust TTD with cross-media budget allocation because it has no conflict of interest. UID2 adoption creates a standards-level network effect that benefits the platform long-term.</p></div></div>
+  <div class="sub-label">Macro Tailwinds</div>
+  <div class="callout blue"><div class="prose"><p>Connected TV advertising is shifting spend from linear broadcast as streaming viewership grows and measurement capabilities improve. The Trade Desk is the leading DSP for CTV programmatic buying. Third-party cookie deprecation is driving demand for identity solutions like UID2. Retail media networks are integrating with TTD's platform to offer first-party purchase data for targeting.</p></div></div>
+</section>
+
+<section>
+  <div class="section-title">Risks</div>
+  
+<table>
+  <thead><tr><th>Risk</th><th>Likelihood</th><th>Impact</th><th>Mitigant</th></tr></thead>
+  <tbody>
+    <tr><td>Google competition</td><td class="dim">High</td><td class="dim">High</td><td class="dim">Google's DV360 benefits from YouTube inventory access TTD cannot match</td></tr>
+    <tr><td>CTV deal dependency</td><td class="dim">Medium</td><td class="dim">Medium</td><td class="dim">Netflix, Disney+, and major streamers could exclude independent DSPs</td></tr>
+    <tr><td>Valuation</td><td class="dim">Medium</td><td class="dim">Medium</td><td class="dim">Fwd P/E 35x is elevated; any growth deceleration would re-rate sharply</td></tr>
+    <tr><td>Cookie timelines</td><td class="dim">Low</td><td class="dim">Low</td><td class="dim">Cookie deprecation delays reduce urgency of UID2 adoption by publishers</td></tr></tbody>
+</table>
+</section>
+
+<section>
+  <div class="section-title">Recent News</div>
+  <p style="color:var(--text-dim);font-size:13px">No news stored.</p>
+</section>
+
+<section>
+  <div class="section-title">Verdict</div>
+  <div class="verdict-block">
+    <div class="verdict-row">
+      <div><div class="verdict-label">Recommendation</div></div>
+      <span class="badge buy">BUY</span>
+      <div style="margin-left:auto;color:var(--text-dim);font-size:12px">
+        Suggested weight: <strong style="color:var(--text)">3–5%</strong>
+      </div>
+    </div>
+    <div class="verdict-body prose"><p>The Trade Desk is the best-positioned independent advertising technology platform in the market. Revenue grows at 18.5% YoY with 81% gross margins and a strong net cash balance sheet. CTV is still in the early innings of programmatic adoption — the addressable market is expanding faster than TTD's current growth rate implies. The fwd P/E of 35x is the primary risk, but for a business with genuine platform moat in a large and growing market, it is justifiable. Initiate a position.</p></div>
+  </div>
+</section>
+
+<footer class="report-footer">
+  Pythia &nbsp;·&nbsp; TTD Analysis Report &nbsp;·&nbsp; 2026-04-19 &nbsp;·&nbsp; <a href="https://fancyboy96.github.io/trader/methodology.html">Methodology</a> &nbsp;·&nbsp; For personal use only
+  <div style="margin-top:10px;font-size:11px;color:var(--text-dim);line-height:1.6;max-width:800px">This report is produced for personal research purposes only. Nothing here constitutes financial advice, an investment recommendation, or an offer to buy or sell any security. All data is sourced from public APIs and may be inaccurate, delayed, or incomplete. Past performance is not indicative of future results. Do your own research. Consult a licensed financial adviser before making any investment decision.</div>
+</footer>
+
+<script>
+  function toggleTheme() {
+    const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', next);
+    localStorage.setItem('pythia-theme', next);
+    document.querySelector('.theme-toggle').textContent = next === 'dark' ? 'Light' : 'Dark';
+  }
+  document.addEventListener('DOMContentLoaded', function() {
+    const theme = document.documentElement.getAttribute('data-theme');
+    const btn = document.querySelector('.theme-toggle');
+    if (btn) btn.textContent = theme === 'dark' ? 'Light' : 'Dark';
+  });
+</script>
+</body>
+</html>

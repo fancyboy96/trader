@@ -136,6 +136,20 @@ trader/
 
 ## Backlog
 
+### Phase 1a — Universe Expansion (next up)
+
+Build `scripts/build_universe.py` to pull ETF constituent lists (SPY, QQQ, VGT, XLV, XLI, SOXX) from provider CSV downloads (SSGA, Invesco, iShares). Populate new `universe` table. Add `--universe` and `--stale-days N` flags to `refresh.py` to batch-refresh all active universe tickers.
+
+Milestone: `python scripts/build_universe.py && python scripts/refresh.py --universe --stale-days 7` runs unattended over ~700 tickers.
+
+### Phase 1b — Automated Weekly Run (backlog)
+
+`scripts/run_weekly.sh` chaining: build_universe → refresh --universe --stale-days 7 → screen → validate → build_site → generate_reports. Validate gates the build. Output to `logs/YYYY-MM-DD.log`.
+
+### Phase 1d — Second-Source Cross-Check (backlog, needs FMP API key)
+
+After each refresh, pull market cap, revenue TTM, trailing P/E from Financial Modeling Prep free tier (250 req/day) and compare vs yfinance. Flag >10% discrepancies in `data_audit`.
+
 ### Programmatic stock and play discovery pipeline
 
 Design and build a pipeline that automatically surfaces promising stocks and thematic plays without manual curation.

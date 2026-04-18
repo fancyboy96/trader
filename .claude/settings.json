@@ -18,7 +18,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 /Users/jessekilburn/projects/trader/scripts/save_session.py"
+            "command": "python3 /Users/jessekilburn/projects/trader/scripts/save_session.py --force"
           }
         ]
       }

@@ -16,15 +16,17 @@ PLAYS = [
         "id": "ai-infrastructure",
         "title": "AI Infrastructure",
         "status": "active",
-        "summary": "The physical layer powering the AI buildout — chips, networking, and foundry capacity.",
+        "summary": "The physical layer powering the AI buildout — chips, memory, networking, and foundry capacity.",
         "thesis": (
             "Hyperscaler capital expenditure on AI compute reached record levels in 2025 and shows no sign of slowing. "
             "The beneficiaries are concentrated: NVIDIA dominates GPU supply, Broadcom supplies custom ASICs and high-speed networking, "
             "TSMC manufactures the leading-edge silicon for both, and Arista Networks provides the spine switching that connects GPU clusters. "
-            "All four sit at structural chokepoints in the supply chain with high switching costs and pricing power. "
+            "Micron's High Bandwidth Memory (HBM3E) is a qualified supplier to NVIDIA's Blackwell platform — "
+            "HBM is now as critical to AI compute as the GPU itself, commanding 5–8x the ASP of standard DRAM. "
+            "All five sit at structural chokepoints in the supply chain with high switching costs and pricing power. "
             "The play is long the physical infrastructure layer before AI software margins materialise broadly."
         ),
-        "tickers": ["NVDA", "AVGO", "TSM", "ANET"],
+        "tickers": ["NVDA", "AVGO", "TSM", "ANET", "MU"],
         "added": "2026-04-18",
     },
     {
@@ -60,6 +62,47 @@ PLAYS = [
         ),
         "tickers": ["MSFT", "GOOGL", "IBM", "IONQ", "RGTI", "QBTS"],
         "added": "2026-04-18",
+    },
+    {
+        "id": "enterprise-ai-platform",
+        "title": "Enterprise AI Platform",
+        "status": "active",
+        "summary": "Dominant enterprise software platforms embedding AI into workflows with locked-in installed bases.",
+        "thesis": (
+            "The AI value chain has two layers: the infrastructure (GPUs, networking, foundry) and the software platforms "
+            "that translate AI capabilities into enterprise workflows. The second layer is where durable, compounding value accrues. "
+            "Microsoft owns the productivity and cloud layer for the global enterprise — Copilot for M365 is the most consequential "
+            "upsell in software history, priced at a 25–30% premium to base licensing. "
+            "ServiceNow is the operating system for enterprise IT, HR, and operations: its Now Assist AI agents "
+            "automate workflows that previously required headcount, increasing platform value without increasing cost for customers. "
+            "Intuit embeds AI into the financial workflows of 10M+ small businesses through QuickBooks and TurboTax, "
+            "deepening switching costs that are already among the highest in software. "
+            "Palantir's AIP (Artificial Intelligence Platform) is translating AI capabilities into operational decision systems "
+            "for government and enterprise customers, with rapidly growing commercial adoption. "
+            "All four are monetising AI through existing distribution — not building from zero — which is the defensible position."
+        ),
+        "tickers": ["MSFT", "NOW", "INTU", "PLTR"],
+        "added": "2026-04-19",
+    },
+    {
+        "id": "digital-advertising",
+        "title": "Digital Advertising",
+        "status": "active",
+        "summary": "AI-powered advertising platforms capturing the shift of spend from linear media to programmatic and connected TV.",
+        "thesis": (
+            "Digital advertising is undergoing a structural transition: from manual media buying toward AI-driven programmatic allocation, "
+            "and from broadcast TV toward connected TV (CTV) streaming platforms. "
+            "AppLovin's AXON 2.0 engine is the clearest demonstration of what AI-native advertising infrastructure looks like: "
+            "70% revenue growth at scale, with targeting accuracy that has outperformed the market's expectations. "
+            "The Trade Desk is the largest independent demand-side platform, serving as the neutral infrastructure "
+            "for agencies and brands buying across CTV, mobile, display, and audio. Its independence from any publisher "
+            "makes it the preferred cross-channel planning tool, and Unified ID 2.0 positions it as the identity standard "
+            "for the cookieless web. "
+            "Both companies benefit from the same tailwind: as AI improves ad targeting precision, the premium for "
+            "data-rich, measurable digital formats compounds over linear TV and manual media buying."
+        ),
+        "tickers": ["APP", "TTD"],
+        "added": "2026-04-19",
     },
     {
         "id": "clean-energy-transition",

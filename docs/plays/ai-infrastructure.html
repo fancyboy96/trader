@@ -86,6 +86,8 @@
     .score-bar-wrap { display:flex; align-items:center; gap:8px; }
     .score-bar { height:6px; background:var(--accent-dim); flex-shrink:0; min-width:2px; }
     .score-bar.fill { background:var(--accent); }
+    .mom-col { display:none; }
+    #results-table.show-mom .mom-col { display:table-cell; }
     .theme-toggle { background:transparent; border:1px solid var(--border); border-radius:4px;
                     color:var(--text-dim); font-family:inherit; font-size:10px; font-weight:600;
                     letter-spacing:.08em; text-transform:uppercase; padding:4px 10px; cursor:pointer;
@@ -145,7 +147,7 @@
 
 <section>
   <div class="section-title">Thesis</div>
-  <div class="callout blue" style="font-size:14px;line-height:1.75">Hyperscaler capital expenditure on AI compute reached record levels in 2025 and shows no sign of slowing. The beneficiaries are concentrated: NVIDIA dominates GPU supply, Broadcom supplies custom ASICs and high-speed networking, TSMC manufactures the leading-edge silicon for both, and Arista Networks provides the spine switching that connects GPU clusters. All four sit at structural chokepoints in the supply chain with high switching costs and pricing power. The play is long the physical infrastructure layer before AI software margins materialise broadly.</div>
+  <div class="callout blue" style="font-size:14px;line-height:1.75">Hyperscaler capital expenditure on AI compute reached record levels in 2025 and shows no sign of slowing. The beneficiaries are concentrated: NVIDIA dominates GPU supply, Broadcom supplies custom ASICs and high-speed networking, TSMC manufactures the leading-edge silicon for both, and Arista Networks provides the spine switching that connects GPU clusters. Micron's High Bandwidth Memory (HBM3E) is a qualified supplier to NVIDIA's Blackwell platform — HBM is now as critical to AI compute as the GPU itself, commanding 5–8x the ASP of standard DRAM. All five sit at structural chokepoints in the supply chain with high switching costs and pricing power. The play is long the physical infrastructure layer before AI software margins materialise broadly.</div>
 </section>
 
 <section>
@@ -187,6 +189,14 @@
       <td class="dim">Computer Hardware</td>
       <td><span class="badge A">A</span></td>
       <td class="num dim">78</td>
+    </tr>
+    <tr>
+      <td class="accent"><a href="../profiles/MU.html">MU</a></td>
+      <td>Micron Technology, Inc.</td>
+      <td class="dim">Technology</td>
+      <td class="dim">Semiconductors</td>
+      <td><span class="badge A">A</span></td>
+      <td class="num dim">80</td>
     </tr></tbody>
   </table>
   <p style="margin-top:12px;font-size:12px;color:var(--text-dim)">
@@ -197,7 +207,7 @@
 </section>
 
 <footer class="report-footer">
-  Pythia &nbsp;·&nbsp; Plays &nbsp;·&nbsp; 2026-04-18 &nbsp;·&nbsp; <a href="https://fancyboy96.github.io/trader/methodology.html">Methodology</a> &nbsp;·&nbsp; For personal use only
+  Pythia &nbsp;·&nbsp; Plays &nbsp;·&nbsp; 2026-04-19 &nbsp;·&nbsp; <a href="https://fancyboy96.github.io/trader/methodology.html">Methodology</a> &nbsp;·&nbsp; For personal use only
   <div style="margin-top:10px;font-size:11px;color:var(--text-dim);line-height:1.6;max-width:800px">This site is produced for personal research purposes only. Nothing here constitutes financial advice, an investment recommendation, or an offer to buy or sell any security. All data is sourced from public APIs and may be inaccurate, delayed, or incomplete. Past performance is not indicative of future results. Do your own research. Consult a licensed financial adviser before making any investment decision.</div>
 </footer>
 
