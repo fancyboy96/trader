@@ -157,12 +157,20 @@
   <div class="section-title">Screener Results</div>
   
 <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
-  <span style="font-size:13px;color:var(--text-dim)">17 companies</span>
-  <button id="group-btn" onclick="toggleGrouping()"
-    style="font-size:12px;padding:5px 12px;border:1px solid var(--border);border-radius:4px;
-           background:var(--bg-card);color:var(--text);cursor:pointer">
-    Group by Industry
-  </button>
+  <span id="view-label" style="font-size:13px;color:var(--text-dim)">17 companies &nbsp;·&nbsp; sorted by score</span>
+  <div style="display:flex;align-items:center;gap:6px">
+    <span style="font-size:11px;color:var(--text-dim);text-transform:uppercase;letter-spacing:.08em">View:</span>
+    <button id="btn-score" onclick="setView('score')"
+      style="font-size:12px;padding:5px 12px;border:1px solid var(--accent);border-radius:4px 0 0 4px;
+             background:var(--accent);color:var(--bg);cursor:pointer;font-weight:600">
+      By Score
+    </button>
+    <button id="btn-industry" onclick="setView('industry')"
+      style="font-size:12px;padding:5px 12px;border:1px solid var(--border);border-radius:0 4px 4px 0;
+             background:var(--bg-card);color:var(--text);cursor:pointer;margin-left:-1px">
+      By Industry
+    </button>
+  </div>
 </div>
 <table id="results-table">
   <thead><tr>
@@ -396,34 +404,43 @@
     </tr></tbody>
 </table>
 <script>
-var _grouped = false;
 var _origRows = null;
-function toggleGrouping() {
+var _currentView = 'score';
+function setView(view) {
   var tbody = document.getElementById('results-body');
-  var btn   = document.getElementById('group-btn');
   if (!_origRows) _origRows = Array.from(tbody.querySelectorAll('tr[data-industry]'));
-  _grouped = !_grouped;
-  btn.textContent = _grouped ? 'Sort by Score' : 'Group by Industry';
-  // clear existing group headers
+  _currentView = view;
+  // update button styles
+  var active   = 'border:1px solid var(--accent);background:var(--accent);color:var(--bg);font-weight:600';
+  var inactive = 'border:1px solid var(--border);background:var(--bg-card);color:var(--text);font-weight:normal';
+  document.getElementById('btn-score').style.cssText    += ';' + (view==='score'    ? active : inactive);
+  document.getElementById('btn-industry').style.cssText += ';' + (view==='industry' ? active : inactive);
+  // remove group headers
   Array.from(tbody.querySelectorAll('tr.industry-header')).forEach(function(el){el.remove();});
-  if (!_grouped) {
-    var sorted = _origRows.slice().sort(function(a,b){return +b.dataset.score - +a.dataset.score;});
-    sorted.forEach(function(r){tbody.appendChild(r);});
+  if (view === 'score') {
+    document.getElementById('view-label').textContent = '17 companies · sorted by score';
+    _origRows.slice().sort(function(a,b){return +b.dataset.score - +a.dataset.score;}).forEach(function(r){tbody.appendChild(r);});
     return;
   }
-  // group alphabetically by industry, within each group sort by score desc
+  // group by industry alphabetically, sorted by score within each group
   var groups = {};
   _origRows.forEach(function(r){
     var ind = r.dataset.industry || 'Unknown';
     if (!groups[ind]) groups[ind] = [];
     groups[ind].push(r);
   });
-  Object.keys(groups).sort().forEach(function(ind){
+  var industryNames = Object.keys(groups).sort();
+  document.getElementById('view-label').textContent = '17 companies · ' + industryNames.length + ' industries';
+  industryNames.forEach(function(ind){
+    var members = groups[ind].sort(function(a,b){return +b.dataset.score - +a.dataset.score;});
     var hdr = document.createElement('tr');
     hdr.className = 'industry-header';
-    hdr.innerHTML = '<td colspan="11" style="background:var(--bg-row);color:var(--accent);font-size:11px;letter-spacing:.12em;text-transform:uppercase;padding:6px 12px;font-weight:600">' + ind + '</td>';
+    hdr.innerHTML = '<td colspan="11" style="background:var(--bg-card);color:var(--accent);'
+      + 'font-size:11px;letter-spacing:.12em;text-transform:uppercase;padding:8px 12px;'
+      + 'font-weight:700;border-top:2px solid var(--border)">'
+      + ind + ' <span style="color:var(--text-dim);font-weight:400;letter-spacing:0;text-transform:none">(' + members.length + ')</span></td>';
     tbody.appendChild(hdr);
-    groups[ind].sort(function(a,b){return +b.dataset.score - +a.dataset.score;}).forEach(function(r){tbody.appendChild(r);});
+    members.forEach(function(r){tbody.appendChild(r);});
   });
 }
 </script>
