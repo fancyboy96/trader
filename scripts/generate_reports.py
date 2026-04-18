@@ -461,7 +461,7 @@ def generate(ticker: str, conn):
 </section>
 
 <footer class="report-footer">
-  Pythia &nbsp;·&nbsp; {ticker} Analysis Report &nbsp;·&nbsp; {today} &nbsp;·&nbsp; For personal use only
+  Pythia &nbsp;·&nbsp; {ticker} Analysis Report &nbsp;·&nbsp; {today} &nbsp;·&nbsp; <a href="https://fancyboy96.github.io/trader/methodology.html">Methodology</a> &nbsp;·&nbsp; For personal use only
   <div style="margin-top:10px;font-size:11px;color:var(--text-dim);line-height:1.6;max-width:800px">This report is produced for personal research purposes only. Nothing here constitutes financial advice, an investment recommendation, or an offer to buy or sell any security. All data is sourced from public APIs and may be inaccurate, delayed, or incomplete. Past performance is not indicative of future results. Do your own research. Consult a licensed financial adviser before making any investment decision.</div>
 </footer>"""
 

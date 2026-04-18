@@ -204,8 +204,9 @@ DISCLAIMER = (
 
 def footer(page: str, prefix: str = "") -> str:
     today = date.today().isoformat()
+    meth = "" if page == "Methodology" else ' &nbsp;·&nbsp; <a href="https://fancyboy96.github.io/trader/methodology.html">Methodology</a>'
     return f"""<footer class="report-footer">
-  Pythia &nbsp;·&nbsp; {page} &nbsp;·&nbsp; {today} &nbsp;·&nbsp; <a href="https://fancyboy96.github.io/trader/methodology.html">Methodology</a> &nbsp;·&nbsp; For personal use only
+  Pythia &nbsp;·&nbsp; {page} &nbsp;·&nbsp; {today}{meth} &nbsp;·&nbsp; For personal use only
   <div style="margin-top:10px;font-size:11px;color:var(--text-dim);line-height:1.6;max-width:800px">{DISCLAIMER}</div>
 </footer>"""
 
