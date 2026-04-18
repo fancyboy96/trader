@@ -228,7 +228,7 @@ def build_landing(conn):
 
 <div class="hero">
   <div class="wordmark">Pythia</div>
-  <div class="tagline">Fundamental stock analysis and long-term portfolio research.<br>Identify quality businesses. Understand the numbers. Build with conviction.</div>
+  <div class="tagline">Fundamental stock analysis and long-term portfolio research.<br>Screen for quality businesses, read the numbers, and build positions with a clear rationale.</div>
 </div>
 
 <div class="nav-cards">
@@ -375,7 +375,7 @@ def build_dashboard(conn):
 def build_methodology():
     tiers = [
         ("A", "75–100", "Strong candidate. Proceed to full fundamental report and consider a position."),
-        ("B", "50–74",  "Watch. Promising but a condition must be met — price pullback, catalyst, or more data."),
+        ("B", "50–74",  "Watch. Promising but a condition must be met first: a price pullback, a catalyst, or more data."),
         ("C", "25–49",  "Weak. Pass unless there is a specific catalyst thesis not captured by the numbers."),
         ("D", "0–24",   "Exclude. Does not meet the quality bar at current metrics."),
     ]
@@ -448,7 +448,7 @@ def build_methodology():
 <section>
   <div class="section-title">Overview</div>
   <div class="callout blue" style="margin-top:0">
-    Screening is a shortlist tool, not a buy signal. Every Tier A output still requires a manual fundamental report before any position is taken. The score surfaces candidates worth investigating — it does not replace analysis.
+    Screening produces a shortlist. Every Tier A output requires a manual fundamental report before any position is taken. The score surfaces candidates worth investigating. It does not replace analysis.
   </div>
 </section>
 
@@ -472,7 +472,7 @@ def build_methodology():
   <div class="tier-grid">{tier_cards}
   </div>
   <div class="callout" style="margin-top:16px">
-    <strong>Verdict language.</strong> Tier A → <strong>BUY</strong> (conviction entry, strong fundamentals). Tier B → <strong>WATCH</strong> (promising, condition to be met). Tier C/D → <strong>PASS</strong> (not compelling at current valuation or risk profile).
+    <strong>Verdict language.</strong> Tier A → <strong>BUY</strong> (conviction entry, fundamentals support a position). Tier B → <strong>WATCH</strong> (promising, a condition must be met before entry). Tier C/D → <strong>PASS</strong> (valuation or quality does not support a position at current levels).
   </div>
 </section>
 
