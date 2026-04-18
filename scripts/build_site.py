@@ -14,9 +14,11 @@ Run after refresh.py, news.py, and screen.py:
 from pathlib import Path
 from datetime import date
 from db import get_conn, init_db
+from plays_data import PLAYS
 
 DOCS     = Path(__file__).parent.parent / "docs"
 PROFILES = DOCS / "profiles"
+PLAYS_DIR = DOCS / "plays"
 
 
 # ── Shared CSS (Pythia design system) ───────────────────────────────────────
@@ -189,6 +191,7 @@ def site_header(active: str, title: str, subtitle: str = "", prefix: str = "") -
   </div>
   <nav>
     <a href="{prefix}index.html" class="{cls('Home')}">Home</a>
+    <a href="{prefix}plays.html" class="{cls('Plays')}">Plays</a>
     <a href="{prefix}dashboard.html" class="{cls('Dashboard')}">Dashboard</a>
   </nav>
 </header>"""
@@ -252,6 +255,11 @@ def build_landing(conn):
 </div>
 
 <div class="nav-cards">
+  <a class="nav-card" href="plays.html">
+    <div class="card-label">Ideas</div>
+    <div class="card-title">Plays</div>
+    <div class="card-desc">Curated thematic investment ideas with associated stocks and supporting thesis.</div>
+  </a>
   <a class="nav-card" href="dashboard.html">
     <div class="card-label">Screener</div>
     <div class="card-title">Dashboard</div>
@@ -717,6 +725,7 @@ def build_profile(conn, ticker: str):
   </div>
   <nav>
     <a href="../index.html">Home</a>
+    <a href="../plays.html">Plays</a>
     <a href="../dashboard.html">Dashboard</a>
   </nav>
 </header>
@@ -741,6 +750,133 @@ def build_profile(conn, ticker: str):
     (PROFILES / f"{ticker}.html").write_text(html_shell(f"{ticker} — {name}", body))
 
 
+# ── Plays pages ──────────────────────────────────────────────────────────────
+
+STATUS_BADGE = {"active": "buy", "watch": "watch", "closed": "pass"}
+STATUS_LABEL = {"active": "Active", "watch": "Watch", "closed": "Closed"}
+
+def build_plays(conn):
+    PLAYS_DIR.mkdir(exist_ok=True)
+    today = date.today().isoformat()
+
+    # Fetch screen data for all tickers referenced in any play
+    all_tickers = {t for p in PLAYS for t in p["tickers"]}
+    rows = conn.execute(f"""
+        SELECT sr.ticker, sr.tier, sr.score, sr.passed_filters, c.name, c.sector, c.industry
+        FROM screen_results sr
+        LEFT JOIN companies c ON sr.ticker = c.ticker
+        WHERE sr.ticker IN ({','.join('?'*len(all_tickers))})
+    """, list(all_tickers)).fetchall()
+    ticker_data = {r["ticker"]: r for r in rows}
+
+    # ── Index page ────────────────────────────────────────────────────────────
+    index_rows = ""
+    for p in PLAYS:
+        tickers_in = p["tickers"]
+        badge = STATUS_BADGE.get(p["status"], "watch")
+        label = STATUS_LABEL.get(p["status"], p["status"].title())
+        ticker_chips = " ".join(
+            f'<span style="font-size:11px;background:var(--bg-row);border:1px solid var(--border);'
+            f'border-radius:3px;padding:1px 6px;color:var(--text-dim)">{t}</span>'
+            for t in tickers_in
+        )
+        index_rows += f"""
+  <tr>
+    <td><a href="plays/{p['id']}.html" style="font-weight:600">{p['title']}</a></td>
+    <td><span class="badge {badge}">{label}</span></td>
+    <td style="font-size:13px;color:var(--text-dim)">{p['summary']}</td>
+    <td style="white-space:nowrap">{ticker_chips}</td>
+    <td class="dim" style="font-size:12px;white-space:nowrap">{p['added']}</td>
+  </tr>"""
+
+    index_body = f"""
+{site_header("Plays", "Plays", f"{len(PLAYS)} active ideas")}
+
+<section>
+  <div class="section-title">Investment Ideas</div>
+  <table>
+    <thead><tr>
+      <th>Play</th><th>Status</th><th>Summary</th><th>Tickers</th><th class="dim">Added</th>
+    </tr></thead>
+    <tbody>{index_rows}</tbody>
+  </table>
+</section>
+
+{footer("Plays")}"""
+
+    (DOCS / "plays.html").write_text(html_shell("Plays", index_body))
+
+    # ── Detail pages ──────────────────────────────────────────────────────────
+    for p in PLAYS:
+        badge = STATUS_BADGE.get(p["status"], "watch")
+        label = STATUS_LABEL.get(p["status"], p["status"].title())
+
+        stock_rows = ""
+        for t in p["tickers"]:
+            d = ticker_data.get(t)
+            tier  = d["tier"]  if d else "—"
+            score = f'{d["score"]:.0f}' if d else "—"
+            name  = (d["name"]     or "—") if d else "—"
+            sect  = (d["sector"]   or "—") if d else "—"
+            ind   = (d["industry"] or "—") if d else "—"
+            tier_badge = f'<span class="badge {tier}">{tier}</span>' if d else "—"
+            stock_rows += f"""
+    <tr>
+      <td class="accent"><a href="../profiles/{t}.html">{t}</a></td>
+      <td>{name}</td>
+      <td class="dim">{sect}</td>
+      <td class="dim">{ind}</td>
+      <td>{tier_badge}</td>
+      <td class="num dim">{score}</td>
+    </tr>"""
+
+        detail_body = f"""
+<a class="back-link" href="../plays.html">← Back to Plays</a>
+
+<header class="site-header">
+  <div class="site-header-row">
+    <div>
+      <div class="label">Pythia — Play</div>
+      <h1>{p['title']} <span class="badge {badge}" style="vertical-align:middle;font-size:13px">{label}</span></h1>
+      <div class="meta">Added: <span>{p['added']}</span></div>
+    </div>
+    <button class="theme-toggle" onclick="toggleTheme()">Dark</button>
+  </div>
+  <nav>
+    <a href="../index.html">Home</a>
+    <a href="../plays.html" class="active">Plays</a>
+    <a href="../dashboard.html">Dashboard</a>
+  </nav>
+</header>
+
+<section>
+  <div class="section-title">Thesis</div>
+  <div class="callout blue" style="font-size:14px;line-height:1.75">{p['thesis']}</div>
+</section>
+
+<section>
+  <div class="section-title">Stocks in this Play</div>
+  <table>
+    <thead><tr>
+      <th>Ticker</th><th>Company</th><th>Sector</th><th>Industry</th>
+      <th>Tier</th><th class="num">Score</th>
+    </tr></thead>
+    <tbody>{stock_rows}</tbody>
+  </table>
+  <p style="margin-top:12px;font-size:12px;color:var(--text-dim)">
+    Click a ticker to view the full company profile.
+    Tier and score are from the most recent screener run.
+    <a href="../dashboard.html">View all screener results →</a>
+  </p>
+</section>
+
+{footer("Plays")}"""
+
+        (PLAYS_DIR / f"{p['id']}.html").write_text(html_shell(p["title"], detail_body))
+
+    print(f"  plays.html — {len(PLAYS)} plays · {len(all_tickers)} tickers")
+
+
 # ── Entry point ───────────────────────────────────────────────────────────────
 
 def main():
@@ -752,6 +888,7 @@ def main():
     print("Building Pythia site...")
 
     build_landing(conn)
+    build_plays(conn)
     build_dashboard(conn)
     build_methodology()
 

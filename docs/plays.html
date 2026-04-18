@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Home — Pythia</title>
+  <title>Plays — Pythia</title>
   <script>const t=localStorage.getItem("pythia-theme");if(t)document.documentElement.setAttribute("data-theme",t);</script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -125,63 +125,56 @@
 </head>
 <body>
 
+
 <header class="site-header">
   <div class="site-header-row">
-    <div><div class="label">Portfolio Research</div></div>
+    <div>
+      <div class="label">Pythia</div>
+      <h1>Plays</h1>
+      <div class="meta">3 active ideas</div>
+    </div>
     <button class="theme-toggle" onclick="toggleTheme()">Dark</button>
   </div>
+  <nav>
+    <a href="index.html" class="">Home</a>
+    <a href="plays.html" class="active">Plays</a>
+    <a href="dashboard.html" class="">Dashboard</a>
+  </nav>
 </header>
 
-<div class="hero">
-  <div class="wordmark">Pythia</div>
-  <div class="tagline">Fundamental stock analysis and long-term portfolio research.<br>Screen for quality businesses, read the numbers, and build positions with a clear rationale.</div>
-</div>
-
-<div class="nav-cards">
-  <a class="nav-card" href="plays.html">
-    <div class="card-label">Ideas</div>
-    <div class="card-title">Plays</div>
-    <div class="card-desc">Curated thematic investment ideas with associated stocks and supporting thesis.</div>
-  </a>
-  <a class="nav-card" href="dashboard.html">
-    <div class="card-label">Screener</div>
-    <div class="card-title">Dashboard</div>
-    <div class="card-desc">All tickers ranked by fundamental score. Tier A and B candidates highlighted. Last run: 2026-04-18.</div>
-  </a>
-</div>
-
 <section>
-  <div class="section-title">At a Glance</div>
-  <div class="stat-grid">
-    <div class="stat-card">
-      <div class="stat-label">Universe</div>
-      <div class="stat-value neutral">34</div>
-      <div class="stat-sub">tickers in database</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-label">Tier A</div>
-      <div class="stat-value green">7</div>
-      <div class="stat-sub">strong candidates</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-label">Tier B</div>
-      <div class="stat-value neutral">8</div>
-      <div class="stat-sub">watch list</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-label">Last Screened</div>
-      <div class="stat-value neutral" style="font-size:16px">2026-04-18</div>
-      <div class="stat-sub">&nbsp;</div>
-    </div>
-  </div>
-</section>
-
-<section>
-  <div class="callout" style="font-size:13px;color:var(--text-dim)">This site is produced for personal research purposes only. Nothing here constitutes financial advice, an investment recommendation, or an offer to buy or sell any security. All data is sourced from public APIs and may be inaccurate, delayed, or incomplete. Past performance is not indicative of future results. Do your own research. Consult a licensed financial adviser before making any investment decision.</div>
+  <div class="section-title">Investment Ideas</div>
+  <table>
+    <thead><tr>
+      <th>Play</th><th>Status</th><th>Summary</th><th>Tickers</th><th class="dim">Added</th>
+    </tr></thead>
+    <tbody>
+  <tr>
+    <td><a href="plays/ai-infrastructure.html" style="font-weight:600">AI Infrastructure</a></td>
+    <td><span class="badge buy">Active</span></td>
+    <td style="font-size:13px;color:var(--text-dim)">The physical layer powering the AI buildout — chips, networking, and foundry capacity.</td>
+    <td style="white-space:nowrap"><span style="font-size:11px;background:var(--bg-row);border:1px solid var(--border);border-radius:3px;padding:1px 6px;color:var(--text-dim)">NVDA</span> <span style="font-size:11px;background:var(--bg-row);border:1px solid var(--border);border-radius:3px;padding:1px 6px;color:var(--text-dim)">AVGO</span> <span style="font-size:11px;background:var(--bg-row);border:1px solid var(--border);border-radius:3px;padding:1px 6px;color:var(--text-dim)">TSM</span> <span style="font-size:11px;background:var(--bg-row);border:1px solid var(--border);border-radius:3px;padding:1px 6px;color:var(--text-dim)">ANET</span></td>
+    <td class="dim" style="font-size:12px;white-space:nowrap">2026-04-18</td>
+  </tr>
+  <tr>
+    <td><a href="plays/glp1-metabolic-health.html" style="font-weight:600">GLP-1 & Metabolic Health</a></td>
+    <td><span class="badge buy">Active</span></td>
+    <td style="font-size:13px;color:var(--text-dim)">Obesity and diabetes drug demand driving a multi-decade healthcare platform shift.</td>
+    <td style="white-space:nowrap"><span style="font-size:11px;background:var(--bg-row);border:1px solid var(--border);border-radius:3px;padding:1px 6px;color:var(--text-dim)">LLY</span> <span style="font-size:11px;background:var(--bg-row);border:1px solid var(--border);border-radius:3px;padding:1px 6px;color:var(--text-dim)">DXCM</span></td>
+    <td class="dim" style="font-size:12px;white-space:nowrap">2026-04-18</td>
+  </tr>
+  <tr>
+    <td><a href="plays/clean-energy-transition.html" style="font-weight:600">Clean Energy Transition</a></td>
+    <td><span class="badge watch">Watch</span></td>
+    <td style="font-size:13px;color:var(--text-dim)">Utility-scale solar manufacturing with US domestic content advantages under IRA incentives.</td>
+    <td style="white-space:nowrap"><span style="font-size:11px;background:var(--bg-row);border:1px solid var(--border);border-radius:3px;padding:1px 6px;color:var(--text-dim)">FSLR</span></td>
+    <td class="dim" style="font-size:12px;white-space:nowrap">2026-04-18</td>
+  </tr></tbody>
+  </table>
 </section>
 
 <footer class="report-footer">
-  Pythia &nbsp;·&nbsp; Home &nbsp;·&nbsp; 2026-04-18 &nbsp;·&nbsp; <a href="https://fancyboy96.github.io/trader/methodology.html">Methodology</a> &nbsp;·&nbsp; For personal use only
+  Pythia &nbsp;·&nbsp; Plays &nbsp;·&nbsp; 2026-04-18 &nbsp;·&nbsp; <a href="https://fancyboy96.github.io/trader/methodology.html">Methodology</a> &nbsp;·&nbsp; For personal use only
   <div style="margin-top:10px;font-size:11px;color:var(--text-dim);line-height:1.6;max-width:800px">This site is produced for personal research purposes only. Nothing here constitutes financial advice, an investment recommendation, or an offer to buy or sell any security. All data is sourced from public APIs and may be inaccurate, delayed, or incomplete. Past performance is not indicative of future results. Do your own research. Consult a licensed financial adviser before making any investment decision.</div>
 </footer>
 
