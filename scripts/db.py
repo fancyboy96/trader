@@ -99,6 +99,23 @@ def init_db():
             sentiment       TEXT    -- NULL | positive | negative | neutral
         );
 
+        -- Latest screener output — one row per ticker, overwritten each run
+        CREATE TABLE IF NOT EXISTS screen_results (
+            ticker              TEXT PRIMARY KEY,
+            run_date            TEXT,
+            passed_filters      INTEGER,  -- 0 | 1
+            filter_fail_reason  TEXT,
+            score               REAL,
+            tier                TEXT,     -- A | B | C | D
+            score_growth        REAL,
+            score_profitability REAL,
+            score_valuation     REAL,
+            score_balance_sheet REAL,
+            revenue_growth_yoy  REAL,
+            revenue_cagr_3y     REAL,
+            eps_growth_yoy      REAL
+        );
+
         CREATE INDEX IF NOT EXISTS idx_fundamentals_ticker ON fundamentals(ticker);
         CREATE INDEX IF NOT EXISTS idx_prices_ticker       ON prices(ticker);
         CREATE INDEX IF NOT EXISTS idx_news_ticker         ON news(ticker);

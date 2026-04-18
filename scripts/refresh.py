@@ -100,7 +100,7 @@ def upsert_fundamentals(conn, ticker: str, info: dict):
         info.get("grossMargins"),
         info.get("profitMargins"),
         info.get("operatingMargins"),
-        info.get("debtToEquity"),
+        (info["debtToEquity"] / 100) if info.get("debtToEquity") is not None else None,
         info.get("currentRatio"),
         info.get("beta"),
         info.get("dividendYield"),
