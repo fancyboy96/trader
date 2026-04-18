@@ -218,6 +218,12 @@ Start with what costs nothing: momentum (data already exists) and news volume (y
 
 ## Running To-Do List
 
+### Completed
+
+- [x] `data_audit` table — every yfinance API call (info, history, financials, news) logged with ticker, timestamp, endpoint, rows returned, and status
+- [x] `scripts/validate.py` — sanity checks: fundamentals freshness, market cap / revenue positivity, gross margin range, D/E range, price_to_fcf and gross_margin internal consistency, price continuity, income statement depth, audit log cleanliness. Exit code 1 on failures.
+- [x] Source attribution — fetch date + snapshot date shown in meta row on every profile page; data provenance line in every analysis report with link back to raw profile
+
 ### Phase 1 — Universe & Data Foundation
 
 - [ ] Create `scripts/build_universe.py`
@@ -274,6 +280,11 @@ Start with what costs nothing: momentum (data already exists) and news volume (y
 - [ ] Build a simple keyword frequency diff: this quarter vs last quarter
   - Flag tickers where language around "demand", "backlog", "guidance raised" increases
 - [ ] Surface as a signal column in the dashboard
+
+### Data Integrity (Deferred)
+
+- [ ] Second-source cross-check — after each refresh, pull market cap, revenue TTM, and trailing P/E from Financial Modeling Prep (free tier: 250 req/day) or Alpha Vantage and compare against yfinance values; flag discrepancies > 10% as warnings in `data_audit`; catches silent yfinance data errors that pass internal consistency checks
+- [ ] Narrative labelling — add `<div class="ai-generated">` wrapper with explicit "Analysis written by Claude Sonnet 4.6" label to each prose section of analysis reports; add inline `<a href="../profiles/TICKER.html#metric">` citations where numbers are stated in narrative text so readers can verify claims against the DB value
 
 ### Ongoing
 

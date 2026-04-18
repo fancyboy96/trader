@@ -116,10 +116,23 @@ def init_db():
             eps_growth_yoy      REAL
         );
 
+        -- Audit log for every API fetch attempt
+        CREATE TABLE IF NOT EXISTS data_audit (
+            id              INTEGER PRIMARY KEY AUTOINCREMENT,
+            ticker          TEXT,
+            fetched_at      TEXT,
+            endpoint        TEXT,   -- info | history | financials | news
+            rows_returned   INTEGER,
+            status          TEXT,   -- ok | error | empty
+            note            TEXT
+        );
+
         CREATE INDEX IF NOT EXISTS idx_fundamentals_ticker ON fundamentals(ticker);
         CREATE INDEX IF NOT EXISTS idx_prices_ticker       ON prices(ticker);
         CREATE INDEX IF NOT EXISTS idx_news_ticker         ON news(ticker);
         CREATE INDEX IF NOT EXISTS idx_news_published      ON news(published_at);
+        CREATE INDEX IF NOT EXISTS idx_audit_ticker        ON data_audit(ticker);
+        CREATE INDEX IF NOT EXISTS idx_audit_fetched       ON data_audit(fetched_at);
     """)
     conn.commit()
     conn.close()

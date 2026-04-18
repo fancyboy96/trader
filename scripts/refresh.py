@@ -14,6 +14,13 @@ import yfinance as yf
 from db import get_conn, init_db
 
 
+def log_audit(conn, ticker: str, endpoint: str, rows: int, status: str, note: str = ""):
+    conn.execute(
+        "INSERT INTO data_audit (ticker, fetched_at, endpoint, rows_returned, status, note) VALUES (?,?,?,?,?,?)",
+        (ticker, datetime.utcnow().isoformat(timespec="seconds") + "Z", endpoint, rows, status, note),
+    )
+
+
 def upsert_company(conn, ticker: str, info: dict):
     conn.execute("""
         INSERT INTO companies (ticker, name, sector, industry, country, description, website, last_updated)
@@ -166,27 +173,45 @@ def refresh_ticker(ticker: str):
 
     if not info or info.get("quoteType") == "NONE":
         print("not found — skipped")
+        conn = get_conn()
+        log_audit(conn, ticker, "info", 0, "empty", "quoteType=NONE or no info returned")
+        conn.commit()
+        conn.close()
         return
 
     conn = get_conn()
     try:
         upsert_company(conn, ticker, info)
         upsert_fundamentals(conn, ticker, info)
+        log_audit(conn, ticker, "info", 1, "ok")
 
         hist = t.history(period="2y")
-        price_rows = upsert_prices(conn, ticker, hist) if not hist.empty else 0
+        if not hist.empty:
+            price_rows = upsert_prices(conn, ticker, hist)
+            log_audit(conn, ticker, "history", price_rows, "ok")
+        else:
+            price_rows = 0
+            log_audit(conn, ticker, "history", 0, "empty")
 
         try:
             fin = t.financials
-            inc_rows = upsert_income_annual(conn, ticker, fin) if fin is not None and not fin.empty else 0
-        except Exception:
+            if fin is not None and not fin.empty:
+                inc_rows = upsert_income_annual(conn, ticker, fin)
+                log_audit(conn, ticker, "financials", inc_rows, "ok")
+            else:
+                inc_rows = 0
+                log_audit(conn, ticker, "financials", 0, "empty")
+        except Exception as e:
             inc_rows = 0
+            log_audit(conn, ticker, "financials", 0, "error", str(e))
 
         conn.commit()
         name = info.get("longName") or info.get("shortName") or ticker
         print(f"ok — {name} | {price_rows} price rows | {inc_rows} income rows")
     except Exception as e:
         conn.rollback()
+        log_audit(conn, ticker, "info", 0, "error", str(e))
+        conn.commit()
         print(f"error — {e}")
     finally:
         conn.close()

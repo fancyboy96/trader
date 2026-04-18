@@ -680,6 +680,13 @@ def build_profile(conn, ticker: str):
     price       = prices["close"] if prices else None
     price_date  = prices["date"]  if prices else "—"
 
+    last_fetch  = conn.execute("""
+        SELECT fetched_at, status FROM data_audit
+        WHERE ticker = ? AND endpoint = 'info' ORDER BY fetched_at DESC LIMIT 1
+    """, (ticker,)).fetchone()
+    fetch_meta  = f"yfinance · fetched {last_fetch['fetched_at'][:10]}" if last_fetch else "yfinance · fetch date unknown"
+    fund_date   = (f and f["snapshot_date"]) or "—"
+
     snap = f"""
 <div class="stat-grid">
   <div class="stat-card">
@@ -764,7 +771,7 @@ def build_profile(conn, ticker: str):
     <div>
       <div class="label">Pythia — Company Profile</div>
       <h1>{ticker} &mdash; {name}</h1>
-      <div class="meta">Sector: <span>{sector}</span> &nbsp;·&nbsp; Industry: <span>{industry}</span> &nbsp;·&nbsp; Generated: <span>{today}</span></div>
+      <div class="meta">Sector: <span>{sector}</span> &nbsp;·&nbsp; Industry: <span>{industry}</span> &nbsp;·&nbsp; Data: <span>{fetch_meta}</span> &nbsp;·&nbsp; Snapshot: <span>{fund_date}</span></div>
     </div>
     <button class="theme-toggle" onclick="toggleTheme()">Dark</button>
   </div>

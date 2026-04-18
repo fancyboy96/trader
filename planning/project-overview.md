@@ -452,6 +452,9 @@ Full detail in `planning/discovery-pipeline.md`. Summary:
 
 ### Near-term
 
+- [x] Data validation script (`scripts/validate.py`) — sanity checks on fundamentals, prices, income, and audit log after every refresh
+- [x] Source attribution — fetch date and snapshot date shown on every profile page and analysis report; data provenance line links back to raw profile from report
+- [x] `data_audit` table — every yfinance API call logged with timestamp, endpoint, rows returned, and status
 - [ ] Universe expansion — pull S&P 500 / ETF constituent lists, screen the full universe automatically
 - [ ] Scheduled refresh script — batch refresh stale tickers weekly
 - [ ] Momentum overlay — add 90-day relative momentum to screener scores using existing price data
@@ -470,6 +473,8 @@ Full detail in `planning/discovery-pipeline.md`. Summary:
 
 ### Deferred
 
+- [ ] Second-source cross-check — pull the same key metrics (market cap, revenue, P/E) from a second free API (Financial Modeling Prep or Alpha Vantage) after each refresh and flag discrepancies above a threshold; catches silent yfinance data errors that pass internal consistency checks
+- [ ] Narrative labelling — add an explicit "Analysis written by Claude [model version]" label to each section of analysis reports that contains AI-generated prose; inline citations linking figures in the narrative to the corresponding DB value on the profile page
 - [ ] GDELT / BigQuery — broad news event database; requires BigQuery account setup
 - [ ] DCF model — scripted discounted cash flow from loaded financials
 - [ ] Portfolio page — track live positions, P&L, and weighting vs targets

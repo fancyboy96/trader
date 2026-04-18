@@ -344,6 +344,13 @@ def generate(ticker: str, conn):
     h52     = hi["h"] if hi else None
     l52     = hi["l"] if hi else None
     today   = date.today().isoformat()
+    fund_date = (f and f["snapshot_date"]) or "unknown"
+
+    last_fetch = conn.execute("""
+        SELECT fetched_at FROM data_audit
+        WHERE ticker = ? AND endpoint = 'info' ORDER BY fetched_at DESC LIMIT 1
+    """, (ticker,)).fetchone()
+    fetch_date = last_fetch["fetched_at"][:10] if last_fetch else "unknown"
 
     pct_from_high = f"{((price - h52) / h52 * 100):.1f}%" if price and h52 else "—"
 
@@ -358,6 +365,10 @@ def generate(ticker: str, conn):
   <div class="stat-card"><div class="stat-label">Fwd P/E</div><div class="stat-value neutral">{fmt_x(f and f['fwd_pe'])}</div><div class="stat-sub">PEG: {fmt_num(f and f['peg_ratio'])}</div></div>
   <div class="stat-card"><div class="stat-label">ROE</div><div class="stat-value neutral">{fmt_pct(f and f['roe'])}</div><div class="stat-sub">D/E: {fmt_num(f and f['debt_to_equity'])}</div></div>
   <div class="stat-card"><div class="stat-label">Screen Score</div><div class="stat-value neutral">{sr['score']:.0f} <span style="font-size:14px;font-weight:normal">/ 100</span></div><div class="stat-sub">Tier: <span class="badge A">A</span></div></div>
+</div>
+<div style="margin-top:10px;font-size:11px;color:var(--text-dim)">
+  Structured data: <strong>yfinance</strong> &nbsp;·&nbsp; Fetched: <strong>{fetch_date}</strong> &nbsp;·&nbsp; Snapshot: <strong>{fund_date}</strong>
+  &nbsp;·&nbsp; <a href="../profiles/{ticker}.html" style="color:var(--text-dim)">View raw profile →</a>
 </div>"""
 
     score_table = f"""
