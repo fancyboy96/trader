@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AusTender Analysis — Preliminary Report</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --ease-out:      cubic-bezier(0.16, 1, 0.3, 1);
+      --duration-base: 200ms;
+    }
+
+    /* ── Light mode ── */
+    :root, [data-theme="light"] {
+      --bg:        #FFFFFF;
+      --bg-card:   #F4F6FA;
+      --bg-row:    #EDF0F7;
+      --bg-hover:  #E5EAF5;
+      --border:    #D6DCE8;
+      --amber:     #2558C4;
+      --amber-dim: #9BB0D4;
+      --text:      #0C1A36;
+      --text-dim:  #6B7FA0;
+      --text-head: #6B7FA0;
+      --green:     #16A34A;
+      --red:       #DC2626;
+      --blue:      #2563EB;
+    }
+
+    /* ── Dark mode ── */
+    [data-theme="dark"] {
+      --bg:        #0A1220;
+      --bg-card:   #0D1729;
+      --bg-row:    #172036;
+      --bg-hover:  #1E2D45;
+      --border:    #1E2D45;
+      --amber:     #F2BDCC;
+      --amber-dim: #7A3D52;
+      --text:      #F0F4F8;
+      --text-dim:  #7A9AB8;
+      --text-head: #7A9AB8;
+      --green:     #34d399;
+      --red:       #f87171;
+      --blue:      #60a5fa;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Helvetica Neue', 'Helvetica', Arial, sans-serif;
+      font-size: 15px;
+      line-height: 1.65;
+      padding: 40px 32px;
+      max-width: 1100px;
+      margin: 0 auto;
+      transition: background var(--duration-base) var(--ease-out),
+                  color var(--duration-base) var(--ease-out);
+    }
+
+    /* ── Header ── */
+    .report-header {
+      border-bottom: 1px solid var(--amber);
+      padding-bottom: 20px;
+      margin-bottom: 36px;
+    }
+    .report-header .label {
+      color: var(--amber);
+      font-size: 12px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+    .report-header h1 {
+      font-size: 24px;
+      font-weight: normal;
+      color: var(--text);
+      letter-spacing: 0.02em;
+    }
+    .report-header .meta {
+      color: var(--text-dim);
+      font-size: 12px;
+      margin-top: 8px;
+    }
+    .report-header .meta span { color: var(--text-head); }
+    .report-header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+
+    /* ── Sections ── */
+    section { margin-bottom: 44px; }
+
+    .section-title {
+      color: var(--amber);
+      font-size: 12px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 6px;
+      margin-bottom: 18px;
+    }
+
+    /* ── Stat grid ── */
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+    .stat-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      padding: 16px 18px;
+    }
+    .stat-card .stat-label {
+      color: var(--text-dim);
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+    .stat-card .stat-value {
+      color: var(--amber);
+      font-size: 22px;
+      font-weight: bold;
+      letter-spacing: -0.01em;
+    }
+    .stat-card .stat-sub {
+      color: var(--text-dim);
+      font-size: 11px;
+      margin-top: 4px;
+    }
+
+    /* ── Tables ── */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+    thead th {
+      color: var(--text-dim);
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      text-align: left;
+      padding: 6px 10px;
+      border-bottom: 1px solid var(--border);
+    }
+    thead th.num { text-align: right; }
+    tbody tr { border-bottom: 1px solid var(--border); }
+    tbody tr:nth-child(even) { background: var(--bg-row); }
+    tbody tr:hover { background: var(--bg-hover); }
+    td {
+      padding: 7px 10px;
+      color: var(--text);
+      vertical-align: middle;
+    }
+    td.num { text-align: right; color: var(--text); font-variant-numeric: tabular-nums; }
+    td.amber { color: var(--amber); }
+    td.dim { color: var(--text-dim); }
+    td.rank { color: var(--text-dim); font-size: 11px; width: 28px; }
+
+    /* ── Bar chart cells ── */
+    .bar-wrap { display: flex; align-items: center; gap: 8px; }
+    .bar {
+      height: 6px;
+      background: var(--amber-dim);
+      flex-shrink: 0;
+      min-width: 2px;
+    }
+    .bar.highlight { background: var(--amber); }
+
+    /* ── Procurement split ── */
+    .split-row { display: flex; gap: 12px; margin-bottom: 16px; }
+    .split-block {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      padding: 14px 18px;
+      flex: 1;
+    }
+    .split-block .method { color: var(--text); font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; }
+    .split-block .pct { font-size: 28px; color: var(--amber); margin: 4px 0; }
+    .split-block .detail { color: var(--text); font-size: 11px; }
+
+    /* ── FY band ── */
+    .fy-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+    .fy-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      padding: 14px 18px;
+    }
+    .fy-card .fy-label { color: var(--amber); font-size: 11px; letter-spacing: 0.1em; margin-bottom: 4px; }
+    .fy-card .fy-val { color: var(--text); font-size: 17px; margin-bottom: 2px; }
+    .fy-card .fy-sub { color: var(--text-dim); font-size: 11px; }
+
+    /* ── Callout ── */
+    .callout {
+      background: var(--bg-card);
+      border-left: 3px solid var(--amber);
+      padding: 14px 18px;
+      margin-top: 16px;
+      color: var(--text);
+      font-size: 14px;
+      line-height: 1.75;
+    }
+    .callout strong { color: var(--text); }
+
+    /* ── Limitations list ── */
+    .limitation {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      padding: 14px 18px;
+      margin-bottom: 10px;
+    }
+    .limitation .lim-title { color: var(--text); margin-bottom: 4px; }
+    .limitation .lim-body { color: var(--text); font-size: 14px; line-height: 1.7; }
+    .limitation .lim-body strong { color: var(--amber); }
+
+    /* ── Collapsible methodology ── */
+    details.methodology {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      margin-bottom: 44px;
+    }
+    details.methodology summary {
+      color: var(--amber);
+      font-size: 11px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      padding: 10px 18px;
+      cursor: pointer;
+      user-select: none;
+      list-style: none;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    details.methodology summary::-webkit-details-marker { display: none; }
+    details.methodology summary::before {
+      content: '▶';
+      font-size: 9px;
+      transition: transform 0.15s;
+    }
+    details.methodology[open] summary::before { transform: rotate(90deg); }
+    details.methodology .meth-body {
+      padding: 0 18px 16px;
+      color: var(--text);
+      font-size: 14px;
+      line-height: 1.75;
+      border-top: 1px solid var(--border);
+    }
+    details.methodology .meth-body strong { color: var(--text); }
+    details.methodology .meth-body code { color: var(--blue); }
+
+    /* ── Theme toggle ── */
+    .theme-toggle {
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      color: var(--text-dim);
+      font-family: inherit;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 4px 10px;
+      cursor: pointer;
+      transition: border-color var(--duration-base), color var(--duration-base);
+      flex-shrink: 0;
+    }
+    .theme-toggle:hover { border-color: var(--amber); color: var(--amber); }
+
+    /* ── Footer ── */
+    .report-footer {
+      border-top: 1px solid var(--border);
+      padding-top: 16px;
+      margin-top: 48px;
+      color: var(--text-dim);
+      font-size: 11px;
+    }
+  </style>
+</head>
+<body>
+
+<!-- ───────────────── HEADER ───────────────── -->
+<header class="report-header">
+  <div class="report-header-row">
+    <div>
+      <div class="label">Orbit — Preliminary Analysis</div>
+      <h1>Australian Government Procurement — AusTender Dataset</h1>
+    </div>
+    <button class="theme-toggle" onclick="toggleTheme()">Dark</button>
+  </div>
+  <div class="meta">
+    Source: <span>AusTender OCDS API (api.tenders.gov.au/ocds)</span> &nbsp;·&nbsp;
+    Period: <span>1 Jul 2022 – 6 Apr 2026 (FY2023, FY2024, FY2025, FY2026 partial)</span> &nbsp;·&nbsp;
+    Scope: <span>All Commonwealth agencies</span> &nbsp;·&nbsp;
+    Generated: <span>6 April 2026</span>
+  </div>
+</header>
+
+<!-- ───────────────── INTRODUCTION ───────────────── -->
+<section>
+  <div class="section-title">Introduction</div>
+  <div class="callout" style="border-left-color: var(--blue); margin-top:0;">
+    Australian Government procurement totals <strong>$227.0B</strong> across 221,633 contracts from FY2023 to April 2026. The structure of that spend is highly concentrated: <strong>514 contracts (0.2% by count) account for $136.6B, or 60% of all value.</strong> Understanding Commonwealth procurement means understanding a small number of very large awards.
+    <br><br>
+    Defence accounts for $127.0B (56% of total spend), or 56 cents in every procurement dollar. Home Affairs ($11.7B), Social Services ($6.3B), and the two Health portfolios ($13.5B combined) each represent credible standalone markets, though none approaches Defence's scale. Any contractor seeking Commonwealth revenue at scale must either hold a position in Defence or aggregate across multiple civilian agencies.
+    <br><br>
+    The contractor base reflects this structure. The top 20 spans defence platform primes (Austal, Hanwha, Boeing, Lockheed Martin, BAE Systems, Anduril), base and estate operators (Cushman &amp; Wakefield, Spotless, Compass, Evolve FM, Ventia), fuel and logistics (Viva Energy, Toll), and enterprise IT (IBM, Accenture, Data#3). Adding FY2023 substantially reshapes the rankings: Lockheed Martin moves from 15th to 7th ($1.28B in FY23 alone), BAE Systems enters the top 10 ($1.04B in FY23), and IBM's $858M FY23 spend exceeds its combined FY2025–FY2026 total. The Big Four consulting firms hold a combined $2.0B across four years; Accenture ($1.3B) leads with KPMG ($650M) second.
+    <br><br>
+    <strong>Procurement method is the structurally significant finding for market access.</strong> 58% of contracts by count are limited tender: direct award to a single supplier with no open competition. Incumbency is the primary mechanism by which Commonwealth spend flows. A supplier without an existing Commonwealth relationship faces a structural barrier.
+  </div>
+</section>
+
+<!-- ───────────────── DATASET OVERVIEW ───────────────── -->
+<section>
+  <div class="section-title">Dataset Overview</div>
+  <div class="stat-grid">
+    <div class="stat-card">
+      <div class="stat-label">Total Contracts</div>
+      <div class="stat-value">221,633</div>
+      <div class="stat-sub">All Commonwealth agencies</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Total Value</div>
+      <div class="stat-value">$227.0B</div>
+      <div class="stat-sub">AUD, awarded value</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Unique Contractors</div>
+      <div class="stat-value">33,093</div>
+      <div class="stat-sub">As prime awardee</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Largest Agency</div>
+      <div class="stat-value">$127.0B</div>
+      <div class="stat-sub">Dept of Defence (56% of total)</div>
+    </div>
+  </div>
+
+  <div class="fy-grid" style="margin-top:12px;">
+    <div class="fy-card">
+      <div class="fy-label">FY2023 (full year)</div>
+      <div class="fy-val">$46.8B</div>
+      <div class="fy-sub">59,525 contracts</div>
+    </div>
+    <div class="fy-card">
+      <div class="fy-label">FY2024 (full year)</div>
+      <div class="fy-val">$63.5B</div>
+      <div class="fy-sub">61,338 contracts</div>
+    </div>
+    <div class="fy-card">
+      <div class="fy-label">FY2025 (full year)</div>
+      <div class="fy-val">$52.1B</div>
+      <div class="fy-sub">59,688 contracts</div>
+    </div>
+    <div class="fy-card">
+      <div class="fy-label">FY2026 ∗ partial to Apr</div>
+      <div class="fy-val">$64.8B</div>
+      <div class="fy-sub">41,082 contracts</div>
+    </div>
+  </div>
+</section>
+
+<!-- ───────────────── PROCUREMENT METHOD ───────────────── -->
+<section>
+  <div class="section-title">Procurement Method</div>
+  <div class="split-row">
+    <div class="split-block">
+      <div class="method">Limited Tender</div>
+      <div class="pct">58%</div>
+      <div class="detail">128,048 contracts &nbsp;·&nbsp; $104.2B</div>
+      <div class="detail" style="margin-top:6px;">Agency selects a single supplier directly. No public market, no competitive evaluation.</div>
+    </div>
+    <div class="split-block">
+      <div class="method">Open Tender</div>
+      <div class="pct">42%</div>
+      <div class="detail">93,433 contracts &nbsp;·&nbsp; $122.6B</div>
+      <div class="detail" style="margin-top:6px;">Public market, competitive evaluation. Average value $1.31M — 60% above limited tender.</div>
+    </div>
+    <div class="split-block">
+      <div class="method">Selective Tender</div>
+      <div class="pct">&lt;1%</div>
+      <div class="detail">152 contracts &nbsp;·&nbsp; $174.8M</div>
+      <div class="detail" style="margin-top:6px;">Invited suppliers only. Panel pre-qualification or capability-gated access.</div>
+    </div>
+  </div>
+  <div class="callout">
+    The majority of Commonwealth procurement, by contract count, bypasses open competition entirely. 58% of contracts are limited tender: agency selects a supplier directly, no public market, no evaluation. The 42% that proceeds to open tender carries higher average contract values ($1.31M vs $814k for limited). Agencies reserve competitive process for their largest and most complex procurements. For most transactions, direct award is the default.
+  </div>
+</section>
+
+<!-- ───────────────── CONTRACT VALUE DISTRIBUTION ───────────────── -->
+<section>
+  <div class="section-title">Contract Value Distribution</div>
+  <table>
+    <thead>
+      <tr>
+        <th>Value Band</th>
+        <th class="num">Contracts</th>
+        <th class="num">% of Total</th>
+        <th class="num">Total Value</th>
+        <th class="num">% of Value</th>
+        <th style="width:175px; padding-left:10px;">
+          <span style="color:var(--text-dim);">% of contracts</span><br>
+          <span style="color:var(--amber);">% of value</span>
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Under $80k</td>
+        <td class="num">128,879</td>
+        <td class="num dim">58%</td>
+        <td class="num">$4.0B</td>
+        <td class="num dim">2%</td>
+        <td style="padding-left:10px;">
+          <div style="display:flex;flex-direction:column;gap:5px;padding:3px 0;">
+            <div style="width:120px;height:6px;background:var(--border);position:relative;">
+              <div style="position:absolute;left:0;top:0;bottom:0;width:70px;background:var(--text-dim);"></div>
+            </div>
+            <div style="width:120px;height:6px;background:var(--border);position:relative;">
+              <div style="position:absolute;left:0;top:0;bottom:0;width:2px;background:var(--amber);"></div>
+            </div>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td>$80k – $500k</td>
+        <td class="num">68,206</td>
+        <td class="num dim">31%</td>
+        <td class="num">$15.6B</td>
+        <td class="num dim">7%</td>
+        <td style="padding-left:10px;">
+          <div style="display:flex;flex-direction:column;gap:5px;padding:3px 0;">
+            <div style="width:120px;height:6px;background:var(--border);position:relative;">
+              <div style="position:absolute;left:0;top:0;bottom:0;width:37px;background:var(--text-dim);"></div>
+            </div>
+            <div style="width:120px;height:6px;background:var(--border);position:relative;">
+              <div style="position:absolute;left:0;top:0;bottom:0;width:8px;background:var(--amber);"></div>
+            </div>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td>$500k – $5M</td>
+        <td class="num">20,950</td>
+        <td class="num dim">9%</td>
+        <td class="num">$29.5B</td>
+        <td class="num dim">13%</td>
+        <td style="padding-left:10px;">
+          <div style="display:flex;flex-direction:column;gap:5px;padding:3px 0;">
+            <div style="width:120px;height:6px;background:var(--border);position:relative;">
+              <div style="position:absolute;left:0;top:0;bottom:0;width:11px;background:var(--text-dim);"></div>
+            </div>
+            <div style="width:120px;height:6px;background:var(--border);position:relative;">
+              <div style="position:absolute;left:0;top:0;bottom:0;width:16px;background:var(--amber);"></div>
+            </div>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td>$5M – $50M</td>
+        <td class="num">3,084</td>
+        <td class="num dim">1%</td>
+        <td class="num">$41.3B</td>
+        <td class="num dim">18%</td>
+        <td style="padding-left:10px;">
+          <div style="display:flex;flex-direction:column;gap:5px;padding:3px 0;">
+            <div style="width:120px;height:6px;background:var(--border);position:relative;">
+              <div style="position:absolute;left:0;top:0;bottom:0;width:2px;background:var(--text-dim);"></div>
+            </div>
+            <div style="width:120px;height:6px;background:var(--border);position:relative;">
+              <div style="position:absolute;left:0;top:0;bottom:0;width:22px;background:var(--amber);"></div>
+            </div>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td>Over $50M</td>
+        <td class="num">514</td>
+        <td class="num dim">&lt;1%</td>
+        <td class="num amber">$136.6B</td>
+        <td class="num dim">60%</td>
+        <td style="padding-left:10px;">
+          <div style="display:flex;flex-direction:column;gap:5px;padding:3px 0;">
+            <div style="width:120px;height:6px;background:var(--border);position:relative;">
+              <div style="position:absolute;left:0;top:0;bottom:0;width:2px;background:var(--text-dim);"></div>
+            </div>
+            <div style="width:120px;height:6px;background:var(--border);position:relative;">
+              <div style="position:absolute;left:0;top:0;bottom:0;width:72px;background:var(--amber);"></div>
+            </div>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <div class="callout">
+    Procurement value is structurally top-heavy. <strong>514 contracts (0.2% of the dataset) account for $136.6B: 60% of all spend.</strong> The 128,879 contracts under $80k (58% by count) collectively represent $4.0B, less than 2% of total value. Effective analysis of Commonwealth procurement begins at $1M: the 13,952 contracts above that threshold account for $200.1B, or 88% of total value.
+  </div>
+</section>
+
+<!-- ───────────────── TOP AGENCIES ───────────────── -->
+<section>
+  <div class="section-title">Top Agencies by Contract Value</div>
+  <table>
+    <thead>
+      <tr>
+        <th class="num" style="width:28px;">#</th>
+        <th>Agency</th>
+        <th class="num">Contracts</th>
+        <th class="num">Total Value</th>
+        <th class="num">% of Total</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td class="rank">1</td><td class="amber">Department of Defence</td><td class="num">87,511</td><td class="num">$127.0B</td><td class="num dim">56%</td></tr>
+      <tr><td class="rank">2</td><td>Department of Home Affairs</td><td class="num">5,526</td><td class="num">$11.7B</td><td class="num dim">5%</td></tr>
+      <tr><td class="rank">3</td><td>Department of Health, Disability and Ageing</td><td class="num">2,651</td><td class="num">$6.9B</td><td class="num dim">3%</td></tr>
+      <tr><td class="rank">4</td><td>Department of Health and Aged Care</td><td class="num">5,451</td><td class="num">$6.6B</td><td class="num dim">3%</td></tr>
+      <tr><td class="rank">5</td><td>Department of Social Services</td><td class="num">1,226</td><td class="num">$6.3B</td><td class="num dim">3%</td></tr>
+      <tr><td class="rank">6</td><td>Department of Employment and Workplace Relations</td><td class="num">4,764</td><td class="num">$6.1B</td><td class="num dim">3%</td></tr>
+      <tr><td class="rank">7</td><td>Services Australia</td><td class="num">6,588</td><td class="num">$6.0B</td><td class="num dim">3%</td></tr>
+      <tr><td class="rank">8</td><td>Australian Taxation Office</td><td class="num">3,255</td><td class="num">$4.8B</td><td class="num dim">2%</td></tr>
+      <tr><td class="rank">9</td><td>DFAT – Australian Aid Program</td><td class="num">1,340</td><td class="num">$4.5B</td><td class="num dim">2%</td></tr>
+      <tr><td class="rank">10</td><td>Dept of Climate Change, Energy, Environment and Water</td><td class="num">7,897</td><td class="num">$4.4B</td><td class="num dim">2%</td></tr>
+      <tr><td class="rank">11</td><td>Department of Foreign Affairs and Trade</td><td class="num">7,668</td><td class="num">$4.2B</td><td class="num dim">2%</td></tr>
+      <tr><td class="rank">12</td><td>Australian Federal Police</td><td class="num">4,334</td><td class="num">$3.5B</td><td class="num dim">2%</td></tr>
+      <tr><td class="rank">13</td><td>Department of Veterans' Affairs</td><td class="num">7,520</td><td class="num">$3.4B</td><td class="num dim">2%</td></tr>
+      <tr><td class="rank">14</td><td>Australian Signals Directorate</td><td class="num">5,570</td><td class="num">$2.9B</td><td class="num dim">1%</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ───────────────── TOP CONTRACTORS ───────────────── -->
+<section>
+  <div class="section-title">Top 20 Contractors by Total Value</div>
+  <p style="color:var(--text-dim); font-size:11px; margin-bottom:12px;">FY2023–FY2026 (partial to April 2026). Pass-through accounts excluded (FMS/RBA, Cooperative Programs; see Data Limitations). ∗ FY2026 partial only.</p>
+  <table>
+    <thead>
+      <tr>
+        <th class="num" style="width:28px;">#</th>
+        <th>Contractor</th>
+        <th class="num">Contracts</th>
+        <th class="num">FY2023</th>
+        <th class="num">FY2024</th>
+        <th class="num">FY2025</th>
+        <th class="num">FY2026 ∗</th>
+        <th class="num">Total</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td class="rank">1</td><td class="amber">Austal Defence Shipbuilding Australia</td><td class="num">4</td><td class="num dim">—</td><td class="num dim">—</td><td class="num dim">—</td><td class="num">$6.9B</td><td class="num">$6.9B</td></tr>
+      <tr><td class="rank">2</td><td class="amber">Hanwha Defense Australia</td><td class="num">5</td><td class="num dim">—</td><td class="num">$4.9B</td><td class="num">$368M</td><td class="num dim">—</td><td class="num">$5.2B</td></tr>
+      <tr><td class="rank">3</td><td>Secure Journeys Pty Ltd ⚠</td><td class="num">2</td><td class="num dim">—</td><td class="num dim">—</td><td class="num">$4.7B</td><td class="num dim">—</td><td class="num">$4.7B</td></tr>
+      <tr><td class="rank">4</td><td>DHA – Central Office</td><td class="num">4</td><td class="num dim">—</td><td class="num">$4.4B</td><td class="num dim">—</td><td class="num dim">—</td><td class="num">$4.4B</td></tr>
+      <tr><td class="rank">5</td><td>Cushman &amp; Wakefield</td><td class="num">202</td><td class="num">$20M</td><td class="num">$3M</td><td class="num">$284M</td><td class="num">$3.6B</td><td class="num">$3.9B</td></tr>
+      <tr><td class="rank">6</td><td>Spotless Facility Services</td><td class="num">281</td><td class="num">$14M</td><td class="num">$22M</td><td class="num">$27M</td><td class="num">$3.7B</td><td class="num">$3.8B</td></tr>
+      <tr><td class="rank">7</td><td class="amber">Lockheed Martin Australia</td><td class="num">105</td><td class="num">$1.28B</td><td class="num">$1.18B</td><td class="num">$143M</td><td class="num">$175M</td><td class="num">$2.8B</td></tr>
+      <tr><td class="rank">8</td><td class="amber">Boeing Defence Australia</td><td class="num">354</td><td class="num">$78M</td><td class="num">$1.0B</td><td class="num">$519M</td><td class="num">$935M</td><td class="num">$2.5B</td></tr>
+      <tr><td class="rank">9</td><td class="amber">BAE Systems Australia</td><td class="num">617</td><td class="num">$1.04B</td><td class="num">$111M</td><td class="num">$221M</td><td class="num">$862M</td><td class="num">$2.2B</td></tr>
+      <tr><td class="rank">10</td><td>Data#3</td><td class="num">2,236</td><td class="num">$782M</td><td class="num">$243M</td><td class="num">$348M</td><td class="num">$669M</td><td class="num">$2.0B</td></tr>
+      <tr><td class="rank">11</td><td>Service Stream Infrastructure Services</td><td class="num">1</td><td class="num dim">—</td><td class="num dim">—</td><td class="num dim">—</td><td class="num">$2.0B</td><td class="num">$2.0B</td></tr>
+      <tr><td class="rank">12</td><td class="amber">Anduril Australia</td><td class="num">13</td><td class="num">$85M</td><td class="num">$4M</td><td class="num">$57M</td><td class="num">$1.9B</td><td class="num">$2.0B</td></tr>
+      <tr><td class="rank">13</td><td>Viva Energy Australia</td><td class="num">209</td><td class="num">$110M</td><td class="num">$481M</td><td class="num">$672M</td><td class="num">$734M</td><td class="num">$2.0B</td></tr>
+      <tr><td class="rank">14</td><td class="amber">Thales Australia</td><td class="num">2,371</td><td class="num">$554M</td><td class="num">$598M</td><td class="num">$428M</td><td class="num">$359M</td><td class="num">$1.9B</td></tr>
+      <tr><td class="rank">15</td><td>Evolve FM</td><td class="num">206</td><td class="num">$40M</td><td class="num">$48M</td><td class="num">$915M</td><td class="num">$877M</td><td class="num">$1.9B</td></tr>
+      <tr><td class="rank">16</td><td class="amber">CEA Technologies</td><td class="num">72</td><td class="num">$465M</td><td class="num">$56M</td><td class="num">$1.34B</td><td class="num">$16M</td><td class="num">$1.9B</td></tr>
+      <tr><td class="rank">17</td><td>Jones Lang LaSalle (ACT)</td><td class="num">1,184</td><td class="num">$327M</td><td class="num">$288M</td><td class="num">$456M</td><td class="num">$793M</td><td class="num">$1.9B</td></tr>
+      <tr><td class="rank">18</td><td>Compass Group Defence Hospitality</td><td class="num">61</td><td class="num dim">—</td><td class="num dim">—</td><td class="num dim">—</td><td class="num">$1.85B</td><td class="num">$1.9B</td></tr>
+      <tr><td class="rank">19</td><td>Ventia Australia</td><td class="num">223</td><td class="num">$34M</td><td class="num">$476M</td><td class="num">$693M</td><td class="num">$402M</td><td class="num">$1.6B</td></tr>
+      <tr><td class="rank">20</td><td>DT Global Asia Pacific</td><td class="num">88</td><td class="num">$637M</td><td class="num">$487M</td><td class="num">$323M</td><td class="num">$137M</td><td class="num">$1.6B</td></tr>
+    </tbody>
+  </table>
+  <div class="callout">
+    <strong>⚠ Secure Journeys Pty Ltd ($4.7B):</strong> two contracts with the Department of Home Affairs at this scale points directly to immigration detention or offshore processing services. At $4.7B it ranks third on the contractor list, above Lockheed Martin, reflecting the cost structure of long-term detention operations. Requires separate categorisation in any defence-focused analysis.<br><br>
+    <strong>FY2023 substantially reshapes the rankings.</strong> Lockheed Martin moves from 15th (prior three-year view) to 7th — $1.28B in FY2023 alone reflects Joint Strike Fighter and missile system awards. BAE Systems enters the top 10 with $1.04B in FY2023, driven by LAND 400 Phase 2 and ammunition supply work. Data#3 nearly doubles its prior ranking, with $782M in FY2023 IT procurement (hardware resale and managed services across Defence and whole-of-government panels).<br><br>
+    <strong>Highlighted rows</strong> are confirmed defence primes or sovereign capability entities. The top 20 includes base and estate operators (Cushman &amp; Wakefield, Spotless, Compass, Evolve FM) and logistics providers (Viva Energy) accounting for more than $15B across four years, representing the infrastructure of Commonwealth operations running in parallel to platform acquisition. Anduril Australia ($2.0B, 13 contracts) is the most significant emerging entrant — $1.9B of its total falls in FY2026, indicating a large platform award concentrated in the current year. DT Global Asia Pacific ($1.6B) is primarily an Australian Aid Program contractor; its inclusion reflects the scale of DFAT-administered development spend.
+  </div>
+</section>
+
+<!-- ───────────────── CONSULTING SPEND ───────────────── -->
+<section>
+  <div class="section-title">Consulting &amp; Advisory Firm Spend — All Commonwealth Agencies</div>
+  <p style="color:var(--text-dim); font-size:11px; margin-bottom:12px;">FY2023–FY2026 (partial to April 2026). ∗ FY2026 partial only. † BCG FY2025 spike is 77% one $99M DFAT Australian Aid Program contract. ‡ PwC Government Advisory rebranded as Scyne Advisory in October 2023; contracts awarded under the shared ABN before October 2023 are attributed to PwC, after to Scyne Advisory.</p>
+  <table>
+    <thead>
+      <tr>
+        <th>Firm</th>
+        <th class="num">FY2023</th>
+        <th class="num">#</th>
+        <th class="num">FY2024</th>
+        <th class="num">#</th>
+        <th class="num">FY2025</th>
+        <th class="num">#</th>
+        <th class="num">FY2026 ∗</th>
+        <th class="num">#</th>
+        <th class="num">Total</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>IBM</td><td class="num">$858M</td><td class="num dim">43</td><td class="num">$346M</td><td class="num dim">48</td><td class="num">$265M</td><td class="num dim">39</td><td class="num">$143M</td><td class="num dim">27</td><td class="num">$1,612M</td></tr>
+      <tr><td class="amber">Accenture</td><td class="num">$216M</td><td class="num dim">73</td><td class="num">$218M</td><td class="num dim">66</td><td class="num">$622M</td><td class="num dim">43</td><td class="num">$236M</td><td class="num dim">36</td><td class="num amber">$1,291M</td></tr>
+      <tr><td>KPMG</td><td class="num">$274M</td><td class="num dim">327</td><td class="num">$217M</td><td class="num dim">298</td><td class="num">$103M</td><td class="num dim">212</td><td class="num">$57M</td><td class="num dim">131</td><td class="num">$650M</td></tr>
+      <tr><td>Deloitte</td><td class="num">$188M</td><td class="num dim">240</td><td class="num">$152M</td><td class="num dim">200</td><td class="num">$165M</td><td class="num dim">186</td><td class="num">$90M</td><td class="num dim">78</td><td class="num">$595M</td></tr>
+      <tr><td>EY</td><td class="num">$135M</td><td class="num dim">169</td><td class="num">$141M</td><td class="num dim">158</td><td class="num">$154M</td><td class="num dim">129</td><td class="num">$74M</td><td class="num dim">59</td><td class="num">$505M</td></tr>
+      <tr><td>PwC ‡</td><td class="num">$187M</td><td class="num dim">194</td><td class="num">$13M</td><td class="num dim">9</td><td class="num">$0.1M</td><td class="num dim">4</td><td class="num dim">—</td><td class="num dim">1</td><td class="num">$201M</td></tr>
+      <tr><td>BCG †</td><td class="num">$22M</td><td class="num dim">23</td><td class="num">$6M</td><td class="num dim">8</td><td class="num">$115M</td><td class="num dim">12</td><td class="num">$7M</td><td class="num dim">9</td><td class="num">$150M</td></tr>
+      <tr><td>Capgemini</td><td class="num">$50M</td><td class="num dim">19</td><td class="num">$7M</td><td class="num dim">16</td><td class="num">$32M</td><td class="num dim">16</td><td class="num">$27M</td><td class="num dim">9</td><td class="num">$116M</td></tr>
+      <tr><td>Scyne Advisory ‡</td><td class="num dim">—</td><td class="num dim">—</td><td class="num">$19M</td><td class="num dim">22</td><td class="num">$57M</td><td class="num dim">47</td><td class="num">$17M</td><td class="num dim">32</td><td class="num">$93M</td></tr>
+      <tr><td>Gartner</td><td class="num">$18M</td><td class="num dim">62</td><td class="num">$24M</td><td class="num dim">67</td><td class="num">$18M</td><td class="num dim">59</td><td class="num">$7M</td><td class="num dim">27</td><td class="num">$67M</td></tr>
+      <tr><td>McKinsey</td><td class="num">$10M</td><td class="num dim">13</td><td class="num">$10M</td><td class="num dim">9</td><td class="num">$16M</td><td class="num dim">16</td><td class="num">$4M</td><td class="num dim">8</td><td class="num">$40M</td></tr>
+      <tr><td>Bain</td><td class="num dim">—</td><td class="num dim">—</td><td class="num">$0.1M</td><td class="num dim">2</td><td class="num">$0.2M</td><td class="num dim">4</td><td class="num">$0.2M</td><td class="num dim">6</td><td class="num">$0.4M</td></tr>
+      <tr><td>Cognizant</td><td class="num dim">—</td><td class="num dim">—</td><td class="num">$0.05M</td><td class="num dim">1</td><td class="num dim">—</td><td class="num dim">—</td><td class="num dim">—</td><td class="num dim">—</td><td class="num">$0.05M</td></tr>
+    </tbody>
+    <tfoot>
+      <tr style="border-top: 1px solid var(--amber);">
+        <td style="color:var(--amber); font-size:11px; text-transform:uppercase; letter-spacing:0.08em;">Total</td>
+        <td class="num amber">$1,958M</td><td class="num dim">1,163</td>
+        <td class="num amber">$1,153M</td><td class="num dim">904</td>
+        <td class="num amber">$1,547M</td><td class="num dim">767</td>
+        <td class="num amber">$662M</td><td class="num dim">423</td>
+        <td class="num amber">$5,320M</td>
+      </tr>
+    </tfoot>
+  </table>
+
+  <div class="callout" style="margin-top:16px;">
+    <strong>$5.3B over four years (FY2023–FY2026) to 13 named firms.</strong> The market is more stratified than the aggregate implies.
+    <br><br>
+    <strong>IBM leads by total value at $1.6B</strong>, driven by an outsized FY2023 ($858M) — more than its combined FY2025–FY2026 spend. This pattern reflects large multi-year platform awards booked upfront in FY2023, including Home Affairs border and identity systems and Defence IT infrastructure. The underlying run-rate is declining sharply year on year.
+    <br><br>
+    <strong>Accenture is the largest advisory firm</strong> at $1.3B. Its FY2025 spike ($622M) reflects major Health digital transformation platforms — it has moved decisively beyond Defence into health and social services portfolios. An average contract value above $9M reflects systems integration scale, not advisory engagements.
+    <br><br>
+    <strong>KPMG leads by contract count</strong> with 968 engagements over four years at an average of $671k. The profile spans advisory, assurance, and project management across many agencies. Broad reach with a dispersed client base and no dominant account.
+    <br><br>
+    <strong>PwC ($201M) and Scyne Advisory ($93M)</strong> share an ABN — PwC Government Advisory rebranded as Scyne Advisory in October 2023. Contracts are split by award date: pre-October 2023 to PwC, post-October 2023 to Scyne. PwC's $187M in FY2023 reflects the full weight of its government advisory practice before the restructure; the sharp drop in FY2024 ($13M) marks the effective handover. Scyne's profile ($19M FY24 → $57M FY25) shows a practice rebuilding post-rebranding.
+    <br><br>
+    <strong>MBB penetration is negligible.</strong> McKinsey holds $40M. BCG registers $150M, of which 77% is a single $115M DFAT Australian Aid Program contract (FY2025). Bain registers $0.4M. Stripped of the BCG outlier, combined MBB spend over four years is approximately $55M.
+    <br><br>
+    <strong>Cognizant's absence ($50k, one contract) is informative.</strong> It operates below the AusTender threshold as a subcontractor, almost certainly inside IBM and Accenture programmes on major Commonwealth IT platforms. Its true exposure is invisible in this dataset and material in practice.
+  </div>
+</section>
+
+<!-- ───────────────── DATA LIMITATIONS ───────────────── -->
+<section>
+  <div class="section-title">Data Limitations</div>
+
+  <div class="limitation">
+    <div class="lim-title">1. No subcontractor visibility</div>
+    <div class="lim-body">AusTender captures only the prime awardee. A $500M systems integration contract may route through fifty subcontractors, none visible here. Supplier analysis based on AusTender alone structurally understates the market position of firms that operate predominantly as second-tier integrators. Cognizant is the clearest example: a minimal AusTender footprint alongside significant known Commonwealth activity through IBM and Accenture programmes.</div>
+  </div>
+
+  <div class="limitation">
+    <div class="lim-title">2. Pass-through accounts must be excluded</div>
+    <div class="lim-body">The raw dataset's largest entry, <strong>FMS Account Reserve Bank of Australia ($23.3B across 160 contracts, FY2023–FY2026)</strong>, is the US Foreign Military Sales channel: Australian government purchases of US-origin weapons systems (missiles, aircraft, electronic warfare) routed through the RBA. All pass-through entries are excluded from supplier analysis in this report.</div>
+  </div>
+
+  <div class="limitation">
+    <div class="lim-title">3. Contract amendments carry valuation uncertainty</div>
+    <div class="lim-body">AusTender does not reliably link contract amendments to originals. A contract escalating from $10M to $50M through successive amendments may appear as multiple discrete records. Total spend per supplier can therefore be either understated (if the original record dominates) or overstated (if amendments are separately counted). Large infrastructure and managed services contracts, which attract frequent amendments, carry the highest valuation uncertainty in this dataset.</div>
+  </div>
+
+  <div class="limitation">
+    <div class="lim-title">4. Commonwealth only — state procurement not captured</div>
+    <div class="lim-body">This analysis covers Commonwealth agencies exclusively. State procurement (Defence SA, state police forces, emergency services, and state-run defence precincts) operates on entirely separate registers. For companies active in the South Australian defence industry or seeking state-level contracts, a separate extraction from individual state portals is required.</div>
+  </div>
+
+  <div class="limitation">
+    <div class="lim-title">5. Contract descriptions are deliberately uninformative</div>
+    <div class="lim-body">Titles such as "Support Services", "ICT Services", and "Labour Support Services" are standard across the dataset. The AusTender record alone cannot determine what was procured. Scope analysis requires cross-referencing tender documents (where published), ministerial disclosures, or industry sources. For sensitive contracts, particularly within Defence, descriptions are often deliberately opaque.</div>
+  </div>
+
+  <div class="limitation">
+    <div class="lim-title">6. The $80k threshold defines the floor of analytical relevance</div>
+    <div class="lim-body">Below the <strong>$80k Commonwealth limited tender threshold</strong>, agencies procure direct with minimal process. The 128,879 contracts below that level are a record of routine operational activity. Filtering to contracts above $1M yields 13,952 contracts covering $200.1B (88% of total value), a dataset that is tractable, strategically meaningful, and where competitive dynamics operate.</div>
+  </div>
+</section>
+
+<!-- ───────────────── METHODOLOGY ───────────────── -->
+<details class="methodology">
+  <summary>Methodology</summary>
+  <div class="meth-body">
+    <br>
+    <strong>Source.</strong> AusTender OCDS API (<code>api.tenders.gov.au/ocds</code>), the authoritative Commonwealth procurement register. Every award notice published by every agency is captured with no manual filtering at collection.
+    <br><br>
+    <strong>Period.</strong> 1 July 2022 – 6 April 2026: FY2023, FY2024, and FY2025 in full; FY2026 to date of extraction. Contracts are assigned to financial years by award date (1 Jul – 30 Jun).
+    <br><br>
+    <strong>Processing.</strong> Records are loaded into a local SQLite database. Supplier names are normalised across case, punctuation, and legal suffix variants to prevent artificial fragmentation of spend. All values are as-published awarded amounts in AUD.
+    <br><br>
+    <strong>Exclusions.</strong> Three pass-through accounts are removed from all supplier-level analysis: <em>FMS Account Reserve Bank of Australia</em> ($23.3B, the US Foreign Military Sales channel), <em>Cooperative Programs Account</em>, and direct RBA entries. These are government-to-government payment mechanisms. Agency-level totals retain all contracts regardless of supplier type.
+  </div>
+</details>
+
+<!-- ───────────────── FOOTER ───────────────── -->
+<footer class="report-footer">
+  Orbit — Preliminary Analysis &nbsp;·&nbsp;
+  Data: AusTender OCDS API (api.tenders.gov.au/ocds) &nbsp;·&nbsp;
+  Period: 1 Jul 2022 – 6 Apr 2026 (FY2023–FY2026 partial) &nbsp;·&nbsp;
+  Generated: 6 April 2026 &nbsp;·&nbsp;
+  This report is for internal use only. All figures are derived from publicly available Commonwealth procurement data.
+</footer>
+
+<script>
+  function toggleTheme() {
+    const html = document.documentElement;
+    const isDark = html.getAttribute('data-theme') === 'dark';
+    html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+    document.querySelector('.theme-toggle').textContent = isDark ? 'Dark' : 'Light';
+  }
+</script>
+
+</body>
+</html>

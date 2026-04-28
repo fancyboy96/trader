@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Orbit — Government Contracting Analysis</title>
+  <script>const t=localStorage.getItem("pythia-theme");if(t)document.documentElement.setAttribute("data-theme",t);</script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root { --ease-out: cubic-bezier(0.16,1,0.3,1); --dur: 200ms; }
+    :root, [data-theme="light"] {
+      --bg:#FFFFFF; --bg-card:#F4F6FA; --bg-row:#EDF0F7; --bg-hover:#E5EAF5;
+      --border:#D6DCE8; --accent:#2558C4; --accent-dim:#9BB0D4;
+      --text:#0C1A36; --text-dim:#6B7FA0; --green:#16A34A; --red:#DC2626; --blue:#2563EB;
+    }
+    [data-theme="dark"] {
+      --bg:#0A1220; --bg-card:#0D1729; --bg-row:#172036; --bg-hover:#1E2D45;
+      --border:#1E2D45; --accent:#F2BDCC; --accent-dim:#7A3D52;
+      --text:#F0F4F8; --text-dim:#7A9AB8; --green:#34d399; --red:#f87171; --blue:#60a5fa;
+    }
+    body { background:var(--bg); color:var(--text);
+           font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;
+           font-size:15px; line-height:1.65; padding:40px 32px;
+           max-width:1100px; margin:0 auto;
+           transition:background var(--dur) var(--ease-out),color var(--dur) var(--ease-out); }
+    a { color:var(--accent); text-decoration:none; }
+    a:hover { text-decoration:underline; }
+    .site-header { border-bottom:1px solid var(--accent); padding-bottom:20px; margin-bottom:36px; }
+    .site-header-row { display:flex; justify-content:space-between; align-items:flex-start; }
+    .label { color:var(--accent); font-size:12px; letter-spacing:.15em; text-transform:uppercase; margin-bottom:6px; }
+    h1 { font-size:24px; font-weight:normal; letter-spacing:.02em; }
+    nav { display:flex; gap:24px; margin-top:14px; font-size:12px; }
+    nav a { color:var(--text-dim); letter-spacing:.05em; text-transform:uppercase; font-size:11px; }
+    nav a:hover { color:var(--accent); text-decoration:none; }
+    nav a.active { color:var(--accent); border-bottom:1px solid var(--accent); padding-bottom:1px; }
+    section { margin-bottom:44px; }
+    .section-title { color:var(--accent); font-size:12px; letter-spacing:.15em; text-transform:uppercase;
+                     border-bottom:1px solid var(--border); padding-bottom:6px; margin-bottom:18px; }
+    .nav-cards { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:12px; margin-bottom:48px; }
+    .nav-card { background:var(--bg-card); border:1px solid var(--border); padding:24px 22px;
+                display:block; transition:border-color var(--dur) var(--ease-out); }
+    .nav-card:hover { border-color:var(--accent); text-decoration:none; }
+    .nav-card .card-label { color:var(--accent); font-size:11px; letter-spacing:.12em;
+                            text-transform:uppercase; margin-bottom:8px; }
+    .nav-card .card-title { color:var(--text); font-size:17px; font-weight:normal; margin-bottom:8px; }
+    .nav-card .card-desc { color:var(--text-dim); font-size:13px; line-height:1.6; }
+    .callout { background:var(--bg-card); border-left:3px solid var(--accent);
+               padding:14px 18px; color:var(--text); font-size:14px; line-height:1.75; }
+    .report-footer { color:var(--text-dim); font-size:12px; border-top:1px solid var(--border);
+                     padding-top:16px; margin-top:48px; }
+    button.theme-toggle { background:none; border:1px solid var(--border); color:var(--text-dim);
+                          font-size:11px; padding:4px 12px; cursor:pointer; letter-spacing:.05em; }
+    button.theme-toggle:hover { border-color:var(--accent); color:var(--accent); }
+  </style>
+  <script>
+    function toggleTheme(){
+      const r=document.documentElement;
+      const next=r.getAttribute("data-theme")==="dark"?"light":"dark";
+      r.setAttribute("data-theme",next);
+      localStorage.setItem("pythia-theme",next);
+      document.querySelector(".theme-toggle").textContent=next==="dark"?"Light":"Dark";
+    }
+  </script>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="site-header-row">
+    <div>
+      <div class="label">Government Contracting Analysis</div>
+      <h1>Orbit</h1>
+    </div>
+    <button class="theme-toggle" onclick="toggleTheme()">Dark</button>
+  </div>
+  <nav>
+    <a href="../index.html">Home</a>
+    <a href="index.html" class="active">Orbit</a>
+  </nav>
+</header>
+
+<section>
+  <div class="callout" style="margin-bottom:32px">
+    Orbit maps government contracting data — AusTender and SA Government spend — to identify
+    contractors with deep public-sector exposure. Preliminary analysis only.
+  </div>
+</section>
+
+<section>
+  <div class="section-title">Reports</div>
+  <div class="nav-cards">
+    <a class="nav-card" href="report-austender-preliminary.html">
+      <div class="card-label">Federal</div>
+      <div class="card-title">AusTender Analysis</div>
+      <div class="card-desc">Preliminary analysis of AusTender contract data. Spend by agency, contractor, and category.</div>
+    </a>
+    <a class="nav-card" href="report-austender-contractors-preliminary.html">
+      <div class="card-label">Federal · Contractors</div>
+      <div class="card-title">Government Contractor Industry</div>
+      <div class="card-desc">Preliminary industry-level analysis of contractors active across federal government procurement.</div>
+    </a>
+    <a class="nav-card" href="report-sa-contractors-preliminary.html">
+      <div class="card-label">South Australia</div>
+      <div class="card-title">SA Government Contractors</div>
+      <div class="card-desc">Preliminary report on SA Government contractor spend, supplier concentration, and category breakdown.</div>
+    </a>
+  </div>
+</section>
+
+<footer class="report-footer">
+  Pythia &nbsp;·&nbsp; Orbit &nbsp;·&nbsp; 2026-04-28 &nbsp;·&nbsp; <a href="../index.html">Home</a> &nbsp;·&nbsp; For personal use only
+</footer>
+
+</body>
+</html>

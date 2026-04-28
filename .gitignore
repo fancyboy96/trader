@@ -8,3 +8,11 @@ __pycache__/
 planning/sessions/
 data/pythia.db
 trader.db
+
+# orbit
+orbit/orbit.db
+orbit/data/*.db
+orbit/data/*.db.bak
+orbit/data/*.csv
+orbit/data/debug/
+orbit/.env

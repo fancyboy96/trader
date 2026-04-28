@@ -1,0 +1,122 @@
+[
+  {
+    "canonical_name": "BAE Systems Australia",
+    "type": "business",
+    "aliases": ["BAE Systems"],
+    "context_terms": []
+  },
+  {
+    "canonical_name": "Hanwha Defense Australia",
+    "type": "business",
+    "aliases": ["Hanwha Defence Australia", "Hanwha Defence", "Hanwha"],
+    "context_terms": ["Redback", "Huntsman", "LAND 400", "vehicle"]
+  },
+  {
+    "canonical_name": "ASC Pty Ltd",
+    "type": "business",
+    "aliases": ["Australian Submarine Corporation", "ASC"],
+    "context_terms": ["submarine", "naval", "shipbuilding"]
+  },
+  {
+    "canonical_name": "Thales Australia",
+    "type": "business",
+    "aliases": ["Thales", "THALES AUSTRALIA LIMITED", "Thales Australia Limited"],
+    "context_terms": []
+  },
+  {
+    "canonical_name": "Saab Australia",
+    "type": "business",
+    "aliases": ["Saab"],
+    "context_terms": []
+  },
+  {
+    "canonical_name": "Boeing Defence Australia",
+    "type": "business",
+    "aliases": ["Boeing Australia", "Boeing Defense Australia"],
+    "context_terms": []
+  },
+  {
+    "canonical_name": "Lockheed Martin Australia",
+    "type": "business",
+    "aliases": ["Lockheed Martin"],
+    "context_terms": []
+  },
+  {
+    "canonical_name": "Raytheon Australia",
+    "type": "business",
+    "aliases": ["Raytheon", "RTX Australia"],
+    "context_terms": []
+  },
+  {
+    "canonical_name": "L3Harris Australia",
+    "type": "business",
+    "aliases": ["L3Harris", "L3 Technologies Australia"],
+    "context_terms": []
+  },
+  {
+    "canonical_name": "NIOA",
+    "type": "business",
+    "aliases": ["NIOA Pty Ltd"],
+    "context_terms": ["ammunition", "munitions", "weapons", "ordnance"]
+  },
+  {
+    "canonical_name": "TKMS Sonartech Atlas",
+    "type": "business",
+    "aliases": ["TKMS SONARTECH ATLAS PTY LIMITED", "Sonartech Atlas", "Atlas Elektronik Australia"],
+    "context_terms": ["sonar", "submarine", "naval", "acoustic"]
+  },
+  {
+    "canonical_name": "Aero Defence",
+    "type": "business",
+    "aliases": ["AERO DEFENCE PTY LTD", "Aero Defence Pty Ltd"],
+    "context_terms": ["aviation", "defence", "aerospace"]
+  },
+  {
+    "canonical_name": "Fujitsu Australia",
+    "type": "business",
+    "aliases": ["FUJITSU AUSTRALIA LIMITED", "Fujitsu Australia Limited"],
+    "context_terms": ["IT", "technology", "managed services"]
+  },
+  {
+    "canonical_name": "Data#3",
+    "type": "business",
+    "aliases": ["Data#3 Limited", "DATA#3 LIMITED. DATA 3 GROUP", "Data 3 Limited"],
+    "context_terms": ["IT", "technology", "reseller"]
+  },
+  {
+    "canonical_name": "KPMG",
+    "type": "business",
+    "aliases": ["KPMG Australia"],
+    "context_terms": ["consulting", "advisory", "audit"]
+  },
+  {
+    "canonical_name": "Milspec Services",
+    "type": "business",
+    "aliases": ["MILSPEC SERVICES PTY LIMITED", "Milspec Services Pty Limited"],
+    "context_terms": ["defence", "logistics", "support services"]
+  },
+  {
+    "canonical_name": "SSN-AUKUS",
+    "type": "program",
+    "aliases": ["AUKUS submarine", "nuclear submarine Australia", "SSN AUKUS"],
+    "context_terms": []
+  },
+  {
+    "canonical_name": "Hunter Class Frigates",
+    "type": "program",
+    "aliases": ["Hunter class frigate", "SEA 5000", "Hunter frigate"],
+    "context_terms": []
+  },
+  {
+    "canonical_name": "LAND 400",
+    "type": "program",
+    "aliases": ["LAND 400 Phase 3", "IFV Australia"],
+    "context_terms": ["Redback", "Lynx", "infantry fighting vehicle"]
+  },
+  {
+    "canonical_name": "Ghost Bat",
+    "type": "program",
+    "aliases": ["MQ-28", "MQ-28A", "Boeing Ghost Bat"],
+    "context_terms": ["loyal wingman", "combat drone Australia"]
+  }
+]

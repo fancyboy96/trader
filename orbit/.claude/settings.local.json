@@ -1,0 +1,23 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:www.tenders.sa.gov.au)",
+      "WebFetch(domain:sacontractsnotices.com.au)",
+      "Bash(python3:*)",
+      "Bash(git add:*)",
+      "Bash(git commit -m ':*)",
+      "Bash(grep:*)",
+      "Bash(sqlite3:*)",
+      "WebSearch",
+      "WebFetch(domain:data.sa.gov.au)",
+      "Bash(curl -s -L -H 'User-Agent: Mozilla/5.0 \\(Macintosh; Intel Mac OS X 10_15_7\\) AppleWebKit/537.36 \\(KHTML, like Gecko\\) Chrome/124.0.0.0 Safari/537.36' -H 'Accept: application/json, text/plain, */*' -H 'Accept-Language: en-AU,en;q=0.9' -H 'Referer: https://www.tenders.sa.gov.au/' 'https://www.tenders.sa.gov.au/api/contract/search?keywords=&minCost=&desc=true&orderBy=startDate&page=1')",
+      "Bash(pip3 show:*)",
+      "Bash(tee /tmp/sa_dryrun.txt)",
+      "Bash(fuser /Users/jessekilburn/projects/orbit/data/orbit.db)",
+      "WebFetch(domain:www.asx.com.au)",
+      "WebFetch(domain:asx.com.au)",
+      "Bash(ls:*)",
+      "Bash(open:*)"
+    ]
+  }
+}

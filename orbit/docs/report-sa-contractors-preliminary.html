@@ -1,0 +1,1255 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SA Government Contractors — Preliminary Report</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --ease-out:      cubic-bezier(0.16, 1, 0.3, 1);
+      --duration-base: 200ms;
+    }
+
+    /* ── Light mode ── */
+    :root, [data-theme="light"] {
+      --bg:        #FFFFFF;
+      --bg-card:   #F4F6FA;
+      --bg-row:    #EDF0F7;
+      --bg-hover:  #E5EAF5;
+      --border:    #D6DCE8;
+      --amber:     #2558C4;
+      --amber-dim: #9BB0D4;
+      --text:      #0C1A36;
+      --text-dim:  #6B7FA0;
+      --text-head: #6B7FA0;
+      --green:     #16A34A;
+      --red:       #DC2626;
+      --blue:      #2563EB;
+    }
+
+    /* ── Dark mode ── */
+    [data-theme="dark"] {
+      --bg:        #0A1220;
+      --bg-card:   #0D1729;
+      --bg-row:    #172036;
+      --bg-hover:  #1E2D45;
+      --border:    #1E2D45;
+      --amber:     #F2BDCC;
+      --amber-dim: #7A3D52;
+      --text:      #F0F4F8;
+      --text-dim:  #7A9AB8;
+      --text-head: #7A9AB8;
+      --green:     #34d399;
+      --red:       #f87171;
+      --blue:      #60a5fa;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Helvetica Neue', 'Helvetica', Arial, sans-serif;
+      font-size: 15px;
+      line-height: 1.65;
+      padding: 40px 32px;
+      max-width: 1100px;
+      margin: 0 auto;
+      transition: background var(--duration-base) var(--ease-out),
+                  color var(--duration-base) var(--ease-out);
+    }
+
+    /* ── Header ── */
+    .report-header {
+      border-bottom: 1px solid var(--amber);
+      padding-bottom: 20px;
+      margin-bottom: 36px;
+    }
+    .report-header .label {
+      color: var(--amber);
+      font-size: 12px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+    .report-header h1 {
+      font-size: 24px;
+      font-weight: normal;
+      color: var(--text);
+      letter-spacing: 0.02em;
+    }
+    .report-header .meta {
+      color: var(--text-dim);
+      font-size: 12px;
+      margin-top: 8px;
+    }
+    .report-header .meta span { color: var(--text-head); }
+    .report-header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+
+    /* ── Sections ── */
+    section { margin-bottom: 44px; }
+
+    .section-title {
+      color: var(--amber);
+      font-size: 12px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 6px;
+      margin-bottom: 18px;
+    }
+
+    /* ── Stat grid ── */
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+    .stat-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      padding: 16px 18px;
+    }
+    .stat-card .stat-label {
+      color: var(--text-dim);
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+    .stat-card .stat-value {
+      color: var(--amber);
+      font-size: 22px;
+      font-weight: bold;
+      letter-spacing: -0.01em;
+    }
+    .stat-card .stat-sub {
+      color: var(--text-dim);
+      font-size: 11px;
+      margin-top: 4px;
+    }
+
+    /* ── Tables ── */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+    thead th {
+      color: var(--text-dim);
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      text-align: left;
+      padding: 6px 10px;
+      border-bottom: 1px solid var(--border);
+    }
+    thead th.num { text-align: right; }
+    tbody tr { border-bottom: 1px solid var(--border); }
+    tbody tr:nth-child(even) { background: var(--bg-row); }
+    tbody tr:hover { background: var(--bg-hover); }
+    td {
+      padding: 7px 10px;
+      color: var(--text);
+      vertical-align: middle;
+    }
+    td.num { text-align: right; color: var(--text); font-variant-numeric: tabular-nums; }
+    td.amber { color: var(--amber); }
+    td.dim { color: var(--text-dim); }
+    td.rank { color: var(--text-dim); font-size: 11px; width: 28px; }
+    tfoot td { padding: 8px 10px; font-size: 13px; }
+
+    /* ── Bar chart cells ── */
+    .bar-wrap { display: flex; align-items: center; gap: 8px; }
+    .bar {
+      height: 6px;
+      background: var(--amber-dim);
+      flex-shrink: 0;
+      min-width: 2px;
+    }
+    .bar.highlight { background: var(--amber); }
+
+    /* ── Split blocks ── */
+    .split-row { display: flex; gap: 12px; margin-bottom: 16px; }
+    .split-block {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      padding: 14px 18px;
+      flex: 1;
+    }
+    .split-block .method { color: var(--text); font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; }
+    .split-block .pct { font-size: 28px; color: var(--amber); margin: 4px 0; }
+    .split-block .detail { color: var(--text); font-size: 11px; }
+
+    /* ── FY band ── */
+    .fy-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+    .fy-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      padding: 14px 18px;
+    }
+    .fy-card .fy-label { color: var(--amber); font-size: 11px; letter-spacing: 0.1em; margin-bottom: 4px; }
+    .fy-card .fy-val { color: var(--text); font-size: 17px; margin-bottom: 2px; }
+    .fy-card .fy-sub { color: var(--text-dim); font-size: 11px; }
+
+    /* ── Callout ── */
+    .callout {
+      background: var(--bg-card);
+      border-left: 3px solid var(--amber);
+      padding: 14px 18px;
+      margin-top: 16px;
+      color: var(--text);
+      font-size: 14px;
+      line-height: 1.75;
+    }
+    .callout strong { color: var(--text); }
+
+    /* ── Agency deep-dive ── */
+    .agency-block {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      padding: 20px 22px;
+      margin-bottom: 16px;
+    }
+    .agency-block .ag-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 14px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 10px;
+    }
+    .agency-block .ag-name {
+      color: var(--amber);
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+    }
+    .agency-block .ag-total {
+      color: var(--text);
+      font-size: 18px;
+    }
+    .agency-block .ag-meta {
+      color: var(--text-dim);
+      font-size: 11px;
+    }
+    .agency-block .ag-prose {
+      color: var(--text);
+      font-size: 13px;
+      line-height: 1.7;
+      margin-bottom: 14px;
+    }
+    .agency-block .ag-prose strong { color: var(--text); }
+    .agency-cols {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    .ag-col-label {
+      color: var(--text-dim);
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    /* ── Limitation ── */
+    .limitation {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      padding: 14px 18px;
+      margin-bottom: 10px;
+    }
+    .limitation .lim-title { color: var(--text); margin-bottom: 4px; }
+    .limitation .lim-body { color: var(--text); font-size: 14px; line-height: 1.7; }
+    .limitation .lim-body strong { color: var(--amber); }
+
+    /* ── Collapsible methodology ── */
+    details.methodology {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      margin-bottom: 44px;
+    }
+    details.methodology summary {
+      color: var(--amber);
+      font-size: 11px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      padding: 10px 18px;
+      cursor: pointer;
+      user-select: none;
+      list-style: none;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    details.methodology summary::-webkit-details-marker { display: none; }
+    details.methodology summary::before {
+      content: '▶';
+      font-size: 9px;
+      transition: transform 0.15s;
+    }
+    details.methodology[open] summary::before { transform: rotate(90deg); }
+    details.methodology .meth-body {
+      padding: 0 18px 16px;
+      color: var(--text);
+      font-size: 14px;
+      line-height: 1.75;
+      border-top: 1px solid var(--border);
+    }
+    details.methodology .meth-body strong { color: var(--text); }
+    details.methodology .meth-body code { color: var(--blue); }
+
+    /* ── Theme toggle ── */
+    .theme-toggle {
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      color: var(--text-dim);
+      font-family: inherit;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 4px 10px;
+      cursor: pointer;
+      transition: border-color var(--duration-base), color var(--duration-base);
+      flex-shrink: 0;
+    }
+    .theme-toggle:hover { border-color: var(--amber); color: var(--amber); }
+
+    /* ── Footer ── */
+    .report-footer {
+      border-top: 1px solid var(--border);
+      padding-top: 16px;
+      margin-top: 48px;
+      color: var(--text-dim);
+      font-size: 11px;
+    }
+
+    /* ── Sub-section label ── */
+    .sub-label {
+      color: var(--text-dim);
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin: 16px 0 8px;
+    }
+  </style>
+</head>
+<body>
+
+<!-- ───────────────── HEADER ───────────────── -->
+<header class="report-header">
+  <div class="report-header-row">
+    <div>
+      <div class="label">Orbit — Preliminary Analysis</div>
+      <h1>South Australian Government Procurement — Contractor Analysis</h1>
+    </div>
+    <button class="theme-toggle" onclick="toggleTheme()">Dark</button>
+  </div>
+  <div class="meta">
+    Source: <span>SA Government CKAN Open Data Portal</span> &nbsp;·&nbsp;
+    Period: <span>FY2024–FY2025 (dated records); prior years (undated records)</span> &nbsp;·&nbsp;
+    Scope: <span>20 SA Government agencies</span> &nbsp;·&nbsp;
+    Generated: <span>9 April 2026</span>
+  </div>
+</header>
+
+<!-- ───────────────── INTRODUCTION ───────────────── -->
+<section>
+  <div class="section-title">Introduction</div>
+  <div class="callout" style="border-left-color: var(--blue); margin-top:0;">
+    South Australian Government procurement disclosed in this dataset totals <strong>$3.57B across 2,370 contract records from 20 agencies.</strong> The structure of that spend is radically concentrated: the Department for Infrastructure and Transport (DIT) accounts for <strong>$3.24B — 91% of all disclosed value — across just 634 contracts.</strong> The remaining 19 agencies collectively represent the other 9%.
+    <br><br>
+    The dominant activity is capital infrastructure delivery. DIT is running the largest hospital building program in South Australia's history concurrently with major transport works — the Tram Grade Separation, Majors Road Interchange, and regional road upgrades. The top nine contracts by value are all construction awards over $50M. Within this, a small cohort of SA-based and national builders capture the bulk of spend: Built Environs, Built Pty Ltd, Sarah Constructions, McMahon Services, and Mossop Group between them hold over $1.29B.
+    <br><br>
+    Beyond DIT, the picture shifts entirely. SA Police spends almost exclusively on <strong>IT and administrative labour hire</strong> — Randstad, Hays, Paxus, Dialog, and Akkodis dominate a $143M total. SA Health's disclosed spend focuses on <strong>clinical reviews, workforce consulting, and pathology reform</strong>, with EY ($7.2M, 16 contracts) as its most embedded advisory firm and Scyne Advisory ($2.6M) handling internal audit. The Department for Education is a heavy <strong>labour hire consumer</strong> ($22M in one contract) alongside digital transformation professional services.
+    <br><br>
+    <strong>Professional services and consulting total $257M (7.2% of spend)</strong> when measured by known firm names. EY is present across 9 agencies and 31 contracts — the most broadly embedded advisory firm in the dataset. KPMG holds 35 contracts across 7 agencies. Scyne Advisory, active across Health, Education, and DIT, has established a meaningful post-PwC position in the SA government market. Labour hire firms — Hays, Randstad, Paxus, Akkodis — account for the largest consulting-adjacent spend, reflecting agencies' heavy reliance on contingent workforce sourcing.
+  </div>
+</section>
+
+<!-- ───────────────── DATASET OVERVIEW ───────────────── -->
+<section>
+  <div class="section-title">Dataset Overview</div>
+  <div class="stat-grid">
+    <div class="stat-card">
+      <div class="stat-label">Total Disclosed Value</div>
+      <div class="stat-value">$3.57B</div>
+      <div class="stat-sub">20 SA Government agencies</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Total Contract Records</div>
+      <div class="stat-value">2,370</div>
+      <div class="stat-sub">FY2024–FY2025 + prior years</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Unique Contractors</div>
+      <div class="stat-value">1,471</div>
+      <div class="stat-sub">After name normalisation</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Consulting &amp; Prof. Services</div>
+      <div class="stat-value">$257M</div>
+      <div class="stat-sub">7.2% of total spend</div>
+    </div>
+  </div>
+
+  <div class="fy-grid" style="margin-top:12px;">
+    <div class="fy-card">
+      <div class="fy-label">FY2024 (dated records)</div>
+      <div class="fy-val">$2.25B</div>
+      <div class="fy-sub">872 contracts</div>
+    </div>
+    <div class="fy-card">
+      <div class="fy-label">FY2025 (dated records)</div>
+      <div class="fy-val">$1.07B</div>
+      <div class="fy-sub">443 contracts</div>
+    </div>
+    <div class="fy-card">
+      <div class="fy-label">Undated records ∗</div>
+      <div class="fy-val">$238M</div>
+      <div class="fy-sub">1,055 contracts</div>
+    </div>
+  </div>
+  <p style="color:var(--text-dim); font-size:11px; margin-top:8px;">∗ A substantial portion of agency disclosures (particularly SA Health, SA Police, DPC, DSD, Defence SA, and SAFC) carry no start date — they are published as aggregate staffing and contractor lists without date attribution. These records are included in agency totals but excluded from the FY breakdown above.</p>
+</section>
+
+<!-- ───────────────── CONTRACT VALUE DISTRIBUTION ───────────────── -->
+<section>
+  <div class="section-title">Contract Value Distribution</div>
+  <table>
+    <thead>
+      <tr>
+        <th>Value Band</th>
+        <th class="num">Contracts</th>
+        <th class="num">% by Count</th>
+        <th class="num">Total Value</th>
+        <th class="num">% of Value</th>
+        <th style="width:175px; padding-left:10px;">
+          <span style="color:var(--text-dim);">% of contracts</span><br>
+          <span style="color:var(--amber);">% of value</span>
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Under $100k</td>
+        <td class="num">1,388</td>
+        <td class="num dim">59%</td>
+        <td class="num">$45.9M</td>
+        <td class="num dim">1%</td>
+        <td style="padding-left:10px;">
+          <div style="display:flex;flex-direction:column;gap:5px;padding:3px 0;">
+            <div style="width:120px;height:6px;background:var(--border);position:relative;"><div style="position:absolute;left:0;top:0;bottom:0;width:71px;background:var(--text-dim);"></div></div>
+            <div style="width:120px;height:6px;background:var(--border);position:relative;"><div style="position:absolute;left:0;top:0;bottom:0;width:1px;background:var(--amber);"></div></div>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td>$100k – $500k</td>
+        <td class="num">516</td>
+        <td class="num dim">22%</td>
+        <td class="num">$121.1M</td>
+        <td class="num dim">3%</td>
+        <td style="padding-left:10px;">
+          <div style="display:flex;flex-direction:column;gap:5px;padding:3px 0;">
+            <div style="width:120px;height:6px;background:var(--border);position:relative;"><div style="position:absolute;left:0;top:0;bottom:0;width:26px;background:var(--text-dim);"></div></div>
+            <div style="width:120px;height:6px;background:var(--border);position:relative;"><div style="position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--amber);"></div></div>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td>$500k – $5M</td>
+        <td class="num">334</td>
+        <td class="num dim">14%</td>
+        <td class="num">$548.1M</td>
+        <td class="num dim">15%</td>
+        <td style="padding-left:10px;">
+          <div style="display:flex;flex-direction:column;gap:5px;padding:3px 0;">
+            <div style="width:120px;height:6px;background:var(--border);position:relative;"><div style="position:absolute;left:0;top:0;bottom:0;width:17px;background:var(--text-dim);"></div></div>
+            <div style="width:120px;height:6px;background:var(--border);position:relative;"><div style="position:absolute;left:0;top:0;bottom:0;width:18px;background:var(--amber);"></div></div>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td>$5M – $50M</td>
+        <td class="num">107</td>
+        <td class="num dim">5%</td>
+        <td class="num">$1,241.1M</td>
+        <td class="num dim">35%</td>
+        <td style="padding-left:10px;">
+          <div style="display:flex;flex-direction:column;gap:5px;padding:3px 0;">
+            <div style="width:120px;height:6px;background:var(--border);position:relative;"><div style="position:absolute;left:0;top:0;bottom:0;width:6px;background:var(--text-dim);"></div></div>
+            <div style="width:120px;height:6px;background:var(--border);position:relative;"><div style="position:absolute;left:0;top:0;bottom:0;width:42px;background:var(--amber);"></div></div>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td>Over $50M</td>
+        <td class="num">9</td>
+        <td class="num dim">&lt;1%</td>
+        <td class="num amber">$1,576.3M</td>
+        <td class="num dim">44%</td>
+        <td style="padding-left:10px;">
+          <div style="display:flex;flex-direction:column;gap:5px;padding:3px 0;">
+            <div style="width:120px;height:6px;background:var(--border);position:relative;"><div style="position:absolute;left:0;top:0;bottom:0;width:1px;background:var(--text-dim);"></div></div>
+            <div style="width:120px;height:6px;background:var(--border);position:relative;"><div style="position:absolute;left:0;top:0;bottom:0;width:53px;background:var(--amber);"></div></div>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <div class="callout">
+    Nine contracts over $50M account for $1.58B — <strong>44% of all disclosed SA government spend.</strong> All nine are DIT construction awards. The 1,388 contracts under $100k collectively represent just $45.9M, or 1% of value — the long tail of routine operational expenditure. Meaningful supplier analysis begins at $500k: the 450 contracts above that threshold carry 94% of total value.
+  </div>
+</section>
+
+<!-- ───────────────── TOP AGENCIES ───────────────── -->
+<section>
+  <div class="section-title">Agencies by Disclosed Spend</div>
+  <table>
+    <thead>
+      <tr>
+        <th class="num" style="width:28px;">#</th>
+        <th>Agency</th>
+        <th class="num">Contracts</th>
+        <th class="num">Total Value</th>
+        <th class="num">% of Total</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td class="rank">1</td><td class="amber">Department for Infrastructure and Transport</td><td class="num">634</td><td class="num">$3,240.1M</td><td class="num dim">90.8%</td></tr>
+      <tr><td class="rank">2</td><td>South Australia Police</td><td class="num">354</td><td class="num">$143.4M</td><td class="num dim">4.0%</td></tr>
+      <tr><td class="rank">3</td><td>SA Health</td><td class="num">362</td><td class="num">$85.8M</td><td class="num dim">2.4%</td></tr>
+      <tr><td class="rank">4</td><td>Department for Education</td><td class="num">349</td><td class="num">$64.0M</td><td class="num dim">1.8%</td></tr>
+      <tr><td class="rank">5</td><td>Department of the Premier and Cabinet</td><td class="num">120</td><td class="num">$10.0M</td><td class="num dim">0.3%</td></tr>
+      <tr><td class="rank">6</td><td>Department of Human Services</td><td class="num">95</td><td class="num">$8.5M</td><td class="num dim">0.2%</td></tr>
+      <tr><td class="rank">7</td><td>Department of State Development</td><td class="num">103</td><td class="num">$5.7M</td><td class="num dim">0.2%</td></tr>
+      <tr><td class="rank">8</td><td>Defence SA</td><td class="num">89</td><td class="num">$2.9M</td><td class="num dim">0.1%</td></tr>
+      <tr><td class="rank">9</td><td>History Trust of South Australia</td><td class="num">28</td><td class="num">$1.8M</td><td class="num dim">&lt;0.1%</td></tr>
+      <tr><td class="rank">10</td><td>South Australian Film Corporation</td><td class="num">67</td><td class="num">$1.7M</td><td class="num dim">&lt;0.1%</td></tr>
+      <tr><td class="rank">11</td><td>Infrastructure SA</td><td class="num">59</td><td class="num">$1.5M</td><td class="num dim">&lt;0.1%</td></tr>
+      <tr><td class="rank">12</td><td>Renewal SA</td><td class="num">31</td><td class="num">$0.9M</td><td class="num dim">&lt;0.1%</td></tr>
+      <tr><td class="rank">13</td><td>Health Services Charitable Gifts Board</td><td class="num">34</td><td class="num">$1.2M</td><td class="num dim">&lt;0.1%</td></tr>
+      <tr><td class="rank">14</td><td>Essential Services Commission (ESCOSA)</td><td class="num">9</td><td class="num">$0.6M</td><td class="num dim">&lt;0.1%</td></tr>
+      <tr><td class="rank">15+</td><td style="color:var(--text-dim);">Five smaller agencies</td><td class="num dim">27</td><td class="num dim">$0.4M</td><td class="num dim">&lt;0.1%</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ───────────────── TOP CONTRACTORS OVERALL ───────────────── -->
+<section>
+  <div class="section-title">Top 25 Contractors by Total Value</div>
+  <p style="color:var(--text-dim); font-size:11px; margin-bottom:12px;">All agencies combined. Contractor names normalised across case and legal suffix variants. FY columns cover dated records only — undated records are excluded from FY attribution. ∗ Joint venture including McConnell Dowell, CPB Contractors, Arup, and Mott MacDonald.</p>
+  <table>
+    <thead>
+      <tr>
+        <th class="num" style="width:28px;">#</th>
+        <th>Contractor</th>
+        <th class="num">Contracts</th>
+        <th class="num">FY2024</th>
+        <th class="num">FY2025</th>
+        <th class="num">Total</th>
+        <th class="num">% of Total</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td class="rank">1</td><td class="amber">Built Environs</td><td class="num">2</td><td class="num">$453.8M</td><td class="num dim">—</td><td class="num">$453.8M</td><td class="num dim">12.7%</td></tr>
+      <tr><td class="rank">2</td><td class="amber">McConnell Dowell / CPB / Arup / Mott MacDonald JV ∗</td><td class="num">1</td><td class="num">$404.6M</td><td class="num dim">—</td><td class="num">$404.6M</td><td class="num dim">11.3%</td></tr>
+      <tr><td class="rank">3</td><td class="amber">Built Pty Ltd</td><td class="num">3</td><td class="num">$29.5M</td><td class="num">$295.1M</td><td class="num">$324.6M</td><td class="num dim">9.1%</td></tr>
+      <tr><td class="rank">4</td><td>Sarah Constructions</td><td class="num">3</td><td class="num">$187.7M</td><td class="num dim">—</td><td class="num">$187.7M</td><td class="num dim">5.3%</td></tr>
+      <tr><td class="rank">5</td><td>McMahon Services Australia</td><td class="num">16</td><td class="num">$125.3M</td><td class="num">$39.7M</td><td class="num">$165.1M</td><td class="num dim">4.6%</td></tr>
+      <tr><td class="rank">6</td><td>Mossop Group</td><td class="num">12</td><td class="num">$121.0M</td><td class="num">$42.1M</td><td class="num">$163.1M</td><td class="num dim">4.6%</td></tr>
+      <tr><td class="rank">7</td><td>Hansen Yuncken</td><td class="num">2</td><td class="num">$110.1M</td><td class="num dim">—</td><td class="num">$110.1M</td><td class="num dim">3.1%</td></tr>
+      <tr><td class="rank">8</td><td>Downer EDI Works</td><td class="num">19</td><td class="num">$58.2M</td><td class="num">$43.7M</td><td class="num">$101.9M</td><td class="num dim">2.9%</td></tr>
+      <tr><td class="rank">9</td><td>Acciona Construction Australia</td><td class="num">1</td><td class="num">$97.1M</td><td class="num dim">—</td><td class="num">$97.1M</td><td class="num dim">2.7%</td></tr>
+      <tr><td class="rank">10</td><td>Bardavcol</td><td class="num">9</td><td class="num">$35.9M</td><td class="num">$33.5M</td><td class="num">$69.4M</td><td class="num dim">1.9%</td></tr>
+      <tr><td class="rank">11</td><td>Premier Roadlines</td><td class="num">3</td><td class="num">$54.6M</td><td class="num dim">—</td><td class="num">$54.6M</td><td class="num dim">1.5%</td></tr>
+      <tr><td class="rank">12</td><td>Hindmarsh Construction Australia</td><td class="num">2</td><td class="num">$49.8M</td><td class="num dim">—</td><td class="num">$49.8M</td><td class="num dim">1.4%</td></tr>
+      <tr><td class="rank">13</td><td>LinkSA</td><td class="num">4</td><td class="num">$45.4M</td><td class="num dim">—</td><td class="num">$45.4M</td><td class="num dim">1.3%</td></tr>
+      <tr><td class="rank">14</td><td>BMD Constructions</td><td class="num">11</td><td class="num">$3.2M</td><td class="num">$37.1M</td><td class="num">$40.3M</td><td class="num dim">1.1%</td></tr>
+      <tr><td class="rank">15</td><td>Little Ferry Service</td><td class="num">6</td><td class="num dim">—</td><td class="num">$38.7M</td><td class="num">$38.7M</td><td class="num dim">1.1%</td></tr>
+      <tr><td class="rank">16</td><td>Spotless Facility Services</td><td class="num">2</td><td class="num">$37.6M</td><td class="num dim">—</td><td class="num">$37.6M</td><td class="num dim">1.1%</td></tr>
+      <tr><td class="rank">17</td><td>Badge Constructions (SA)</td><td class="num">1</td><td class="num">$36.2M</td><td class="num dim">—</td><td class="num">$36.2M</td><td class="num dim">1.0%</td></tr>
+      <tr><td class="rank">18</td><td>Kennett</td><td class="num">1</td><td class="num dim">—</td><td class="num">$33.6M</td><td class="num">$33.6M</td><td class="num dim">0.9%</td></tr>
+      <tr><td class="rank">19</td><td>Sitzler</td><td class="num">2</td><td class="num dim">—</td><td class="num">$32.9M</td><td class="num">$32.9M</td><td class="num dim">0.9%</td></tr>
+      <tr><td class="rank">20</td><td>Bild Infrastructure</td><td class="num">2</td><td class="num dim">—</td><td class="num">$29.0M</td><td class="num">$29.0M</td><td class="num dim">0.8%</td></tr>
+      <tr><td class="rank">21</td><td>Civil &amp; Allied Technical Construction (CATCON)</td><td class="num">3</td><td class="num dim">—</td><td class="num">$25.0M</td><td class="num">$25.0M</td><td class="num dim">0.7%</td></tr>
+      <tr><td class="rank">22</td><td>Randstad</td><td class="num">13</td><td class="num">$5.2M</td><td class="num dim">—</td><td class="num">$24.8M</td><td class="num dim">0.7%</td></tr>
+      <tr><td class="rank">23</td><td>Fulton Hogan Industries</td><td class="num">6</td><td class="num">$1.4M</td><td class="num">$23.0M</td><td class="num">$24.4M</td><td class="num dim">0.7%</td></tr>
+      <tr><td class="rank">24</td><td>Hays</td><td class="num">16</td><td class="num">$7.9M</td><td class="num dim">—</td><td class="num">$23.8M</td><td class="num dim">0.7%</td></tr>
+      <tr><td class="rank">25</td><td>Mark Davis</td><td class="num">3</td><td class="num dim">—</td><td class="num">$23.2M</td><td class="num">$23.2M</td><td class="num dim">0.6%</td></tr>
+    </tbody>
+  </table>
+  <div class="callout">
+    <strong>The top 25 is almost entirely construction.</strong> Positions 1–21 are infrastructure builders or civil contractors, reflecting DIT's dominance of total disclosed spend. The only non-construction names entering the top 25 are Randstad (rank 22), Hays (rank 24), and Mark Davis (rank 25) — all engaged by SA Police and Education on labour hire.
+    <br><br>
+    <strong>Built Environs leads with $453.8M</strong> from just two contracts: the Flinders Medical Centre Redevelopment ($355.9M) and the Modbury Hospital Mental Health Precinct ($97.9M), both as managing contractor. Built Pty Ltd (a related but separate entity) holds a further $324.6M including Mt Barker Hospital ($289.8M in FY2025). Together, the Built group represents approximately $778M — roughly 22% of total disclosed spend — concentrated in hospital infrastructure.
+    <br><br>
+    <strong>The McConnell Dowell/CPB/Arup/Mott MacDonald JV ($404.6M)</strong> is a design-and-construct joint venture for the Tram Grade Separation Projects. This single contract — the largest by value in the dataset — involves all four firms acting together; individual shares are not disclosed.
+    <br><br>
+    <strong>McMahon Services ($165M, 16 contracts) and Mossop Group ($163M, 12 contracts)</strong> are the most active mid-tier builders by both value and contract count. McMahon spans hospitals, road safety, and regional infrastructure. Mossop is focused on mental health and hospital facility works across multiple DIT projects.
+    <br><br>
+    <strong>FY2025 shows a pipeline shift.</strong> Built Pty Ltd, BMD Constructions, Sitzler, Bild Infrastructure, CATCON, and Fulton Hogan all entered or expanded significantly in FY2025, while the FY2024 cohort (Built Environs, McConnell Dowell JV, Sarah Constructions, Acciona) was dominated by earlier awards. This suggests the capital program is progressing — some major FY2024 contracts are delivering while new packages are being awarded downstream.
+  </div>
+</section>
+
+<!-- ───────────────── AGENCY DEEP DIVES ───────────────── -->
+<section>
+  <div class="section-title">Agency Analysis</div>
+
+  <!-- DIT -->
+  <div class="agency-block">
+    <div class="ag-header">
+      <div>
+        <div class="ag-name">Department for Infrastructure and Transport</div>
+        <div class="ag-meta">634 contracts &nbsp;·&nbsp; 327 contractors</div>
+      </div>
+      <div style="text-align:right;">
+        <div class="ag-total">$3,240.1M</div>
+        <div class="ag-meta">90.8% of total disclosed spend</div>
+      </div>
+    </div>
+
+    <div class="ag-prose">
+      DIT is running the most significant concurrent capital program in South Australia's recent history — hospital redevelopments, transport infrastructure, and regional road upgrades delivered simultaneously. The spend profile reflects this: the ten largest contracts are all over $30M, and the top three alone total $1.18B. The department's role as the state's capital delivery vehicle means it acts as principal for projects commissioned by other agencies (e.g., SA Health's hospital builds are procured and managed through DIT).
+      <br><br>
+      The dominant delivery model is the <strong>managing contractor</strong> — a construction management approach where the builder manages trade packages rather than undertaking a fixed-price lump sum. This model allocates risk differently from design-and-construct and tends to produce higher headline contract values. Built Environs, Built Pty Ltd, and Mossop Group are DIT's preferred managing contractors across the hospital program.
+      <br><br>
+      Beyond construction, DIT procures <strong>specialist engineering and architectural consulting</strong> for project initiation, design, and financial assurance. Baukultur ($17.3M) is the lead architect on the SA Forensic Centre. Swanbury Penglase ($8.5M), Grieve Gillett ($7.7M), and DesignInc Adelaide ($5.8M) are active on multiple DIT projects. Aurecon ($7.8M) and WSP ($5.7M) provide engineering advisory services. KPMG holds $6.5M across six contracts, predominantly for financial auditing of the North-South Corridor project alliance.
+      <br><br>
+      Soft facilities management for completed assets is held by <strong>Spotless Facility Services ($37.6M)</strong>, indicating DIT's engagement extends into operational phase asset management post-construction.
+    </div>
+
+    <div class="agency-cols">
+      <div>
+        <div class="ag-col-label">Top Contractors by Value</div>
+        <table>
+          <thead><tr><th>#</th><th>Contractor</th><th class="num">Value</th></tr></thead>
+          <tbody>
+            <tr><td class="rank">1</td><td>Built Environs</td><td class="num amber">$453.8M</td></tr>
+            <tr><td class="rank">2</td><td>McConnell Dowell / CPB / Arup / Mott MacDonald JV</td><td class="num">$404.6M</td></tr>
+            <tr><td class="rank">3</td><td>Built Pty Ltd</td><td class="num">$324.6M</td></tr>
+            <tr><td class="rank">4</td><td>Sarah Constructions</td><td class="num">$187.7M</td></tr>
+            <tr><td class="rank">5</td><td>McMahon Services Australia</td><td class="num">$165.1M</td></tr>
+            <tr><td class="rank">6</td><td>Mossop Group</td><td class="num">$163.1M</td></tr>
+            <tr><td class="rank">7</td><td>Hansen Yuncken</td><td class="num">$110.1M</td></tr>
+            <tr><td class="rank">8</td><td>Downer EDI Works</td><td class="num">$101.9M</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div>
+        <div class="ag-col-label">Top Consulting &amp; Advisory ($108.7M total)</div>
+        <table>
+          <thead><tr><th>#</th><th>Firm</th><th class="num">Value</th><th class="num">#</th></tr></thead>
+          <tbody>
+            <tr><td class="rank">1</td><td>Baukultur</td><td class="num amber">$17.3M</td><td class="num dim">1</td></tr>
+            <tr><td class="rank">2</td><td>Swanbury Penglase</td><td class="num">$8.5M</td><td class="num dim">3</td></tr>
+            <tr><td class="rank">3</td><td>Aurecon</td><td class="num">$7.8M</td><td class="num dim">4</td></tr>
+            <tr><td class="rank">4</td><td>Grieve Gillett</td><td class="num">$7.7M</td><td class="num dim">6</td></tr>
+            <tr><td class="rank">5</td><td>KPMG</td><td class="num">$6.5M</td><td class="num dim">6</td></tr>
+            <tr><td class="rank">6</td><td>MBB Group</td><td class="num">$6.1M</td><td class="num dim">2</td></tr>
+            <tr><td class="rank">7</td><td>DesignInc Adelaide</td><td class="num">$5.8M</td><td class="num dim">3</td></tr>
+            <tr><td class="rank">8</td><td>WSP Australia</td><td class="num">$4.5M</td><td class="num dim">5</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- SA POLICE -->
+  <div class="agency-block">
+    <div class="ag-header">
+      <div>
+        <div class="ag-name">South Australia Police</div>
+        <div class="ag-meta">354 contracts &nbsp;·&nbsp; 95 contractors</div>
+      </div>
+      <div style="text-align:right;">
+        <div class="ag-total">$143.4M</div>
+        <div class="ag-meta">4.0% of total disclosed spend</div>
+      </div>
+    </div>
+
+    <div class="ag-prose">
+      SAPOL's disclosed contractor spend is almost exclusively <strong>labour hire and contingent workforce</strong>. The agency publishes annual aggregate disclosures of agency staff costs categorised by function (IS&amp;T, administrative, project support), rather than individual contract awards. The result is a spend profile dominated entirely by staffing firms, with individual contract values representing a full year of contingent workforce supply across each category.
+      <br><br>
+      <strong>IT and systems work drives the largest labour spend.</strong> Multiple SAPOL disclosures reference "IS&amp;T activities" and "architecture and e-projects" — reflecting ongoing investments in police systems modernisation, records management, and digital infrastructure. Dialog ($9.5M, 5 contracts) stands out as SAPOL's primary IT services firm beyond pure recruitment, suggesting it operates in a more project-delivery capacity rather than simple labour supply. Escient ($5.4M, 5 contracts) similarly holds a position in IT advisory work.
+      <br><br>
+      Administrative and operational staffing runs concurrently — Randstad, Hays, and Paxus each hold multiple annual supply agreements covering general administrative, project, and COVID-era support functions. Akkodis ($6.2M) specialises in technology and engineering talent, consistent with SAPOL's IT-led spend profile.
+      <br><br>
+      The absence of significant professional services advisory — no strategy consulting, no Big 4 advisory, minimal management consulting — is notable. SAPOL's disclosed advisory footprint is contained: a single EY engagement ($56k) for an HR Management Branch Review is the only named advisory firm outside IT staffing.
+    </div>
+
+    <div class="agency-cols">
+      <div>
+        <div class="ag-col-label">Top Contractors by Value</div>
+        <table>
+          <thead><tr><th>#</th><th>Contractor</th><th class="num">Value</th><th class="num">#</th></tr></thead>
+          <tbody>
+            <tr><td class="rank">1</td><td>Randstad</td><td class="num amber">$19.4M</td><td class="num dim">10</td></tr>
+            <tr><td class="rank">2</td><td>Hays</td><td class="num">$15.5M</td><td class="num dim">8</td></tr>
+            <tr><td class="rank">3</td><td>Paxus Australia</td><td class="num">$14.0M</td><td class="num dim">6</td></tr>
+            <tr><td class="rank">4</td><td>Dialog</td><td class="num">$9.5M</td><td class="num dim">5</td></tr>
+            <tr><td class="rank">5</td><td>Akkodis</td><td class="num">$6.2M</td><td class="num dim">3</td></tr>
+            <tr><td class="rank">6</td><td>Innodev Pty Ltd</td><td class="num">$5.7M</td><td class="num dim">3</td></tr>
+            <tr><td class="rank">7</td><td>Escient</td><td class="num">$5.4M</td><td class="num dim">5</td></tr>
+            <tr><td class="rank">8</td><td>Peoplebank</td><td class="num">$4.8M</td><td class="num dim">5</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div>
+        <div class="ag-col-label">Top Consulting &amp; Prof. Services ($92.4M of $143.4M total)</div>
+        <table>
+          <thead><tr><th>#</th><th>Firm</th><th class="num">Value</th><th class="num">#</th></tr></thead>
+          <tbody>
+            <tr><td class="rank">1</td><td>Randstad (labour hire)</td><td class="num amber">$19.4M</td><td class="num dim">10</td></tr>
+            <tr><td class="rank">2</td><td>Hays (labour hire)</td><td class="num">$15.5M</td><td class="num dim">8</td></tr>
+            <tr><td class="rank">3</td><td>Paxus Australia (IT staffing)</td><td class="num">$14.0M</td><td class="num dim">6</td></tr>
+            <tr><td class="rank">4</td><td>Dialog (IT services)</td><td class="num">$9.5M</td><td class="num dim">5</td></tr>
+            <tr><td class="rank">5</td><td>Akkodis (tech staffing)</td><td class="num">$6.2M</td><td class="num dim">3</td></tr>
+            <tr><td class="rank">6</td><td>Escient (IT advisory)</td><td class="num">$5.4M</td><td class="num dim">5</td></tr>
+          </tbody>
+        </table>
+        <p style="color:var(--text-dim);font-size:11px;margin-top:8px;">64% of SAPOL's total spend is contingent workforce supply. Strategy advisory engagement is minimal.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- SA HEALTH -->
+  <div class="agency-block">
+    <div class="ag-header">
+      <div>
+        <div class="ag-name">SA Health</div>
+        <div class="ag-meta">362 contracts &nbsp;·&nbsp; ~120 contractors</div>
+      </div>
+      <div style="text-align:right;">
+        <div class="ag-total">$85.8M</div>
+        <div class="ag-meta">2.4% of total disclosed spend</div>
+      </div>
+    </div>
+
+    <div class="ag-prose">
+      SA Health's disclosed spend combines three distinct categories: <strong>operational services</strong> (traffic control, pharmacy, clinical supply), <strong>advisory and reform consulting</strong>, and <strong>aggregate staffing disclosures</strong> from individual health networks. The largest single item is Workzone Traffic Control ($11.7M), reflecting the scale of on-site traffic management at COVID-19 drive-through testing sites operated across the network — a legacy of the pandemic response period.
+      <br><br>
+      The advisory and reform picture is more strategically significant. <strong>Ernst &amp; Young is SA Health's most embedded advisory firm</strong>, with 16 disclosed engagements totalling $7.2M. EY's work spans three related bodies of work: the Safety and Efficiency Review of SA Pathology (multiple phases, total ~$3M), CALHN workforce modelling and planning ($1.86M across two contracts), and ongoing financial modelling, assurance, and data analytics support. EY was awarded the SA Pathology reform work competitively — a significant mandate and the largest individual advisory engagement in the health sector dataset.
+      <br><br>
+      <strong>Scyne Advisory holds $2.6M across 9 contracts</strong> covering internal audit, ways of working reform (organisational operating model, $1.46M), audit and financial advisory, contract management support, and cyber security review. Scyne's SA Health presence is consistent with its broader SA government positioning — a mid-market advisory firm with a strong audit and assurance base. FTI Consulting ($906k) was engaged for specific financial restructuring work.
+      <br><br>
+      A notable feature of SA Health's disclosures is the prevalence of pharmacy service contracts — RGH Pharmacy Consulting Services ($1.05M), Epic Pharmacy, and others — reflecting privatised or outsourced pharmacy operations at regional hospitals including Port Augusta and Whyalla. These are operational outsourcing arrangements, not advisory engagements.
+    </div>
+
+    <div class="agency-cols">
+      <div>
+        <div class="ag-col-label">Top Contractors by Value</div>
+        <table>
+          <thead><tr><th>#</th><th>Contractor</th><th class="num">Value</th><th class="num">#</th></tr></thead>
+          <tbody>
+            <tr><td class="rank">1</td><td>Workzone Traffic Control</td><td class="num amber">$11.7M</td><td class="num dim">1</td></tr>
+            <tr><td class="rank">2</td><td>Ernst &amp; Young</td><td class="num">$7.2M</td><td class="num dim">16</td></tr>
+            <tr><td class="rank">3</td><td>Scyne Advisory</td><td class="num">$2.6M</td><td class="num dim">9</td></tr>
+            <tr><td class="rank">4</td><td>Epic Pharmacy</td><td class="num">$2.6M</td><td class="num dim">2</td></tr>
+            <tr><td class="rank">5</td><td>Agile Group (Global)</td><td class="num">$1.4M</td><td class="num dim">1</td></tr>
+            <tr><td class="rank">6</td><td>RGH Pharmacy Consulting Services</td><td class="num">$1.1M</td><td class="num dim">1</td></tr>
+            <tr><td class="rank">7</td><td>FTI Consulting</td><td class="num">$0.9M</td><td class="num dim">1</td></tr>
+            <tr><td class="rank">8</td><td>University of Adelaide</td><td class="num">$0.8M</td><td class="num dim">3</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div>
+        <div class="ag-col-label">Top Consulting &amp; Advisory ($17.4M of $85.8M total)</div>
+        <table>
+          <thead><tr><th>#</th><th>Firm</th><th class="num">Value</th><th class="num">#</th></tr></thead>
+          <tbody>
+            <tr><td class="rank">1</td><td>Ernst &amp; Young</td><td class="num amber">$7.2M</td><td class="num dim">16</td></tr>
+            <tr><td class="rank">2</td><td>Scyne Advisory</td><td class="num">$2.6M</td><td class="num dim">9</td></tr>
+            <tr><td class="rank">3</td><td>FTI Consulting</td><td class="num">$0.9M</td><td class="num dim">1</td></tr>
+            <tr><td class="rank">4</td><td>Deloitte Financial Advisory</td><td class="num">$0.5M</td><td class="num dim">1</td></tr>
+            <tr><td class="rank">5</td><td>KPMG</td><td class="num">$0.4M</td><td class="num dim">3</td></tr>
+          </tbody>
+        </table>
+        <p style="color:var(--text-dim);font-size:11px;margin-top:8px;">EY's SA Pathology reform mandate is the largest single advisory engagement across all SA agencies in the dataset.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- EDUCATION -->
+  <div class="agency-block">
+    <div class="ag-header">
+      <div>
+        <div class="ag-name">Department for Education</div>
+        <div class="ag-meta">349 contracts &nbsp;·&nbsp; ~180 contractors</div>
+      </div>
+      <div style="text-align:right;">
+        <div class="ag-total">$64.0M</div>
+        <div class="ag-meta">1.8% of total disclosed spend</div>
+      </div>
+    </div>
+
+    <div class="ag-prose">
+      Education's spend falls into two distinct streams: <strong>labour resources</strong> and <strong>digital transformation professional services</strong>. The largest single entry is a $22.2M "Labour resources" aggregated disclosure — by far the largest undifferentiated staffing contract in the non-DIT portion of the dataset. Schools Ministry Group ($5.7M) represents National Student Wellbeing Program delivery by a non-government provider.
+      <br><br>
+      The <strong>digital transformation and data program</strong> is the most analytically significant part of Education's spend. Multiple professional services contracts reference the Education Management System (EMS) project, an edAnalytics platform, ICT infrastructure in schools, and an Early Learning Strategy — reflecting a sustained investment in departmental data and systems capability. Expose Data ($1.9M, 4 contracts) is the primary analytics and data services firm across this program.
+      <br><br>
+      Labour hire (Hays $7.7M, Randstad $5.2M, Paxus $1.9M) reflects the department's use of contingent ICT and administrative workers across both operational and project roles. The Women's &amp; Children's Hospital appears as a contractor ($1.4M) for Early Learning Strategy professional services — indicating cross-agency service delivery arrangements.
+      <br><br>
+      <strong>Scyne Advisory ($400k across 5 contracts)</strong> holds a foothold in Education covering EMS program assurance, procurement review, risk review, and program evaluation — a light-touch but broad advisory engagement consistent with Scyne's cross-government audit and assurance positioning.
+    </div>
+
+    <div class="agency-cols">
+      <div>
+        <div class="ag-col-label">Top Contractors by Value</div>
+        <table>
+          <thead><tr><th>#</th><th>Contractor</th><th class="num">Value</th><th class="num">#</th></tr></thead>
+          <tbody>
+            <tr><td class="rank">1</td><td>Hays (labour hire)</td><td class="num amber">$7.7M</td><td class="num dim">1</td></tr>
+            <tr><td class="rank">2</td><td>Schools Ministry Group</td><td class="num">$5.7M</td><td class="num dim">1</td></tr>
+            <tr><td class="rank">3</td><td>Randstad (labour hire)</td><td class="num">$5.2M</td><td class="num dim">1</td></tr>
+            <tr><td class="rank">4</td><td>Expose Data</td><td class="num">$1.9M</td><td class="num dim">4</td></tr>
+            <tr><td class="rank">5</td><td>Paxus Australia (IT staffing)</td><td class="num">$1.9M</td><td class="num dim">2</td></tr>
+            <tr><td class="rank">6</td><td>MEGT (Australia) Ltd</td><td class="num">$1.8M</td><td class="num dim">1</td></tr>
+            <tr><td class="rank">7</td><td>Talent International (SA)</td><td class="num">$1.5M</td><td class="num dim">3</td></tr>
+            <tr><td class="rank">8</td><td>Women's &amp; Children's Hospital</td><td class="num">$1.4M</td><td class="num dim">1</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div>
+        <div class="ag-col-label">Top Consulting &amp; Prof. Services ($23.5M of $64.0M)</div>
+        <table>
+          <thead><tr><th>#</th><th>Firm</th><th class="num">Value</th><th class="num">#</th></tr></thead>
+          <tbody>
+            <tr><td class="rank">1</td><td>Hays (labour hire)</td><td class="num amber">$7.7M</td><td class="num dim">1</td></tr>
+            <tr><td class="rank">2</td><td>Randstad (labour hire)</td><td class="num">$5.2M</td><td class="num dim">1</td></tr>
+            <tr><td class="rank">3</td><td>Expose Data</td><td class="num">$1.9M</td><td class="num dim">4</td></tr>
+            <tr><td class="rank">4</td><td>Paxus Australia</td><td class="num">$1.9M</td><td class="num dim">2</td></tr>
+            <tr><td class="rank">5</td><td>Deloitte Financial Advisory</td><td class="num">$0.9M</td><td class="num dim">1</td></tr>
+            <tr><td class="rank">6</td><td>Akkodis</td><td class="num">$0.8M</td><td class="num dim">2</td></tr>
+          </tbody>
+        </table>
+        <p style="color:var(--text-dim);font-size:11px;margin-top:8px;">Scyne Advisory holds 5 Education contracts totalling ~$400k — assurance, risk review, and program evaluation.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- DPC -->
+  <div class="agency-block">
+    <div class="ag-header">
+      <div>
+        <div class="ag-name">Department of the Premier and Cabinet</div>
+        <div class="ag-meta">120 contracts &nbsp;·&nbsp; ~80 contractors</div>
+      </div>
+      <div style="text-align:right;">
+        <div class="ag-total">$10.0M</div>
+        <div class="ag-meta">0.3% of total disclosed spend</div>
+      </div>
+    </div>
+
+    <div class="ag-prose">
+      DPC is the most advisory-intensive department relative to its size. <strong>67% of its total spend ($6.7M of $10.0M) is professional services</strong> — a far higher advisory intensity than any other agency in the dataset. The department procures strategy, policy analysis, market research, ICT review, and programme evaluation rather than operational or capital goods.
+      <br><br>
+      The largest single engagement is Jacobs Group ($1.7M), contracted to conduct a constraints analysis for proposed battery storage sites for the SA Battery Storage Policy — a technically specialised infrastructure advisory assignment. Malcolm Hyde ($1.3M) was engaged for a review of multi-agency emergency response arrangements — a sensitive governance advisory mandate that would not have gone to open tender.
+      <br><br>
+      <strong>KPMG ($640k, 7 contracts)</strong> is DPC's most frequently used advisory firm, engaged across ICT functional reviews, assurance planning, and emerging issues. <strong>PwC ($375k, 6 contracts)</strong> holds a run of smaller advisory mandates. Square Holes ($574k) was engaged for marketing and communications strategy. Notable individual engagements include evaluation of the First Nations Entrepreneur Hub (Circle), economic impact analysis of Lot Fourteen, and several procurements listed as exempt from disclosure under PC027 — indicating sensitive or cabinet-related advisory work.
+      <br><br>
+      Elevate Management Consulting, Gus Commercial Consulting, and Innovation Performance Australia represent the boutique advisory tier — smaller SA-based firms holding project-specific mandates. The $350k Defence supply chain industry attraction engagement (awarded to Innovation Performance Australia) reflects DPC's role in economic policy coordination.
+    </div>
+
+    <div class="agency-cols">
+      <div>
+        <div class="ag-col-label">Top Contractors by Value</div>
+        <table>
+          <thead><tr><th>#</th><th>Contractor</th><th class="num">Value</th><th class="num">#</th></tr></thead>
+          <tbody>
+            <tr><td class="rank">1</td><td>Jacobs Group</td><td class="num amber">$1.7M</td><td class="num dim">1</td></tr>
+            <tr><td class="rank">2</td><td>Malcolm Hyde</td><td class="num">$1.3M</td><td class="num dim">1</td></tr>
+            <tr><td class="rank">3</td><td>KPMG</td><td class="num">$0.6M</td><td class="num dim">7</td></tr>
+            <tr><td class="rank">4</td><td>Square Holes</td><td class="num">$0.6M</td><td class="num dim">1</td></tr>
+            <tr><td class="rank">5</td><td>PwC</td><td class="num">$0.4M</td><td class="num dim">6</td></tr>
+            <tr><td class="rank">6</td><td>Innovation Performance Australia</td><td class="num">$0.4M</td><td class="num dim">1</td></tr>
+            <tr><td class="rank">7</td><td>Gus Commercial Consulting (SA)</td><td class="num">$0.2M</td><td class="num dim">2</td></tr>
+            <tr><td class="rank">8</td><td>Elevate Management Consulting</td><td class="num">$0.2M</td><td class="num dim">2</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div>
+        <div class="ag-col-label">Consulting &amp; Advisory (67% of total spend)</div>
+        <table>
+          <thead><tr><th>#</th><th>Firm</th><th class="num">Value</th><th class="num">#</th></tr></thead>
+          <tbody>
+            <tr><td class="rank">1</td><td>Jacobs Group</td><td class="num amber">$1.7M</td><td class="num dim">1</td></tr>
+            <tr><td class="rank">2</td><td>Malcolm Hyde</td><td class="num">$1.3M</td><td class="num dim">1</td></tr>
+            <tr><td class="rank">3</td><td>KPMG</td><td class="num">$0.6M</td><td class="num dim">7</td></tr>
+            <tr><td class="rank">4</td><td>Square Holes</td><td class="num">$0.6M</td><td class="num dim">1</td></tr>
+            <tr><td class="rank">5</td><td>PwC</td><td class="num">$0.4M</td><td class="num dim">6</td></tr>
+            <tr><td class="rank">6</td><td>Gus Commercial Consulting (SA)</td><td class="num">$0.2M</td><td class="num dim">2</td></tr>
+          </tbody>
+        </table>
+        <p style="color:var(--text-dim);font-size:11px;margin-top:8px;">DPC is the highest advisory-intensity agency in the dataset. EY appears on 3 small engagements not shown above.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- DHS -->
+  <div class="agency-block">
+    <div class="ag-header">
+      <div>
+        <div class="ag-name">Department of Human Services</div>
+        <div class="ag-meta">95 contracts &nbsp;·&nbsp; ~55 contractors</div>
+      </div>
+      <div style="text-align:right;">
+        <div class="ag-total">$8.5M</div>
+        <div class="ag-meta">0.2% of total disclosed spend</div>
+      </div>
+    </div>
+
+    <div class="ag-prose">
+      DHS procurement is primarily <strong>technology discovery, program evaluation, and community services delivery</strong>. The largest engagement is Cloudwerx ($1.3M) for planning and discovery work on the Screening Systems Transformation project — a significant IT modernisation program. Security services (Fields Group, $1.2M, 2 contracts) represents outsourced physical security for DHS facilities.
+      <br><br>
+      The advisory spend at DHS is modest but strategically focused. DWS ($499k) was engaged for planning, requirements analysis, and RFQ support — an IT advisory function. Gravitate Consulting ($283k) provided developer support (Microsoft Azure, .NET). Community-facing program evaluation contracts (Clear Horizon Consulting, evaluation of Family Violence National Partnership initiatives; Aboriginal Emergency Outreach service delivery support) reflect DHS's social policy role.
+    </div>
+
+    <div class="agency-cols">
+      <div>
+        <div class="ag-col-label">Top Contractors</div>
+        <table>
+          <thead><tr><th>#</th><th>Contractor</th><th class="num">Value</th></tr></thead>
+          <tbody>
+            <tr><td class="rank">1</td><td>Cloudwerx</td><td class="num amber">$1.3M</td></tr>
+            <tr><td class="rank">2</td><td>Fields Group</td><td class="num">$1.2M</td></tr>
+            <tr><td class="rank">3</td><td>DWS Advanced Business Solutions</td><td class="num">$0.5M</td></tr>
+            <tr><td class="rank">4</td><td>Iwiri Aboriginal Corporation</td><td class="num">$0.4M</td></tr>
+            <tr><td class="rank">5</td><td>Gravitate Consulting</td><td class="num">$0.3M</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div>
+        <div class="ag-col-label">Top Consulting &amp; Advisory ($4.3M of $8.5M)</div>
+        <table>
+          <thead><tr><th>#</th><th>Firm</th><th class="num">Value</th></tr></thead>
+          <tbody>
+            <tr><td class="rank">1</td><td>Cloudwerx (IT discovery)</td><td class="num amber">$1.3M</td></tr>
+            <tr><td class="rank">2</td><td>Fields Group (security)</td><td class="num">$1.2M</td></tr>
+            <tr><td class="rank">3</td><td>DWS (IT advisory)</td><td class="num">$0.5M</td></tr>
+            <tr><td class="rank">4</td><td>Gravitate Consulting</td><td class="num">$0.3M</td></tr>
+            <tr><td class="rank">5</td><td>Clear Horizon Consulting</td><td class="num">$0.2M</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- DSD -->
+  <div class="agency-block">
+    <div class="ag-header">
+      <div>
+        <div class="ag-name">Department of State Development</div>
+        <div class="ag-meta">103 contracts &nbsp;·&nbsp; ~70 contractors</div>
+      </div>
+      <div style="text-align:right;">
+        <div class="ag-total">$5.7M</div>
+        <div class="ag-meta">0.2% of total disclosed spend</div>
+      </div>
+    </div>
+
+    <div class="ag-prose">
+      DSD's spend is dominated by <strong>ICT licensing and specialist IT staffing</strong>, reflecting the department's role in trade, investment, and industry development rather than capital delivery. Dassault Systèmes ($555k) — the 3D design software vendor — is the largest single contractor, likely licensed for industry capability or aerospace/defence supply chain modelling work. Peoplbank ($412k) and Hays ($228k) provide specialist IT contractors.
+      <br><br>
+      Hajdu Consulting ($300k) was engaged for unspecified consulting work. EY appears on three small mandates (change management, strategy, procurement review). The total advisory spend ($2.3M) is spread thinly across a large number of small engagements — no single advisory firm holds a dominant position. This is consistent with a relatively small department without a large capital or reform program driving concentrated advisory demand.
+    </div>
+
+    <div class="agency-cols">
+      <div>
+        <div class="ag-col-label">Top Contractors</div>
+        <table>
+          <thead><tr><th>#</th><th>Contractor</th><th class="num">Value</th></tr></thead>
+          <tbody>
+            <tr><td class="rank">1</td><td>Dassault Systèmes</td><td class="num amber">$555k</td></tr>
+            <tr><td class="rank">2</td><td>Peoplebank (IT staffing)</td><td class="num">$412k</td></tr>
+            <tr><td class="rank">3</td><td>Hajdu Consulting</td><td class="num">$300k</td></tr>
+            <tr><td class="rank">4</td><td>NEC IT Solutions</td><td class="num">$250k</td></tr>
+            <tr><td class="rank">5</td><td>Hays (labour hire)</td><td class="num">$228k</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div>
+        <div class="ag-col-label">Top Consulting &amp; Advisory ($2.3M of $5.7M)</div>
+        <table>
+          <thead><tr><th>#</th><th>Firm</th><th class="num">Value</th></tr></thead>
+          <tbody>
+            <tr><td class="rank">1</td><td>Dassault Systèmes</td><td class="num amber">$555k</td></tr>
+            <tr><td class="rank">2</td><td>Peoplebank</td><td class="num">$412k</td></tr>
+            <tr><td class="rank">3</td><td>Hajdu Consulting</td><td class="num">$300k</td></tr>
+            <tr><td class="rank">4</td><td>Hays</td><td class="num">$228k</td></tr>
+            <tr><td class="rank">5</td><td>Escient</td><td class="num">$102k</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Defence SA -->
+  <div class="agency-block">
+    <div class="ag-header">
+      <div>
+        <div class="ag-name">Defence SA</div>
+        <div class="ag-meta">89 contracts &nbsp;·&nbsp; ~60 contractors</div>
+      </div>
+      <div style="text-align:right;">
+        <div class="ag-total">$2.9M</div>
+        <div class="ag-meta">0.1% of total disclosed spend</div>
+      </div>
+    </div>
+
+    <div class="ag-prose">
+      Defence SA's disclosed spend is small relative to its strategic significance. The agency functions as an <strong>industry facilitation and investment attraction body</strong> rather than a capital or operational procurement agency — its core work involves connecting SA defence industry players with Commonwealth programs and managing defence precinct infrastructure at Osborne and Edinburgh. Accordingly, most of its contracted expenditure is for <strong>research, design, and specialist advisory</strong> rather than construction or services delivery.
+      <br><br>
+      SmartSat CRC ($898k) is the largest single contractor — a space and satellite research cooperative. Birdon Pty Ltd ($411k) is a specialist naval vessel builder and maritime advisory firm. Van Den Berg Design Team ($265k) provided architecture and design services. The consulting footprint is minimal ($238k) and fragmented across small engagements with Aurecon, Frazer-Nash Consultancy, Tonkin Consulting, and Hays.
+    </div>
+
+    <div class="agency-cols">
+      <div>
+        <div class="ag-col-label">Top Contractors</div>
+        <table>
+          <thead><tr><th>#</th><th>Contractor</th><th class="num">Value</th></tr></thead>
+          <tbody>
+            <tr><td class="rank">1</td><td>SmartSat CRC</td><td class="num amber">$898k</td></tr>
+            <tr><td class="rank">2</td><td>Birdon Pty Ltd</td><td class="num">$411k</td></tr>
+            <tr><td class="rank">3</td><td>Van Den Berg Design Team</td><td class="num">$265k</td></tr>
+            <tr><td class="rank">4</td><td>W-H Commercial</td><td class="num">$139k</td></tr>
+            <tr><td class="rank">5</td><td>Hays</td><td class="num">$79k</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div>
+        <div class="ag-col-label">Consulting &amp; Advisory ($238k of $2.9M)</div>
+        <table>
+          <thead><tr><th>#</th><th>Firm</th><th class="num">Value</th></tr></thead>
+          <tbody>
+            <tr><td class="rank">1</td><td>Hays</td><td class="num">$79k</td></tr>
+            <tr><td class="rank">2</td><td>PwC</td><td class="num">$68k</td></tr>
+            <tr><td class="rank">3</td><td>Aurecon</td><td class="num">$43k</td></tr>
+            <tr><td class="rank">4</td><td>Frazer-Nash Consultancy</td><td class="num">$19k</td></tr>
+            <tr><td class="rank">5</td><td>Tonkin Consulting</td><td class="num">$13k</td></tr>
+          </tbody>
+        </table>
+        <p style="color:var(--text-dim);font-size:11px;margin-top:8px;">Defence SA's advisory spend is minimal. Its strategic role operates through facilitation and relationship management, not contracted advisory.</p>
+      </div>
+    </div>
+  </div>
+
+</section>
+
+<!-- ───────────────── CONSULTING & PROF SERVICES ───────────────── -->
+<section>
+  <div class="section-title">Consulting &amp; Professional Services — All Agencies</div>
+  <p style="color:var(--text-dim); font-size:11px; margin-bottom:12px;">Includes management consulting, engineering and technical advisory, architecture, IT consulting, and labour hire / recruitment firms. Identified by firm name; does not rely on contract description keywords. Firm names normalised across legal variants.</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th class="num" style="width:28px;">#</th>
+        <th>Firm</th>
+        <th>Type</th>
+        <th class="num">Contracts</th>
+        <th class="num">Agencies</th>
+        <th class="num">Total Value</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td class="rank">1</td><td>Randstad</td><td class="dim">Labour hire</td><td class="num">13</td><td class="num dim">4</td><td class="num amber">$24.8M</td></tr>
+      <tr><td class="rank">2</td><td>Hays</td><td class="dim">Labour hire</td><td class="num">16</td><td class="num dim">6</td><td class="num">$23.8M</td></tr>
+      <tr><td class="rank">3</td><td>Baukultur</td><td class="dim">Architecture</td><td class="num">2</td><td class="num dim">2</td><td class="num">$17.4M</td></tr>
+      <tr><td class="rank">4</td><td>Paxus Australia</td><td class="dim">IT staffing</td><td class="num">8</td><td class="num dim">2</td><td class="num">$15.9M</td></tr>
+      <tr><td class="rank">5</td><td class="amber">Ernst &amp; Young</td><td class="dim">Big 4 advisory</td><td class="num">31</td><td class="num dim">9</td><td class="num">$13.4M</td></tr>
+      <tr><td class="rank">6</td><td>Dialog</td><td class="dim">IT services</td><td class="num">6</td><td class="num dim">2</td><td class="num">$9.6M</td></tr>
+      <tr><td class="rank">7</td><td class="amber">KPMG</td><td class="dim">Big 4 advisory</td><td class="num">35</td><td class="num dim">7</td><td class="num">$9.2M</td></tr>
+      <tr><td class="rank">8</td><td>Swanbury Penglase</td><td class="dim">Architecture</td><td class="num">4</td><td class="num dim">3</td><td class="num">$8.5M</td></tr>
+      <tr><td class="rank">9</td><td>Aurecon</td><td class="dim">Eng. consulting</td><td class="num">10</td><td class="num dim">5</td><td class="num">$8.3M</td></tr>
+      <tr><td class="rank">10</td><td>Grieve Gillett</td><td class="dim">Architecture</td><td class="num">6</td><td class="num dim">1</td><td class="num">$7.7M</td></tr>
+      <tr><td class="rank">11</td><td>Akkodis</td><td class="dim">Tech staffing</td><td class="num">5</td><td class="num dim">2</td><td class="num">$7.0M</td></tr>
+      <tr><td class="rank">12</td><td>Escient</td><td class="dim">IT advisory</td><td class="num">11</td><td class="num dim">4</td><td class="num">$6.3M</td></tr>
+      <tr><td class="rank">13</td><td>MBB Group</td><td class="dim">Management consulting</td><td class="num">2</td><td class="num dim">1</td><td class="num">$6.1M</td></tr>
+      <tr><td class="rank">14</td><td>DesignInc Adelaide</td><td class="dim">Architecture</td><td class="num">3</td><td class="num dim">1</td><td class="num">$5.8M</td></tr>
+      <tr><td class="rank">15</td><td>WSP Australia</td><td class="dim">Eng. consulting</td><td class="num">10</td><td class="num dim">3</td><td class="num">$5.7M</td></tr>
+      <tr><td class="rank">16</td><td>Peoplebank</td><td class="dim">IT staffing</td><td class="num">8</td><td class="num dim">4</td><td class="num">$5.6M</td></tr>
+      <tr><td class="rank">17</td><td>G-Force Consulting</td><td class="dim">Building consulting</td><td class="num">2</td><td class="num dim">1</td><td class="num">$5.3M</td></tr>
+      <tr><td class="rank">18</td><td>Hoban Recruitment</td><td class="dim">Labour hire</td><td class="num">4</td><td class="num dim">2</td><td class="num">$4.9M</td></tr>
+      <tr><td class="rank">19</td><td>Mott MacDonald</td><td class="dim">Eng. consulting</td><td class="num">3</td><td class="num dim">1</td><td class="num">$4.4M</td></tr>
+      <tr><td class="rank">20</td><td>DFP Recruitment Services</td><td class="dim">Labour hire</td><td class="num">7</td><td class="num dim">1</td><td class="num">$3.9M</td></tr>
+      <tr><td class="rank">21</td><td>Russell &amp; Yelland</td><td class="dim">Architecture / eng.</td><td class="num">3</td><td class="num dim">1</td><td class="num">$3.6M</td></tr>
+      <tr><td class="rank">22</td><td>Tonkin Consulting</td><td class="dim">Eng. consulting</td><td class="num">4</td><td class="num dim">2</td><td class="num">$3.5M</td></tr>
+      <tr><td class="rank">23</td><td class="amber">Scyne Advisory</td><td class="dim">Management consulting</td><td class="num">17</td><td class="num dim">3</td><td class="num">$3.4M</td></tr>
+      <tr><td class="rank">24</td><td>Smedley Technical &amp; Strategic</td><td class="dim">Technical advisory</td><td class="num">1</td><td class="num dim">1</td><td class="num">$2.6M</td></tr>
+      <tr><td class="rank">25</td><td>Expose Data</td><td class="dim">Data/IT consulting</td><td class="num">6</td><td class="num dim">3</td><td class="num">$2.2M</td></tr>
+    </tbody>
+    <tfoot>
+      <tr style="border-top: 1px solid var(--amber);">
+        <td colspan="4" style="color:var(--amber); font-size:11px; text-transform:uppercase; letter-spacing:0.08em;">Total (252 named firms)</td>
+        <td></td>
+        <td class="num amber">$257.3M</td>
+      </tr>
+    </tfoot>
+  </table>
+
+  <div class="callout" style="margin-top:16px;">
+    <strong>Labour hire dominates consulting-category spend.</strong> Randstad ($24.8M), Hays ($23.8M), Paxus ($15.9M), Akkodis ($7.0M), Peoplebank ($5.6M), Hoban ($4.9M), and DFP ($3.9M) collectively account for $85.9M — 33% of all professional services spend. This reflects agencies' heavy structural reliance on contingent workforce, particularly SA Police and Education.
+    <br><br>
+    <strong>Architecture accounts for $44.9M</strong> across Baukultur ($17.4M), Swanbury Penglase ($8.5M), Grieve Gillett ($7.7M), DesignInc Adelaide ($5.8M), and Russell &amp; Yelland ($3.6M). This spend is almost entirely attributable to DIT's major hospital and infrastructure program — all five firms are engaged directly on DIT capital projects. Baukultur's position is notable: a single $17.3M contract for the SA Forensic Centre (lead project architect) makes it the third-largest professional services firm in the entire dataset.
+    <br><br>
+    <strong>Ernst &amp; Young is the most widely deployed advisory firm in SA government</strong>, present across 9 agencies and 31 contracts. No other firm approaches this breadth. Its largest mandate — the SA Pathology Safety and Efficiency Review ($3M+) — is the most significant named advisory engagement in the dataset. KPMG leads by contract count (35 contracts, 7 agencies), reflecting a broad-based audit, assurance, and advisory practice rather than major single mandates.
+    <br><br>
+    <strong>Scyne Advisory ($3.4M, 17 contracts, 3 agencies)</strong> is building a consistent SA government position post-PwC rebrand. Its SA footprint spans Health (internal audit, operating model reform), Education (EMS assurance, risk, program review), and DIT (alliance audit). Average contract value of $202k reflects a high-volume, lower-margin audit and assurance model rather than large advisory mandates. This is a different positioning to EY's SA Health engagement, which involves substantive reform advice at higher individual contract values.
+    <br><br>
+    <strong>Engineering consulting ($22.2M across Aurecon, WSP, Mott MacDonald, Tonkin, Russell &amp; Yelland)</strong> is the third-largest advisory category. All five firms are primarily engaged on DIT capital projects. Aurecon is active across 5 agencies (10 contracts), making it the most broadly deployed engineering advisory firm. MBB Group ($6.1M, 2 contracts) holds what appears to be construction management advisory on DIT projects — large individual engagements with a single client.
+  </div>
+</section>
+
+<!-- ───────────────── PER-AGENCY CONSULTING VIEW ───────────────── -->
+<section>
+  <div class="section-title">Consulting &amp; Advisory — Top Firms by Agency</div>
+  <p style="color:var(--text-dim); font-size:11px; margin-bottom:14px;">Ranks the top advisory firms for each agency. Labour hire firms are included as they represent the dominant consulting-category expenditure for several agencies. Values shown are across all available contract records including undated disclosures.</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Agency</th>
+        <th>Rank 1</th>
+        <th class="num">Value</th>
+        <th>Rank 2</th>
+        <th class="num">Value</th>
+        <th>Rank 3</th>
+        <th class="num">Value</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="amber">DIT</td>
+        <td>Baukultur</td><td class="num">$17.3M</td>
+        <td>Swanbury Penglase</td><td class="num">$8.5M</td>
+        <td>Aurecon</td><td class="num">$7.8M</td>
+      </tr>
+      <tr>
+        <td class="amber">SA Police</td>
+        <td>Randstad</td><td class="num">$19.4M</td>
+        <td>Hays</td><td class="num">$15.5M</td>
+        <td>Paxus Australia</td><td class="num">$14.0M</td>
+      </tr>
+      <tr>
+        <td class="amber">SA Health</td>
+        <td>Ernst &amp; Young</td><td class="num">$7.2M</td>
+        <td>Scyne Advisory</td><td class="num">$2.6M</td>
+        <td>FTI Consulting</td><td class="num">$0.9M</td>
+      </tr>
+      <tr>
+        <td class="amber">Education</td>
+        <td>Hays</td><td class="num">$7.7M</td>
+        <td>Randstad</td><td class="num">$5.2M</td>
+        <td>Expose Data</td><td class="num">$1.9M</td>
+      </tr>
+      <tr>
+        <td class="amber">DPC</td>
+        <td>Jacobs Group</td><td class="num">$1.7M</td>
+        <td>Malcolm Hyde</td><td class="num">$1.3M</td>
+        <td>KPMG</td><td class="num">$0.6M</td>
+      </tr>
+      <tr>
+        <td class="amber">Human Services</td>
+        <td>Cloudwerx</td><td class="num">$1.3M</td>
+        <td>Fields Group</td><td class="num">$1.2M</td>
+        <td>DWS</td><td class="num">$0.5M</td>
+      </tr>
+      <tr>
+        <td class="amber">State Development</td>
+        <td>Dassault Systèmes</td><td class="num">$555k</td>
+        <td>Peoplebank</td><td class="num">$412k</td>
+        <td>Hajdu Consulting</td><td class="num">$300k</td>
+      </tr>
+      <tr>
+        <td class="amber">Defence SA</td>
+        <td>Hays</td><td class="num">$79k</td>
+        <td>PwC</td><td class="num">$68k</td>
+        <td>Aurecon</td><td class="num">$43k</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="callout" style="margin-top:16px;">
+    <strong>Advisory market structure varies sharply by agency.</strong> DIT's consulting spend is dominated by technical advisory and architecture firms — the Big 4 are largely absent from DIT's top consulting positions, where engineers and architects hold the mandates. SA Health is the opposite: EY holds the dominant advisory relationship, while technical firms are absent. SA Police and Education are almost entirely labour hire.
+    <br><br>
+    <strong>No single firm holds a dominant position across multiple agencies.</strong> EY's 9-agency footprint is the widest, but its individual agency spends are relatively modest outside SA Health. KPMG's 7-agency reach is similarly dispersed and count-heavy rather than value-heavy. This fragmentation suggests the SA government advisory market rewards persistent relationship-building and panel positioning rather than large single-agency mandates — with the partial exception of EY's SA Health and KPMG's DIT audit engagements.
+    <br><br>
+    <strong>Scyne Advisory's 3-agency, 17-contract position</strong> (Health, Education, DIT) is the most striking post-rebrand recovery in the dataset. Starting from a zero base in SA in October 2023, it has established audit and assurance mandates across three agencies in under two years — consistent with a deliberate strategy to reconstitute the former PwC Government Advisory client base under the new brand.
+  </div>
+</section>
+
+<!-- ───────────────── DATA LIMITATIONS ───────────────── -->
+<section>
+  <div class="section-title">Data Limitations</div>
+
+  <div class="limitation">
+    <div class="lim-title">1. Disclosure threshold and coverage gaps</div>
+    <div class="lim-body">SA CKAN disclosures are made by agencies on a voluntary or partially mandated basis. Not all agencies disclose all contracts, and the threshold for disclosure varies. Small advisory engagements below departmental reporting thresholds may not appear. The dataset likely <strong>understates the volume and value of small-value advisory work</strong> across all agencies, particularly for boutique SA-based consulting firms engaged on sub-threshold projects.</div>
+  </div>
+
+  <div class="limitation">
+    <div class="lim-title">2. Undated records limit FY analysis</div>
+    <div class="lim-body">1,055 of 2,370 contract records (44%) carry no start date. These are predominantly from SA Police, SA Health, DPC, DSD, Defence SA, and SAFC, which publish aggregate staffing lists rather than individual contract awards. FY2024 and FY2025 figures in this report cover <strong>dated DIT and Education records only</strong> and do not represent the full agency-level spend for those years.</div>
+  </div>
+
+  <div class="limitation">
+    <div class="lim-title">3. No subcontractor visibility</div>
+    <div class="lim-body">The CKAN dataset records only the prime contractor. In the major DIT hospital and transport projects, managing contractors engage hundreds of trade and specialist subcontractors — none visible here. The market position of firms operating as project subcontractors (particularly specialist trade contractors and advisory firms embedded inside managing contractor teams) is invisible in this dataset.</div>
+  </div>
+
+  <div class="limitation">
+    <div class="lim-title">4. Aggregate rows and name inconsistency</div>
+    <div class="lim-body">Several agencies (notably SA Health and SAPOL) publish aggregate "total contractors" rows rather than individual disclosures. These have been excluded from contractor-level analysis but remain in agency-level totals where consistent with agency-published figures. Contractor names are inconsistently formatted across agencies and years — normalisation has been applied for known variants, but <strong>residual fragmentation across name variants for smaller firms is likely.</strong></div>
+  </div>
+
+  <div class="limitation">
+    <div class="lim-title">5. This dataset covers SA Government agencies only</div>
+    <div class="lim-body">Commonwealth agencies operating in South Australia (Defence, Home Affairs, Health) procure through AusTender, not CKAN. The two datasets do not overlap. For a full picture of contractor activity in SA — particularly for defence primes and infrastructure firms active on both Commonwealth and state programs — analysis must span both registers separately.</div>
+  </div>
+</section>
+
+<!-- ───────────────── METHODOLOGY ───────────────── -->
+<details class="methodology">
+  <summary>Methodology</summary>
+  <div class="meth-body">
+    <br>
+    <strong>Source.</strong> South Australian Government CKAN Open Data Portal. Contract disclosure data extracted for all available agencies. Records were loaded into a local SQLite database as part of the Orbit data pipeline.
+    <br><br>
+    <strong>Period.</strong> Records with start dates fall predominantly in FY2024 (July 2023 – June 2024) and FY2025 (July 2024 – June 2025). A substantial volume of records (1,055) carry no start date — these are included in agency totals and contractor rankings but excluded from year-attributed analysis. The CKAN portal does not consistently indicate the year of disclosure for undated records; notes fields suggest some date back to FY2022.
+    <br><br>
+    <strong>Exclusions.</strong> Aggregate placeholder rows — including "Total Contractors", "Contractors – Agency Staffing – Grand Total", and "Total Independent Contractors" — were excluded from all contractor-level analysis. Agency-level totals use the published figures inclusive of these rows where consistent with original source.
+    <br><br>
+    <strong>Name normalisation.</strong> Contractor names were normalised across case, punctuation, and legal suffix variants (Pty Ltd / Pty. Ltd. / Pty Limited). Known variants of the same entity were merged under a canonical name. Residual fragmentation across uncommon variants is possible for less-frequently appearing firms.
+    <br><br>
+    <strong>Consulting classification.</strong> Professional services firms are identified by company name against a curated list of known consulting, advisory, architecture, engineering, IT services, and recruitment firms. Description-keyword matching was not used; identification is based on firm identity only. This approach captures known firms reliably but will miss boutique or newly established advisory firms not on the reference list.
+  </div>
+</details>
+
+<!-- ───────────────── FOOTER ───────────────── -->
+<footer class="report-footer">
+  Orbit Defence &amp; Government Intelligence &nbsp;·&nbsp; SA Government Contractors — Preliminary Report &nbsp;·&nbsp; Generated 9 April 2026 &nbsp;·&nbsp;
+  Data: SA Government CKAN Open Data Portal &nbsp;·&nbsp; For internal use only
+</footer>
+
+<script>
+  function toggleTheme() {
+    const html = document.documentElement;
+    const current = html.getAttribute('data-theme');
+    const next = current === 'dark' ? 'light' : 'dark';
+    html.setAttribute('data-theme', next);
+    document.querySelector('.theme-toggle').textContent = next === 'dark' ? 'Light' : 'Dark';
+  }
+</script>
+
+</body>
+</html>

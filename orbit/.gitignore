@@ -1,0 +1,5 @@
+node_modules/
+data/*.db
+data/*.csv
+.env
+.env.local

@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Government Contractor Industry — Preliminary Analysis</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --ease-out:      cubic-bezier(0.16, 1, 0.3, 1);
+      --duration-base: 200ms;
+    }
+
+    :root, [data-theme="light"] {
+      --bg:        #FFFFFF;
+      --bg-card:   #F4F6FA;
+      --bg-row:    #EDF0F7;
+      --bg-hover:  #E5EAF5;
+      --border:    #D6DCE8;
+      --amber:     #2558C4;
+      --amber-dim: #9BB0D4;
+      --text:      #0C1A36;
+      --text-dim:  #6B7FA0;
+      --text-head: #6B7FA0;
+      --green:     #16A34A;
+      --red:       #DC2626;
+      --blue:      #2563EB;
+    }
+
+    [data-theme="dark"] {
+      --bg:        #0A1220;
+      --bg-card:   #0D1729;
+      --bg-row:    #172036;
+      --bg-hover:  #1E2D45;
+      --border:    #1E2D45;
+      --amber:     #F2BDCC;
+      --amber-dim: #7A3D52;
+      --text:      #F0F4F8;
+      --text-dim:  #7A9AB8;
+      --text-head: #7A9AB8;
+      --green:     #34d399;
+      --red:       #f87171;
+      --blue:      #60a5fa;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Helvetica Neue', 'Helvetica', Arial, sans-serif;
+      font-size: 15px;
+      line-height: 1.65;
+      padding: 40px 32px;
+      max-width: 1100px;
+      margin: 0 auto;
+      transition: background var(--duration-base) var(--ease-out),
+                  color var(--duration-base) var(--ease-out);
+    }
+
+    .report-header {
+      border-bottom: 1px solid var(--amber);
+      padding-bottom: 20px;
+      margin-bottom: 36px;
+    }
+    .report-header .label {
+      color: var(--amber);
+      font-size: 12px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+    .report-header h1 {
+      font-size: 24px;
+      font-weight: normal;
+      color: var(--text);
+      letter-spacing: 0.02em;
+    }
+    .report-header .meta {
+      color: var(--text-dim);
+      font-size: 12px;
+      margin-top: 8px;
+    }
+    .report-header .meta span { color: var(--text-head); }
+    .report-header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+
+    section { margin-bottom: 44px; }
+
+    .section-title {
+      color: var(--amber);
+      font-size: 12px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 6px;
+      margin-bottom: 18px;
+    }
+
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+    .stat-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      padding: 16px 18px;
+    }
+    .stat-card .stat-label {
+      color: var(--text-dim);
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+    .stat-card .stat-value {
+      color: var(--amber);
+      font-size: 22px;
+      font-weight: bold;
+      letter-spacing: -0.01em;
+    }
+    .stat-card .stat-sub {
+      color: var(--text-dim);
+      font-size: 11px;
+      margin-top: 4px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+    thead th {
+      color: var(--text-dim);
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      text-align: left;
+      padding: 6px 10px;
+      border-bottom: 1px solid var(--border);
+    }
+    thead th.num { text-align: right; }
+    tbody tr { border-bottom: 1px solid var(--border); }
+    tbody tr:nth-child(even) { background: var(--bg-row); }
+    tbody tr:hover { background: var(--bg-hover); }
+    td {
+      padding: 7px 10px;
+      color: var(--text);
+      vertical-align: middle;
+    }
+    td.num { text-align: right; font-variant-numeric: tabular-nums; }
+    td.amber { color: var(--amber); }
+    td.dim { color: var(--text-dim); }
+    td.rank { color: var(--text-dim); font-size: 11px; width: 28px; }
+    tfoot td { padding: 8px 10px; font-size: 13px; }
+
+    .bar-wrap { display: flex; align-items: center; gap: 8px; }
+    .bar {
+      height: 6px;
+      background: var(--amber-dim);
+      flex-shrink: 0;
+      min-width: 2px;
+    }
+    .bar.highlight { background: var(--amber); }
+
+    .callout {
+      background: var(--bg-card);
+      border-left: 3px solid var(--amber);
+      padding: 14px 18px;
+      margin-top: 16px;
+      color: var(--text);
+      font-size: 14px;
+      line-height: 1.75;
+    }
+    .callout strong { color: var(--text); }
+
+    /* Concentration pyramid */
+    .pyramid {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      margin-bottom: 16px;
+    }
+    .pyramid-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .pyramid-bar-wrap {
+      flex: 1;
+      height: 28px;
+      background: var(--bg-row);
+      position: relative;
+      overflow: hidden;
+    }
+    .pyramid-fill {
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      background: var(--amber-dim);
+      transition: width 0.3s var(--ease-out);
+    }
+    .pyramid-fill.hi { background: var(--amber); }
+    .pyramid-label {
+      width: 140px;
+      color: var(--text-dim);
+      font-size: 11px;
+      text-align: right;
+      flex-shrink: 0;
+    }
+    .pyramid-pct {
+      width: 50px;
+      color: var(--amber);
+      font-size: 13px;
+      font-variant-numeric: tabular-nums;
+      flex-shrink: 0;
+    }
+    .pyramid-val {
+      width: 60px;
+      color: var(--text-dim);
+      font-size: 11px;
+      flex-shrink: 0;
+    }
+
+    /* Archetype cards */
+    .archetype-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    .archetype-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      padding: 16px 18px;
+    }
+    .archetype-card .arch-name {
+      color: var(--amber);
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+    .archetype-card .arch-value {
+      font-size: 20px;
+      color: var(--text);
+      margin-bottom: 2px;
+    }
+    .archetype-card .arch-meta {
+      color: var(--text-dim);
+      font-size: 11px;
+      margin-bottom: 8px;
+    }
+    .archetype-card .arch-examples {
+      color: var(--text-dim);
+      font-size: 11px;
+      line-height: 1.5;
+      border-top: 1px solid var(--border);
+      padding-top: 8px;
+    }
+    .archetype-card .arch-examples strong { color: var(--text); }
+
+    /* Tenure grid */
+    .tenure-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+    .tenure-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      padding: 12px 14px;
+    }
+    .tenure-card .t-label { color: var(--amber); font-size: 11px; letter-spacing: 0.08em; margin-bottom: 4px; }
+    .tenure-card .t-val { font-size: 16px; color: var(--text); }
+    .tenure-card .t-sub { color: var(--text-dim); font-size: 11px; margin-top: 2px; }
+
+    /* Scale band row */
+    .scale-row {
+      display: flex;
+      gap: 0;
+      margin-bottom: 16px;
+      height: 48px;
+      overflow: hidden;
+    }
+    .scale-seg {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--bg);
+      transition: opacity 0.2s;
+      cursor: default;
+      flex-shrink: 0;
+      padding: 0 4px;
+      text-align: center;
+    }
+
+    .split-row { display: flex; gap: 12px; margin-bottom: 16px; }
+    .split-block {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      padding: 14px 18px;
+      flex: 1;
+    }
+    .split-block .method { color: var(--text); font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; }
+    .split-block .pct { font-size: 28px; color: var(--amber); margin: 4px 0; }
+    .split-block .detail { color: var(--text); font-size: 11px; }
+
+    .sub-label {
+      color: var(--text-dim);
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin: 16px 0 8px;
+    }
+
+    .limitation {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      padding: 14px 18px;
+      margin-bottom: 10px;
+    }
+    .limitation .lim-title { color: var(--text); margin-bottom: 4px; font-size: 13px; }
+    .limitation .lim-body { color: var(--text); font-size: 13px; line-height: 1.7; }
+    .limitation .lim-body strong { color: var(--amber); }
+
+    details.methodology {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      margin-bottom: 44px;
+    }
+    details.methodology summary {
+      color: var(--amber);
+      font-size: 11px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      padding: 10px 18px;
+      cursor: pointer;
+      user-select: none;
+      list-style: none;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    details.methodology summary::-webkit-details-marker { display: none; }
+    details.methodology summary::before { content: '▶'; font-size: 9px; transition: transform 0.15s; }
+    details.methodology[open] summary::before { transform: rotate(90deg); }
+    details.methodology .meth-body {
+      padding: 0 18px 16px;
+      color: var(--text);
+      font-size: 13px;
+      line-height: 1.75;
+      border-top: 1px solid var(--border);
+    }
+    details.methodology .meth-body code { color: var(--blue); }
+
+    .theme-toggle {
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      color: var(--text-dim);
+      font-family: inherit;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 4px 10px;
+      cursor: pointer;
+      transition: border-color var(--duration-base), color var(--duration-base);
+      flex-shrink: 0;
+    }
+    .theme-toggle:hover { border-color: var(--amber); color: var(--amber); }
+
+    .report-footer {
+      border-top: 1px solid var(--border);
+      padding-top: 16px;
+      margin-top: 48px;
+      color: var(--text-dim);
+      font-size: 11px;
+    }
+  </style>
+</head>
+<body>
+
+<!-- ───────────────── HEADER ───────────────── -->
+<header class="report-header">
+  <div class="report-header-row">
+    <div>
+      <div class="label">Orbit — Preliminary Analysis</div>
+      <h1>The Government Contractor Industry: Market Structure and Supplier Profiles</h1>
+    </div>
+    <button class="theme-toggle" onclick="toggleTheme()">Dark</button>
+  </div>
+  <div class="meta">
+    Source: <span>AusTender OCDS API</span> &nbsp;·&nbsp;
+    Contractors: <span>33,086 (excl. pass-through accounts)</span> &nbsp;·&nbsp;
+    Total spend analysed: <span>$203.7B</span> &nbsp;·&nbsp;
+    Generated: <span>14 April 2026</span>
+  </div>
+</header>
+
+<!-- ───────────────── INTRODUCTION ───────────────── -->
+<section>
+  <div class="section-title">Overview</div>
+  <div class="callout" style="border-left-color: var(--blue); margin-top:0;">
+    The Commonwealth procurement base contains 33,086 contractors, functioning as two distinct industries operating in parallel. The first is a concentrated tier of roughly 1,500 established suppliers (primes, estate managers, IT integrators, consultants, labour hire firms, and specialist monopolies) holding long-term, multi-year relationships worth $123B collectively. The second is a broad, shallow pool of 19,000+ one-time or single-year contractors: tradespeople, medical practitioners, regional businesses, and project-specific suppliers who collectively account for under 15% of total value.
+    <br><br>
+    <strong>The top 100 contractors hold 55% of all spend</strong> from a base of 33,000. The top 500 hold 80%. The 298 contractors with more than 100 contract awards between them hold 34% of value. A single government buyer transacts repeatedly with a small set of deeply embedded incumbents.
+    <br><br>
+    <strong>The most valuable contractor relationships are service monopolies.</strong> Austal ($6.9B, 4 contracts) and Hanwha ($5.2B, 5 contracts) are the only viable domestic shipbuilding and armoured vehicle suppliers. Secure Journeys ($4.7B, 2 contracts) holds Australia's immigration detention infrastructure. DHA ($4.4B) provides defence housing. Viva Energy ($2.0B) supplies fuel to Defence estates. In each case the contract value reflects the absence of a competitive alternative.
+    <br><br>
+    A structurally significant segment sits outside the conventional contractor picture: <strong>property trusts and single-purpose entities</strong> receiving billion-dollar payments for office leases classified as procurement. The Trustee for 150 Lonsdale Street Trust ($1.05B, one contract, Australian Federal Police), Athllon Trustee ($368M, Services Australia), and a cluster of ATO property vehicles reveal that a material portion of AusTender's recorded "contractor" spend represents long-term lease payments.
+  </div>
+</section>
+
+<!-- ───────────────── MARKET CONCENTRATION ───────────────── -->
+<section>
+  <div class="section-title">Market Concentration</div>
+  <div class="stat-grid" style="margin-bottom:20px;">
+    <div class="stat-card">
+      <div class="stat-label">Total Contractors</div>
+      <div class="stat-value">33,086</div>
+      <div class="stat-sub">Excl. FMS/pass-through accounts</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Top 100 share</div>
+      <div class="stat-value">55%</div>
+      <div class="stat-sub">of $203.7B total spend</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Top 500 share</div>
+      <div class="stat-value">80%</div>
+      <div class="stat-sub">of total spend</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Bottom 16,808</div>
+      <div class="stat-value">9%</div>
+      <div class="stat-sub">of spend, 1 contract each</div>
+    </div>
+  </div>
+
+  <p style="color:var(--text-dim); font-size:11px; margin-bottom:10px; text-transform:uppercase; letter-spacing:0.08em;">Cumulative spend share by contractor rank. Each row = value held by contractors ranked 1 through N.</p>
+  <div class="pyramid">
+    <div class="pyramid-row">
+      <div class="pyramid-label">Top 10</div>
+      <div class="pyramid-bar-wrap"><div class="pyramid-fill hi" style="width:18.9%;"></div></div>
+      <div class="pyramid-pct">18.9%</div>
+      <div class="pyramid-val">$38.5B</div>
+    </div>
+    <div class="pyramid-row">
+      <div class="pyramid-label">Top 50</div>
+      <div class="pyramid-bar-wrap"><div class="pyramid-fill hi" style="width:43.4%;"></div></div>
+      <div class="pyramid-pct">43.4%</div>
+      <div class="pyramid-val">$88.4B</div>
+    </div>
+    <div class="pyramid-row">
+      <div class="pyramid-label">Top 100</div>
+      <div class="pyramid-bar-wrap"><div class="pyramid-fill hi" style="width:55.4%;"></div></div>
+      <div class="pyramid-pct">55.4%</div>
+      <div class="pyramid-val">$112.8B</div>
+    </div>
+    <div class="pyramid-row">
+      <div class="pyramid-label">Top 500</div>
+      <div class="pyramid-bar-wrap"><div class="pyramid-fill" style="width:80.5%;"></div></div>
+      <div class="pyramid-pct">80.5%</div>
+      <div class="pyramid-val">$163.8B</div>
+    </div>
+    <div class="pyramid-row">
+      <div class="pyramid-label">Top 1,000</div>
+      <div class="pyramid-bar-wrap"><div class="pyramid-fill" style="width:87.9%;"></div></div>
+      <div class="pyramid-pct">87.9%</div>
+      <div class="pyramid-val">$179.0B</div>
+    </div>
+    <div class="pyramid-row">
+      <div class="pyramid-label">All 33,086</div>
+      <div class="pyramid-bar-wrap"><div class="pyramid-fill" style="width:100%;"></div></div>
+      <div class="pyramid-pct">100%</div>
+      <div class="pyramid-val">$203.7B</div>
+    </div>
+  </div>
+  <div class="callout">
+    32,086 contractors outside the top 1,000 share the remaining 12% of spend ($24.7B). Monitoring the top 500 contractors covers 80% of all Commonwealth procurement value.
+  </div>
+</section>
+
+<!-- ───────────────── SUPPLIER ARCHETYPES ───────────────── -->
+<section>
+  <div class="section-title">Supplier Archetypes</div>
+  <p style="color:var(--text-dim); font-size:12px; margin-bottom:14px;">Six distinct supplier types account for the structured portion of government spend. Archetype is inferred from contractor name and contract patterns using keyword matching; UNSPSC-based formal classification has not yet been applied.</p>
+  <div class="archetype-grid">
+    <div class="archetype-card">
+      <div class="arch-name">Defence Primes</div>
+      <div class="arch-value">$35.6B</div>
+      <div class="arch-meta">~187 contractors</div>
+      <div class="arch-examples">
+        Platform developers, weapons systems, naval construction, combat vehicles, C2 systems. Contracts are large, multi-year, often sole-source.
+        <br><br><strong>Examples:</strong> Austal ($6.9B), Hanwha ($5.2B), BAE Systems ($2.2B), Thales ($1.9B), CEA Technologies ($1.9B), Anduril ($2.0B), Kongsberg ($1.2B), L3Harris ($1.1B)
+      </div>
+    </div>
+    <div class="archetype-card">
+      <div class="arch-name">Estate &amp; Facilities</div>
+      <div class="arch-value">$16.8B</div>
+      <div class="arch-meta">~92 contractors</div>
+      <div class="arch-examples">
+        Base operations, building maintenance, cleaning, catering, property management. Volume-driven with hundreds of repeat contracts per supplier.
+        <br><br><strong>Examples:</strong> Cushman &amp; Wakefield ($3.9B), Spotless ($3.8B), Evolve FM ($1.9B), JLL ($1.9B), Compass Group ($1.9B), Ventia ($1.6B)
+      </div>
+    </div>
+    <div class="archetype-card">
+      <div class="arch-name">IT &amp; Technology</div>
+      <div class="arch-value">$9.7B</div>
+      <div class="arch-meta">~87 contractors</div>
+      <div class="arch-examples">
+        Hardware supply, software licensing, managed services, systems integration. Split between volume resellers and high-value managed services providers.
+        <br><br><strong>Examples:</strong> Data#3 ($2.0B), IBM ($1.6B), Leidos ($1.4B), Dell ($884M), Optus ($833M), Telstra ($728M)
+      </div>
+    </div>
+    <div class="archetype-card">
+      <div class="arch-name">Consulting &amp; Advisory</div>
+      <div class="arch-value">$5.3B</div>
+      <div class="arch-meta">~47 identified firms</div>
+      <div class="arch-examples">
+        Strategy, technology transformation, program management, internal audit, workforce. Wide agency reach; contract sizes vary by firm positioning.
+        <br><br><strong>Examples:</strong> Accenture ($1.3B), KPMG ($688M), Deloitte ($598M), EY ($505M), Scyne ($264M), BCG ($150M)
+      </div>
+    </div>
+    <div class="archetype-card">
+      <div class="arch-name">Labour Hire &amp; Recruitment</div>
+      <div class="arch-value">$3.7B</div>
+      <div class="arch-meta">~198 firms</div>
+      <div class="arch-examples">
+        Contingent workforce supply across every agency. Hays alone spans 97 agencies. Contracts are small individually but numerous; volume is the business model.
+        <br><br><strong>Examples:</strong> Hays ($659M, 97 agencies), Hudson ($307M), Randstad ($239M), Adecco ($1.3B), HorizonOne ($112M)
+      </div>
+    </div>
+    <div class="archetype-card">
+      <div class="arch-name">Specialist Monopolies</div>
+      <div class="arch-value">~$15B+</div>
+      <div class="arch-meta">Small number of sole-source providers</div>
+      <div class="arch-examples">
+        Single-source providers for critical services where government has no substitutable supplier. Contract values reflect structural dependency and sole-source status.
+        <br><br><strong>Examples:</strong> Secure Journeys ($4.7B, detention), DHA ($4.4B, defence housing), Viva Energy ($2.0B, fuel), Service Stream ($2.0B, one contract)
+      </div>
+    </div>
+  </div>
+  <div class="callout">
+    The six archetypes are structurally different markets. Defence primes and specialist monopolies operate with limited competitive tension; value reflects capability scarcity or sole-source status. Facilities and IT are competitive at the contract level but exhibit strong incumbent advantage at renewal. Consulting and labour hire are formally competitive but show persistent concentration: the same firms appear across dozens of agencies year after year.
+  </div>
+</section>
+
+<!-- ───────────────── CONTRACT VOLUME PROFILE ───────────────── -->
+<section>
+  <div class="section-title">Contractor Scale — Volume vs Value</div>
+  <p style="color:var(--text-dim); font-size:12px; margin-bottom:14px;">Contractors grouped by number of contract awards. High count indicates a repeat, systemic supplier; low count with high value indicates a large single-award relationship.</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Contract count band</th>
+        <th class="num">Contractors</th>
+        <th class="num">Total Value</th>
+        <th class="num">% of Value</th>
+        <th class="num">Avg per contractor</th>
+        <th style="width:130px; padding-left:10px;">Value share</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>100+ contracts</td>
+        <td class="num amber">298</td>
+        <td class="num amber">$69.8B</td>
+        <td class="num dim">34%</td>
+        <td class="num">$234M</td>
+        <td style="padding-left:10px;"><div class="bar-wrap"><div class="bar highlight" style="width:102px;"></div></div></td>
+      </tr>
+      <tr>
+        <td>21–100 contracts</td>
+        <td class="num">1,147</td>
+        <td class="num">$38.2B</td>
+        <td class="num dim">19%</td>
+        <td class="num">$33M</td>
+        <td style="padding-left:10px;"><div class="bar-wrap"><div class="bar" style="width:57px;"></div></div></td>
+      </tr>
+      <tr>
+        <td>6–20 contracts</td>
+        <td class="num">3,331</td>
+        <td class="num">$28.9B</td>
+        <td class="num dim">14%</td>
+        <td class="num">$8.7M</td>
+        <td style="padding-left:10px;"><div class="bar-wrap"><div class="bar" style="width:43px;"></div></div></td>
+      </tr>
+      <tr>
+        <td>2–5 contracts</td>
+        <td class="num">11,502</td>
+        <td class="num">$48.2B</td>
+        <td class="num dim">24%</td>
+        <td class="num">$4.2M</td>
+        <td style="padding-left:10px;"><div class="bar-wrap"><div class="bar" style="width:72px;"></div></div></td>
+      </tr>
+      <tr>
+        <td>1 contract</td>
+        <td class="num">16,808</td>
+        <td class="num">$18.6B</td>
+        <td class="num dim">9%</td>
+        <td class="num">$1.1M</td>
+        <td style="padding-left:10px;"><div class="bar-wrap"><div class="bar" style="width:28px;"></div></div></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="callout">
+    The 2–5 contract band is the largest by value ($48.2B, 24%) despite containing mostly smaller suppliers; large single-award relationships such as Service Stream ($2.0B, one contract) contribute materially here. The 16,808 one-contract suppliers collectively hold $18.6B, but that average of $1.1M per contractor conceals a large range: from a $2.0B sole-source infrastructure contract to a $200 stationery purchase. The 298 high-volume suppliers (100+ contracts) averaging $234M each are the structural core of government supply: embedded and renewal-prone.
+  </div>
+</section>
+
+<!-- ───────────────── TENURE & CONTINUITY ───────────────── -->
+<section>
+  <div class="section-title">Contractor Tenure — Years Active in AusTender</div>
+  <p style="color:var(--text-dim); font-size:12px; margin-bottom:14px;">Based on distinct calendar years with at least one contract award. Dataset spans approximately FY2022–FY2026 (5 years).</p>
+  <div class="tenure-grid">
+    <div class="tenure-card">
+      <div class="t-label">1 year</div>
+      <div class="t-val">19,326</div>
+      <div class="t-sub">contractors · $29.5B</div>
+    </div>
+    <div class="tenure-card">
+      <div class="t-label">2 years</div>
+      <div class="t-val">6,796</div>
+      <div class="t-sub">contractors · $26.5B</div>
+    </div>
+    <div class="tenure-card">
+      <div class="t-label">3 years</div>
+      <div class="t-val">3,059</div>
+      <div class="t-sub">contractors · $20.8B</div>
+    </div>
+    <div class="tenure-card">
+      <div class="t-label">4 years</div>
+      <div class="t-val">2,380</div>
+      <div class="t-sub">contractors · $27.0B</div>
+    </div>
+    <div class="tenure-card">
+      <div class="t-label">5 years (full)</div>
+      <div class="t-val">1,532</div>
+      <div class="t-sub">contractors · <strong style="color:var(--amber);">$123.2B</strong></div>
+    </div>
+  </div>
+  <div class="callout">
+    The 1,532 contractors present in every year of the dataset hold $123.2B, or 60% of total spend. These are suppliers with structurally embedded relationships the government renews year on year. The 19,326 one-year contractors account for $29.5B (14%), with most of that value concentrated in a small number of large one-off awards (construction projects, pharmaceutical supply contracts, leasehold purchases).
+  </div>
+
+  <div class="sub-label">Highest average annual spend — continuous 5-year suppliers</div>
+  <table>
+    <thead>
+      <tr>
+        <th class="rank">#</th>
+        <th>Contractor</th>
+        <th class="num">Contracts</th>
+        <th class="num">Total</th>
+        <th class="num">Avg/year</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td class="rank">1</td><td>Cushman &amp; Wakefield Pty Ltd</td><td class="num">202</td><td class="num amber">$3,866M</td><td class="num">$773M</td></tr>
+      <tr><td class="rank">2</td><td>Spotless Facility Services Pty Ltd</td><td class="num">281</td><td class="num">$3,771M</td><td class="num">$754M</td></tr>
+      <tr><td class="rank">3</td><td>Lockheed Martin Australia Pty Ltd</td><td class="num">105</td><td class="num">$2,774M</td><td class="num">$555M</td></tr>
+      <tr><td class="rank">4</td><td>Boeing Defence Australia Ltd</td><td class="num">354</td><td class="num">$2,545M</td><td class="num">$509M</td></tr>
+      <tr><td class="rank">5</td><td>Anduril Australia Pty Ltd</td><td class="num">13</td><td class="num">$2,027M</td><td class="num">$507M</td></tr>
+      <tr><td class="rank">6</td><td>BAE Systems Australia Pty Ltd</td><td class="num">617</td><td class="num">$2,238M</td><td class="num">$448M</td></tr>
+      <tr><td class="rank">7</td><td>Data#3 Limited</td><td class="num">2,236</td><td class="num">$2,041M</td><td class="num">$408M</td></tr>
+      <tr><td class="rank">8</td><td>Viva Energy Australia Pty Ltd</td><td class="num">209</td><td class="num">$1,997M</td><td class="num">$399M</td></tr>
+      <tr><td class="rank">9</td><td>Thales Australia</td><td class="num">2,371</td><td class="num">$1,938M</td><td class="num">$388M</td></tr>
+      <tr><td class="rank">10</td><td>CEA Technologies Pty Ltd</td><td class="num">72</td><td class="num">$1,874M</td><td class="num">$375M</td></tr>
+      <tr><td class="rank">11</td><td>Evolve FM Pty Ltd</td><td class="num">206</td><td class="num">$1,880M</td><td class="num">$376M</td></tr>
+      <tr><td class="rank">12</td><td>Jones Lang LaSalle (ACT) Pty Ltd</td><td class="num">1,184</td><td class="num">$1,864M</td><td class="num">$373M</td></tr>
+      <tr><td class="rank">13</td><td>Compass Group Defence Hospitality</td><td class="num">61</td><td class="num">$1,855M</td><td class="num">$371M</td></tr>
+      <tr><td class="rank">14</td><td>IBM Australia Ltd</td><td class="num">157</td><td class="num">$1,612M</td><td class="num">$322M</td></tr>
+      <tr><td class="rank">15</td><td>DT Global Asia Pacific Pty Ltd</td><td class="num">88</td><td class="num">$1,585M</td><td class="num">$317M</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ───────────────── HIGH-VOLUME SUPPLIERS ───────────────── -->
+<section>
+  <div class="section-title">High-Volume Suppliers — Most Contracts Awarded</div>
+  <p style="color:var(--text-dim); font-size:12px; margin-bottom:14px;">Contract count indicates how frequently a supplier transacts with government. High count reflects either a recurring service model (labour hire, IT supply) or a long-term platform relationship invoiced in discrete parcels (Thales, BAE).</p>
+  <table>
+    <thead>
+      <tr>
+        <th class="rank">#</th>
+        <th>Contractor</th>
+        <th class="num">Contracts</th>
+        <th class="num">Agencies</th>
+        <th class="num">Total Value</th>
+        <th class="num">Avg contract</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td class="rank">1</td><td>Hays Specialist Recruitment</td><td class="num amber">3,514</td><td class="num">97</td><td class="num">$659M</td><td class="num dim">$188k</td></tr>
+      <tr><td class="rank">2</td><td>Thales Australia</td><td class="num">2,371</td><td class="num">4</td><td class="num">$1,938M</td><td class="num dim">$817k</td></tr>
+      <tr><td class="rank">3</td><td>Data#3 Limited</td><td class="num">2,236</td><td class="num">91</td><td class="num">$2,041M</td><td class="num dim">$913k</td></tr>
+      <tr><td class="rank">4</td><td>Hudson Global Resources</td><td class="num">1,915</td><td class="num">78</td><td class="num">$307M</td><td class="num dim">$160k</td></tr>
+      <tr><td class="rank">5</td><td>Australian Government Solicitor</td><td class="num">1,835</td><td class="num">68</td><td class="num">$172M</td><td class="num dim">$93k</td></tr>
+      <tr><td class="rank">6</td><td>Dell Australia Pty Ltd</td><td class="num">1,750</td><td class="num">60</td><td class="num">$884M</td><td class="num dim">$505k</td></tr>
+      <tr><td class="rank">7</td><td>Telstra Limited</td><td class="num">1,414</td><td class="num">67</td><td class="num">$728M</td><td class="num dim">$515k</td></tr>
+      <tr><td class="rank">8</td><td>Jones Lang LaSalle (ACT)</td><td class="num">1,184</td><td class="num">50</td><td class="num">$1,864M</td><td class="num dim">$1,574k</td></tr>
+      <tr><td class="rank">9</td><td>Mediabrands / Universal McCann</td><td class="num">1,132</td><td class="num">66</td><td class="num">$847M</td><td class="num dim">$748k</td></tr>
+      <tr><td class="rank">10</td><td>Randstad Pty Ltd</td><td class="num">1,089</td><td class="num">60</td><td class="num">$239M</td><td class="num dim">$220k</td></tr>
+      <tr><td class="rank">11</td><td>KPMG</td><td class="num">968</td><td class="num">77</td><td class="num">$650M</td><td class="num dim">$672k</td></tr>
+      <tr><td class="rank">12</td><td>Clayton Utz Lawyers</td><td class="num">1,032</td><td class="num">66</td><td class="num">$147M</td><td class="num dim">$143k</td></tr>
+      <tr><td class="rank">13</td><td>BAE Systems Australia</td><td class="num">617</td><td class="num">5</td><td class="num">$2,238M</td><td class="num dim">$3,628k</td></tr>
+      <tr><td class="rank">14</td><td>SG Fleet Australia Pty Ltd</td><td class="num">1,243</td><td class="num">43</td><td class="num">$613M</td><td class="num dim">$493k</td></tr>
+      <tr><td class="rank">15</td><td>Fujitsu Australia Ltd</td><td class="num">899</td><td class="num">41</td><td class="num">$495M</td><td class="num dim">$551k</td></tr>
+    </tbody>
+  </table>
+  <div class="callout">
+    Thales (2,371 contracts, 4 agencies, $817k average) and BAE Systems (617 contracts, 5 agencies, $3.6M average) combine high volume with high value and low agency breadth, transacting entirely within Defence on platform sustainment and deliverables. Hays at 3,514 contracts across 97 agencies operates at the opposite end of the value spectrum: near-ubiquitous at $188k per contract. Hays fills short-term IT roles; BAE delivers naval combat system components.
+  </div>
+</section>
+
+<!-- ───────────────── SINGLE-AGENCY DEPENDENCIES ───────────────── -->
+<section>
+  <div class="section-title">Single-Agency Dependencies — High-Value Sole Buyers</div>
+  <p style="color:var(--text-dim); font-size:12px; margin-bottom:14px;">Contractors whose entire AusTender revenue derives from one agency. At high values, these represent structural dependencies for both parties.</p>
+  <table>
+    <thead>
+      <tr>
+        <th>Contractor</th>
+        <th>Sole agency</th>
+        <th class="num">Contracts</th>
+        <th class="num">Total Value</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>Austal Defence Shipbuilding Australia</td><td class="dim">Dept of Defence</td><td class="num">4</td><td class="num amber">$6,874M</td></tr>
+      <tr><td>Hanwha Defense Australia Pty Ltd</td><td class="dim">Dept of Defence</td><td class="num">5</td><td class="num">$5,221M</td></tr>
+      <tr><td>Secure Journeys Pty Ltd</td><td class="dim">Dept of Home Affairs</td><td class="num">2</td><td class="num">$4,686M</td></tr>
+      <tr><td>DHA — Central Office</td><td class="dim">Dept of Defence</td><td class="num">4</td><td class="num">$4,381M</td></tr>
+      <tr><td>Service Stream Infrastructure Services</td><td class="dim">Dept of Defence</td><td class="num">1</td><td class="num">$2,038M</td></tr>
+      <tr><td>Anduril Australia Pty Ltd</td><td class="dim">Dept of Defence</td><td class="num">13</td><td class="num">$2,027M</td></tr>
+      <tr><td>CEA Technologies Pty Ltd</td><td class="dim">Dept of Defence</td><td class="num">72</td><td class="num">$1,874M</td></tr>
+      <tr><td>Compass Group Defence Hospitality</td><td class="dim">Dept of Defence</td><td class="num">61</td><td class="num">$1,855M</td></tr>
+      <tr><td>Fulton Hogan Construction Pty Ltd</td><td class="dim">Dept of Defence</td><td class="num">7</td><td class="num">$1,240M</td></tr>
+      <tr><td>Kongsberg Defence &amp; Aerospace AS</td><td class="dim">Dept of Defence</td><td class="num">12</td><td class="num">$1,197M</td></tr>
+      <tr><td>L3Harris Communications Australia</td><td class="dim">Dept of Defence</td><td class="num">165</td><td class="num">$1,077M</td></tr>
+      <tr><td>Raytheon Australia Pty Ltd</td><td class="dim">Dept of Defence</td><td class="num">92</td><td class="num">$1,060M</td></tr>
+      <tr><td>ADECCO Australia Pty Ltd</td><td class="dim">Dept of Defence</td><td class="num">5</td><td class="num">$1,335M</td></tr>
+      <tr><td>Serendipity (WA) Pty Ltd</td><td class="dim">Dept of Defence</td><td class="num">24</td><td class="num">$1,261M</td></tr>
+    </tbody>
+  </table>
+  <div class="callout">
+    Defence dominates this list, reflecting the nature of sovereign capability procurement: once a supplier builds the ship, the programme, or the combat system, they become the only viable sustainment provider. Kongsberg ($1.2B), Raytheon ($1.1B), and L3Harris ($1.1B) are foreign-headquartered entities with Australian subsidiaries entirely dependent on the Defence relationship. Adecco at $1.3B from Defence is a reminder that labour hire is the largest procurement category within the department by contract count. Serendipity (WA) at $1.26B is a privately held catering and hospitality firm whose entire revenue base is a single government client.
+  </div>
+</section>
+
+<!-- ───────────────── HIDDEN ENTITIES ───────────────── -->
+<section>
+  <div class="section-title">Hidden Entities — Property Trusts &amp; Single-Purpose Vehicles</div>
+  <p style="color:var(--text-dim); font-size:12px; margin-bottom:14px;">A class of high-value AusTender records where the recipient is a property trust, landowner entity, or purpose-built vehicle receiving lease or land payments classified as procurement.</p>
+  <table>
+    <thead>
+      <tr>
+        <th>Entity</th>
+        <th>Agency</th>
+        <th class="num">Contracts</th>
+        <th class="num">Value</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>The Trustee for 150 Lonsdale Street Trust</td><td class="dim">Australian Federal Police</td><td class="num">1</td><td class="num amber">$1,052M</td></tr>
+      <tr><td>CDC No2 Trust / No3 Trust / No4 Trust</td><td class="dim">Dept of Agriculture</td><td class="num">1</td><td class="num">$387M</td></tr>
+      <tr><td>The Trust Company (Australia) Ltd</td><td class="dim">Services Australia</td><td class="num">17</td><td class="num">$385M</td></tr>
+      <tr><td>The Trustee for the Salvation Army (Vic) Property Trust</td><td class="dim">Dept of Social Services</td><td class="num">8</td><td class="num">$379M</td></tr>
+      <tr><td>Athllon Trustee Pty Ltd</td><td class="dim">Services Australia</td><td class="num">1</td><td class="num">$368M</td></tr>
+      <tr><td>Doma Barton Pty Ltd</td><td class="dim">Australian Taxation Office</td><td class="num">1</td><td class="num">$323M</td></tr>
+      <tr><td>The Trustee for CH Genge Landowner Trust</td><td class="dim">Australian Taxation Office</td><td class="num">1</td><td class="num">$311M</td></tr>
+      <tr><td>The Trustee for 55 Elizabeth Street Trust</td><td class="dim">Australian Taxation Office</td><td class="num">1</td><td class="num">$299M</td></tr>
+      <tr><td>Trustee for Walker Northbourne Property Unit Trust</td><td class="dim">Australian Electoral Commission</td><td class="num">1</td><td class="num">$261M</td></tr>
+      <tr><td>320 Pitt Street</td><td class="dim">Dept of Defence</td><td class="num">1</td><td class="num">$225M</td></tr>
+    </tbody>
+  </table>
+  <div class="callout">
+    These entities collectively represent approximately $4B in AusTender records for property leases and landowner payments. They appear in the contractor database because AusTender records all Commonwealth contract expenditure, including long-term accommodation arrangements. The 150 Lonsdale Street Trust ($1.05B, Australian Federal Police) is the AFP's Melbourne headquarters lease. The ATO cluster reflects multi-decade office leasehold commitments classified as procurement. Supply chain analysis focused on goods and services should exclude these records.
+  </div>
+</section>
+
+<!-- ───────────────── LIMITATIONS ───────────────── -->
+<section>
+  <div class="section-title">Analytical Limitations</div>
+  <div class="limitation">
+    <div class="lim-title">Contractor name fragmentation</div>
+    <div class="lim-body">The same company appears under multiple name variants across agency submissions. Segment totals and archetype groupings in this report aggregate known variants by keyword matching. Group-level spend for large firms (Deloitte, KPMG, Accenture) is understated where trading entity names were not identified. ABN-based consolidation, planned in Phase 1 of the enrichment pipeline, will resolve this.</div>
+  </div>
+  <div class="limitation">
+    <div class="lim-title">Contract value is face value</div>
+    <div class="lim-body">AusTender records awarded contract value. Actual expenditure may differ due to contract variations, partial drawdown, or cancellation. Single-contract high-value records (Service Stream $2.0B, Sigma Healthcare $635M) should be treated as ceiling values pending confirmation against actual payments data.</div>
+  </div>
+  <div class="limitation">
+    <div class="lim-title">Pass-through accounts excluded</div>
+    <div class="lim-body">The FMS Account (Reserve Bank of Australia, $23.3B) is excluded from all analysis. It is a financial channel for US Foreign Military Sales government-to-government payments. Similar cooperative program accounts (ACEA, DFAS-PE) are also excluded.</div>
+  </div>
+  <div class="limitation">
+    <div class="lim-title">Archetype classification is heuristic</div>
+    <div class="lim-body">Supplier archetypes are inferred from contractor name keywords and contract patterns using heuristic matching; UNSPSC codes present in the dataset have not yet been applied. The "Other" category ($121.6B, 31,367 contractors) contains the majority of spend and includes many contractors that would classify into recognisable segments with richer data.</div>
+  </div>
+</section>
+
+<!-- ───────────────── METHODOLOGY ───────────────── -->
+<details class="methodology">
+  <summary>Methodology</summary>
+  <div class="meth-body">
+    <p style="margin-bottom:10px;">Data is sourced from the AusTender OCDS API (<code>api.tenders.gov.au/ocds</code>), harvested via <code>scripts/austender_harvest.py</code> and stored in a local SQLite database (<code>data/orbit.db</code>). Pass-through financial accounts (FMS Account Reserve Bank of Australia and related cooperative programme accounts) are excluded from all contractor counts and spend totals in this report. Adjusted total spend is $203.7B across 33,086 contractors.</p>
+    <p style="margin-bottom:10px;"><strong>Concentration analysis:</strong> Contractors ranked by total awarded contract value. Top-N cumulative share calculated from ranked totals.</p>
+    <p style="margin-bottom:10px;"><strong>Tenure analysis:</strong> Years active calculated as distinct calendar years with at least one contract award. The dataset spans calendar years 2022–2026 (5 years).</p>
+    <p><strong>Archetype classification:</strong> Name-keyword matching against known firm lists. Mutually exclusive: a contractor matching multiple keyword sets is assigned to the first matching category in priority order (Defence, Facilities, IT, Consulting, Labour Hire). The large "Other" residual reflects the limits of keyword-only classification.</p>
+  </div>
+</details>
+
+<!-- ───────────────── FOOTER ───────────────── -->
+<footer class="report-footer">
+  Orbit Intelligence &nbsp;·&nbsp; Preliminary Analysis &nbsp;·&nbsp; April 2026 &nbsp;·&nbsp;
+  Source: AusTender OCDS API &nbsp;·&nbsp; 33,086 contractors &nbsp;·&nbsp; $203.7B analysed &nbsp;·&nbsp;
+  For internal use only
+</footer>
+
+<script>
+  function toggleTheme() {
+    const html = document.documentElement;
+    const isDark = html.getAttribute('data-theme') === 'dark';
+    html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+    document.querySelector('.theme-toggle').textContent = isDark ? 'Dark' : 'Light';
+  }
+</script>
+</body>
+</html>
